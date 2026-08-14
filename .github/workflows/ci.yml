@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify on ${{ matrix.os }} with .NET 10
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+      CSHARP_DESIGN_PATTERNS_REPOSITORY_BLOB_BASE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}/
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10 SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore locked dependencies
+        run: dotnet restore DesignPatterns.sln --locked-mode
+
+      - name: Verify formatting
+        if: runner.os == 'Windows'
+        run: dotnet format DesignPatterns.sln --verify-no-changes --no-restore
+
+      - name: Build solution
+        run: dotnet build DesignPatterns.sln --configuration Release --no-restore
+
+      - name: Run standard tests with coverage
+        shell: pwsh
+        run: >-
+          dotnet test DesignPatterns.sln
+          --configuration Release
+          --no-build
+          --no-restore
+          --logger "trx;LogFilePrefix=$($env:RUNNER_OS)-"
+          --results-directory output/test-results
+          --collect "XPlat Code Coverage"
+
+      - name: Run executable teaching checks
+        shell: pwsh
+        run: |
+          dotnet run --project tests/DesignPatterns.SmokeTests --configuration Release --no-build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./scripts/run-teaching-projects.ps1 -SelfTest -NoBuild
+
+      - name: Test coverage verifier
+        shell: pwsh
+        run: ./tests/Scripts/verify-coverage.self-test.ps1
+
+      - name: Verify coverage baseline
+        shell: pwsh
+        run: ./scripts/verify-coverage.ps1 -ResultsDirectory output/test-results
+
+      - name: Verify documentation links and pattern index
+        shell: pwsh
+        run: ./scripts/verify-docs.ps1 -NoBuild
+
+      - name: Render HTML guide previews
+        shell: pwsh
+        run: ./scripts/export-all-guides.ps1 -HtmlOnly -NoBuild
+
+      - name: Upload test and coverage results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ runner.os }}
+          path: output/test-results/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload HTML guide previews
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: guide-html-previews
+          path: output/pdf/*.html
+          if-no-files-found: error
+          retention-days: 14

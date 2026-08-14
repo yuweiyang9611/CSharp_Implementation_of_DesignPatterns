@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ReliableCheckout.Api/ReliableCheckout.Api.csproj" />
+  <Project Path="ReliableCheckout.Tests/ReliableCheckout.Tests.csproj" />
+</Solution>
