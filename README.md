@@ -10,6 +10,22 @@
 
 高级实验： [重构工坊与生产化毕业项目](labs/README.md)
 
+## 公开迁移与提交隐私
+
+本公开仓库由先前的私有仓库迁移而来。由于旧仓库的提交元数据和 Pull Request 记录包含个人隐私信息，旧仓库已永久删除，原有提交、分支和 PR 历史均未迁移；本仓库从当前代码快照重新初始化，历史以 `Initial public release` 为起点。
+
+为避免提交元数据再次暴露私人邮箱，本仓库只接受 GitHub noreply 邮箱作为 Git author/committer 邮箱。维护者本机已启用版本化 Git hooks，CI 也会扫描全部可达提交，并在发现非 noreply 邮箱时失败且不在日志中输出邮箱值。
+
+Git 不会在克隆时自动启用仓库中的 hooks。每个新克隆都必须运行一次初始化脚本：
+
+```powershell
+pwsh -File ./scripts/enable-git-hooks.ps1 -Email "你的 GitHub noreply 邮箱"
+```
+
+如果当前 Git 配置已经使用 noreply 邮箱，可以省略 `-Email`。完整说明、Windows PowerShell 命令和故障排查见 [Git hooks 启用指南](GIT_HOOKS.md)。
+
+GitHub noreply 邮箱可在 GitHub 的 **Settings → Emails** 中查看。建议同时启用 **Keep my email addresses private** 和 **Block command line pushes that expose my email**。
+
 ## 课程分层
 
 | 层次 | 内容 | 主要问题 | 验证方式 |
