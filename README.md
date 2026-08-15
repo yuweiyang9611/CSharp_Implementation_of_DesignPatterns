@@ -16,12 +16,13 @@
 
 为避免提交元数据再次暴露私人邮箱，本仓库只接受 GitHub noreply 邮箱作为 Git author/committer 邮箱。维护者本机已启用版本化 Git hooks，CI 也会扫描全部可达提交，并在发现非 noreply 邮箱时失败且不在日志中输出邮箱值。
 
-克隆仓库后，可选择启用相同的本地保护：
+Git 不会在克隆时自动启用仓库中的 hooks。每个新克隆都必须运行一次初始化脚本：
 
 ```powershell
-git config user.email "你的 GitHub noreply 邮箱"
-git config core.hooksPath .githooks
+pwsh -File ./scripts/enable-git-hooks.ps1 -Email "你的 GitHub noreply 邮箱"
 ```
+
+如果当前 Git 配置已经使用 noreply 邮箱，可以省略 `-Email`。完整说明、Windows PowerShell 命令和故障排查见 [Git hooks 启用指南](GIT_HOOKS.md)。
 
 GitHub noreply 邮箱可在 GitHub 的 **Settings → Emails** 中查看。建议同时启用 **Keep my email addresses private** 和 **Block command line pushes that expose my email**。
 
