@@ -1,0 +1,74 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build learning site
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+      CSHARP_DESIGN_PATTERNS_REPOSITORY_BLOB_BASE: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+      CSHARP_DESIGN_PATTERNS_PAGES_BASE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET 10 SDK
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: tools/GuideExporter/packages.lock.json
+
+      - name: Restore locked dependencies
+        run: dotnet restore tools/GuideExporter/GuideExporter.csproj --locked-mode
+
+      - name: Build guide exporter
+        run: dotnet build tools/GuideExporter/GuideExporter.csproj --configuration Release --no-restore
+
+      - name: Build static learning site
+        shell: pwsh
+        run: ./scripts/build-pages.ps1 -NoBuild
+
+      - name: Validate interactive JavaScript
+        run: node --check site/assets/app.js
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: output/pages-site
+
+  deploy:
+    name: Deploy learning site
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

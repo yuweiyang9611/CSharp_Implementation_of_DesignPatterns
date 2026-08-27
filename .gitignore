@@ -3,5 +3,6 @@ obj/
 .vs/
 .idea/
 output/pdf/*
+output/pages-site/
 output/test-results/
 tmp/

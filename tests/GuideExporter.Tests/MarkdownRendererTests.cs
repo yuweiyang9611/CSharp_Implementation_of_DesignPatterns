@@ -82,6 +82,19 @@ public sealed class MarkdownRendererTests
             StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Render_PreservesInlineFormattingInsideLinkLabels()
+    {
+        const string markdown = "# Guide\nOpen [`labs`](../labs/README.md) and [**course guide**](guide.md).";
+
+        string html = Render(markdown);
+
+        Assert.Contains("<a href=\"../labs/README.md\"><code>labs</code></a>", html, StringComparison.Ordinal);
+        Assert.Contains("<a href=\"../docs/guide.md\"><strong>course guide</strong></a>", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("@@CODE", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("@@LINK", html, StringComparison.Ordinal);
+    }
+
     private static string Render(string markdown)
     {
         string root = Path.Combine(Path.GetTempPath(), "guide-renderer-tests");

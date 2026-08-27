@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10252a">
+  <meta name="description" content="用现代 C# 14 / .NET 10 跑通 GoF 23 种设计模式，从独立示例走向真实项目与生产可靠性。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="C# 设计模式学习地图">
+  <meta property="og:description" content="23 个可运行模式、3 个组合项目、2 个高级实验：从角色协作走向生产可靠性。">
+  <meta property="og:url" content="https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/">
+  <meta property="og:image" content="https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/assets/og.png">
+  <meta property="og:image:width" content="1672">
+  <meta property="og:image:height" content="941">
+  <meta property="og:image:alt" content="C# 设计模式学习地图：23 patterns、3 projects、2 labs">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="C# 设计模式学习地图">
+  <meta name="twitter:description" content="23 个可运行模式、3 个组合项目、2 个高级实验。">
+  <meta name="twitter:image" content="https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/assets/og.png">
+  <title>C# 设计模式学习地图</title>
+  <link rel="canonical" href="https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="C# 设计模式学习地图首页">
+      <span class="brand-mark" aria-hidden="true">{ }</span>
+      <span><strong>Design Patterns</strong><small>C# 学习地图</small></span>
+    </a>
+    <nav aria-label="主导航">
+      <a href="#routes">学习路线</a>
+      <a href="#patterns">23 种模式</a>
+      <a href="#projects">实战项目</a>
+      <a href="#labs">高级实验</a>
+      <a class="nav-github" href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Modern C# 14 · .NET 10</p>
+        <h1 id="hero-title">别背类图。<br><em>让模式跑起来。</em></h1>
+        <p class="hero-lead">从 23 个可独立运行的 Demo 出发，进入 3 个组合教学项目，再用 2 个高级实验检验重构与可靠性。</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="guides/learning-path.html#路线-a30-分钟快速体验">30 分钟开始</a>
+          <a class="button button-ghost" href="#patterns">浏览全部模式</a>
+        </div>
+        <dl class="hero-stats" aria-label="课程规模">
+          <div><dt>23</dt><dd>独立模式</dd></div>
+          <div><dt>3</dt><dd>组合项目</dd></div>
+          <div><dt>2</dt><dd>高级实验</dd></div>
+          <div><dt>33</dt><dd>项目自检</dd></div>
+        </dl>
+      </div>
+
+      <aside class="terminal-card" aria-label="快速运行示例">
+        <div class="terminal-bar"><span></span><span></span><span></span><b>PatternRunner</b><button class="terminal-copy" type="button" data-copy-command="dotnet run --project src/DesignPatterns.Runner -- adapter">复制</button></div>
+        <div class="terminal-body">
+          <p><span class="prompt">❯</span> dotnet run --project<br><span class="indent">src/DesignPatterns.Runner -- adapter</span></p>
+          <div class="terminal-output">
+            <p>=== Adapter / 适配器模式 [Structural] ===</p>
+            <p class="muted">意图：把已有类型的接口转换为客户端期望的接口…</p>
+            <p class="muted">旧设备原始读数: 41.0 °F</p>
+            <p class="muted">新接口位置: 冷藏库 A</p>
+            <p>适配后的读数: 5.0 °C</p>
+            <p>冷链检查结果: 温度正常</p>
+          </div>
+          <div class="terminal-note"><span>01</span><p>先看输出，再沿调用链读角色，最后用自检证明理解。</p></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="route-section" id="routes" aria-labelledby="routes-title">
+      <div class="section-heading">
+        <div><p class="section-kicker">CHOOSE YOUR PATH</p><h2 id="routes-title">按你拥有的时间开始</h2></div>
+        <p>不用一次读完所有内容。选一条路线，运行代码，带着输出回到教程。</p>
+      </div>
+      <div class="route-grid">
+        <a class="route-card featured" href="guides/learning-path.html#路线-a30-分钟快速体验">
+          <span class="route-index">A</span><p class="route-time">30 分钟</p><h3>快速体验</h3>
+          <p>用 Adapter 完成“独立角色 → 真实业务 → 自检证据”的最短闭环。</p><span class="route-link">从这里开始 →</span>
+        </a>
+        <a class="route-card" href="guides/learning-path.html#路线-b6-小时入门闭环">
+          <span class="route-index">B</span><p class="route-time">约 6 小时</p><h3>入门闭环</h3>
+          <p>掌握 5 个高频模式，并完成一次 OnlineStore 业务扩展。</p><span class="route-link">查看路线 →</span>
+        </a>
+        <a class="route-card" href="guides/learning-path.html#路线-c10-周完整课程">
+          <span class="route-index">C</span><p class="route-time">10 周</p><h3>核心课程</h3>
+          <p>跑完 23 种模式和三个组合项目，建立真正的模式取舍能力。</p><span class="route-link">查看路线 →</span>
+        </a>
+        <a class="route-card" href="guides/learning-path.html#路线-d34-周高级实验">
+          <span class="route-index">D</span><p class="route-time">再用 3～4 周</p><h3>高级实验</h3>
+          <p>训练安全重构，并在重试、并发和崩溃后保护业务不变量。</p><span class="route-link">查看路线 →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="patterns-section" id="patterns" aria-labelledby="patterns-title">
+      <div class="section-heading pattern-heading">
+        <div><p class="section-kicker">PATTERN ATLAS</p><h2 id="patterns-title">23 种模式，<br>按问题查找</h2></div>
+        <div class="progress-panel">
+          <div class="progress-copy"><span>我的学习进度</span><strong id="progress-count">0 / 23</strong></div>
+          <div class="progress-track" id="progress-track" role="progressbar" aria-label="设计模式学习进度" aria-valuemin="0" aria-valuemax="23" aria-valuenow="0"><span id="progress-bar"></span></div>
+          <p>完成状态只保存在当前浏览器中。<button type="button" id="reset-progress">清空记录</button></p>
+        </div>
+      </div>
+
+      <div class="pattern-toolbar" aria-label="筛选设计模式">
+        <label class="search-box" for="pattern-search"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-copy"><strong>搜索模式</strong><input id="pattern-search" type="search" placeholder="名称、意图或场景…" autocomplete="off"></span></label>
+        <div class="filter-list" role="group" aria-label="按 GoF 分类筛选">
+          <button class="filter-button active" type="button" data-category="all" aria-pressed="true">全部 <span>23</span></button>
+          <button class="filter-button" type="button" data-category="Creational" aria-pressed="false">创建型 <span>5</span></button>
+          <button class="filter-button" type="button" data-category="Structural" aria-pressed="false">结构型 <span>7</span></button>
+          <button class="filter-button" type="button" data-category="Behavioral" aria-pressed="false">行为型 <span>11</span></button>
+        </div>
+      </div>
+
+      <div class="pattern-meta"><p id="pattern-result" aria-live="polite">按初学者顺序显示全部 23 种模式</p><a href="guides/pattern-index.html">打开完整模式索引 ↗</a></div>
+      <div class="pattern-grid" id="pattern-grid"></div>
+      <noscript><p class="no-results">模式检索器需要 JavaScript；你仍可直接打开<a href="guides/pattern-index.html">完整模式索引</a>继续学习。</p></noscript>
+      <p class="no-results" id="no-results" hidden>没有找到匹配的模式。试试“状态”“创建”或“缓存”。</p>
+    </section>
+
+    <section class="projects-section" id="projects" aria-labelledby="projects-title">
+      <div class="section-heading">
+        <div><p class="section-kicker">FROM ROLES TO REAL WORK</p><h2 id="projects-title">从角色协作<br>走进真实业务</h2></div>
+        <p>独立 Demo 回答“角色怎样协作”；三个项目回答“业务变化为什么值得这些角色”。它们合计覆盖全部 23 种模式。</p>
+      </div>
+      <div class="project-grid">
+        <article class="project-card project-store">
+          <div class="project-top"><span class="project-number">01</span><span class="project-type">COMMERCE</span></div>
+          <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>¥</b></div>
+          <h3>OnlineStore</h3><p>购物车、计价、支付、库存与订单生命周期的完整结算链。</p>
+          <ul class="chip-list" aria-label="使用的模式"><li>Builder</li><li>Strategy</li><li>State</li><li>Facade</li><li>+3</li></ul>
+          <div class="project-links"><a href="guides/online-store.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/OnlineStore" aria-label="查看 OnlineStore 源码">源码 ↗</a></div>
+        </article>
+        <article class="project-card project-home">
+          <div class="project-top"><span class="project-number">02</span><span class="project-type">IoT</span></div>
+          <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>⌂</b></div>
+          <h3>SmartHome</h3><p>多协议设备接入、权限控制、设备联动、撤销与安全场景恢复。</p>
+          <ul class="chip-list" aria-label="使用的模式"><li>Adapter</li><li>Bridge</li><li>Command</li><li>Memento</li><li>+4</li></ul>
+          <div class="project-links"><a href="guides/smart-home.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/SmartHome" aria-label="查看 SmartHome 源码">源码 ↗</a></div>
+        </article>
+        <article class="project-card project-docs">
+          <div class="project-top"><span class="project-number">03</span><span class="project-type">WORKFLOW</span></div>
+          <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>¶</b></div>
+          <h3>DocumentWorkflow</h3><p>模板复制、DSL 筛选、合规检查和多渠道发布的报表流水线。</p>
+          <ul class="chip-list" aria-label="使用的模式"><li>Prototype</li><li>Visitor</li><li>Decorator</li><li>Interpreter</li><li>+4</li></ul>
+          <div class="project-links"><a href="guides/document-workflow.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/DocumentWorkflow" aria-label="查看 DocumentWorkflow 源码">源码 ↗</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="labs-section" id="labs" aria-labelledby="labs-title">
+      <div class="labs-intro"><p class="section-kicker">BEYOND THE CATALOG</p><h2 id="labs-title">模式之外，<br><em>结果必须可靠。</em></h2><p>学会组织变化之后，继续训练安全改变遗留代码，以及在并发、重试、乱序和崩溃后保护业务不变量。</p><a href="guides/labs.html">查看高级实验地图 →</a></div>
+      <div class="lab-stack">
+        <a class="lab-card" href="guides/refactoring.html"><span>LAB 01 · 4～7 天</span><h3>Checkout Refactoring Kata</h3><p>坏代码 → 特征测试 → Strategy / Chain / State / Facade → 等价性证明</p><b>安全重构工坊 ↗</b></a>
+        <a class="lab-card" href="guides/reliable-checkout.html"><span>LAB 02 · 2～3 周</span><h3>Reliable Checkout</h3><p>HTTP + SQLite · 幂等 · 原子库存 · Outbox · 重试 · 乱序回调</p><b>生产可靠性毕业项目 ↗</b></a>
+      </div>
+    </section>
+
+    <section class="guides-section" id="guides" aria-labelledby="guides-title">
+      <div class="section-heading"><div><p class="section-kicker">READ DEEPER</p><h2 id="guides-title">完整课程指南</h2></div><p>所有指南都由仓库中的 Markdown 自动生成；文档更新后，GitHub Pages 会随主分支重新发布。</p></div>
+      <div class="guide-grid">
+        <a href="guides/learning-path.html"><span>01</span><div><small>START HERE</small><h3>学习路线</h3><p>从 30 分钟到 14 周，按时间选择。</p></div><b>↗</b></a>
+        <a href="guides/fundamentals.html"><span>02</span><div><small>23 PATTERNS</small><h3>基础学习指南</h3><p>意图、角色、C# 实现、取舍与练习。</p></div><b>↗</b></a>
+        <a href="guides/practice.html"><span>03</span><div><small>3 PROJECTS</small><h3>实战学习指南</h3><p>从独立模式走向组合业务链。</p></div><b>↗</b></a>
+        <a href="guides/pattern-index.html"><span>04</span><div><small>LOOKUP</small><h3>模式源码索引</h3><p>Runner key、源码、实战落点与章节。</p></div><b>↗</b></a>
+      </div>
+    </section>
+
+    <section class="quality-strip" aria-label="课程质量信息">
+      <p>可运行，而不只是可阅读。</p>
+      <dl><div><dt>23 / 23</dt><dd>Demo 离线烟雾测试</dd></div><div><dt>33 / 33</dt><dd>组合项目确定性自检</dd></div><div><dt>.NET 10</dt><dd>Windows + Linux CI</dd></div><div><dt>C# 14</dt><dd>Nullable + 警告即错误</dd></div></dl>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand"><span class="brand-mark" aria-hidden="true">{ }</span><p><strong>C# 设计模式学习地图</strong><br><span>独立 Demo → 组合项目 → 安全重构 → 生产可靠性</span></p></div>
+    <div class="footer-links"><a href="guides/repository-overview.html">项目说明</a><a href="guides/learning-path.html">学习路线</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns">GitHub 源码 ↗</a></div>
+  </footer>
+
+  <dialog class="pattern-dialog" id="pattern-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" id="dialog-close" aria-label="关闭">×</button>
+    <p class="dialog-category" id="dialog-category"></p>
+    <p class="dialog-number" id="dialog-number"></p>
+    <h2 id="dialog-title"></h2>
+    <p class="dialog-intent" id="dialog-intent"></p>
+    <div class="dialog-scenario"><span>示例场景</span><p id="dialog-scenario"></p></div>
+    <div class="dialog-command"><div><span>运行这个 Demo</span><button type="button" id="dialog-copy">复制命令</button></div><code id="dialog-command"></code></div>
+    <div class="dialog-actions"><a class="button button-primary" id="dialog-guide" href="#">阅读教程</a><a class="button button-dark" id="dialog-source" href="#">查看源码 ↗</a><a class="dialog-practice" id="dialog-practice" href="#">查看实战落点 ↗</a></div>
+  </dialog>
+</body>
+</html>

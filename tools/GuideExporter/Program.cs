@@ -482,9 +482,19 @@ internal static partial class MarkdownRenderer
         for (var index = 0; index < links.Count; index++)
         {
             var (label, url) = links[index];
+            var encodedLabel = WebUtility.HtmlEncode(label);
+            encodedLabel = BoldRegex.Replace(encodedLabel, "<strong>$1</strong>");
+            for (var codeIndex = 0; codeIndex < codeTokens.Count; codeIndex++)
+            {
+                encodedLabel = encodedLabel.Replace(
+                    $"@@CODE{codeIndex}@@",
+                    $"<code>{WebUtility.HtmlEncode(codeTokens[codeIndex])}</code>",
+                    StringComparison.Ordinal);
+            }
+
             encoded = encoded.Replace(
                 $"@@LINK{index}@@",
-                $"<a href=\"{WebUtility.HtmlEncode(url)}\">{WebUtility.HtmlEncode(label)}</a>",
+                $"<a href=\"{WebUtility.HtmlEncode(url)}\">{encodedLabel}</a>",
                 StringComparison.Ordinal);
         }
 
