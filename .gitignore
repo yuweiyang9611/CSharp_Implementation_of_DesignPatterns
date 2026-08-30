@@ -4,5 +4,7 @@ obj/
 .idea/
 output/pdf/*
 output/pages-site/
+output/site-regression/
 output/test-results/
+node_modules/
 tmp/

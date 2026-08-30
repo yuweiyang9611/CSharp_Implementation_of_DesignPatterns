@@ -238,6 +238,8 @@ internal static partial class MarkdownRenderer
         var body = new StringBuilder();
         var paragraph = new List<string>();
         var headingIds = new Dictionary<string, int>(StringComparer.Ordinal);
+        var tableCount = 0;
+        var codeBlockCount = 0;
         var inCode = false;
         var codeLanguage = string.Empty;
         var code = new StringBuilder();
@@ -300,7 +302,8 @@ internal static partial class MarkdownRenderer
                     var languageClass = string.IsNullOrWhiteSpace(codeLanguage)
                         ? string.Empty
                         : $" class=\"language-{WebUtility.HtmlEncode(codeLanguage)}\"";
-                    body.Append($"<pre><code{languageClass}>");
+                    codeBlockCount++;
+                    body.Append($"<pre tabindex=\"0\" aria-label=\"代码块 {codeBlockCount}，可横向滚动\"><code{languageClass}>");
                     body.Append(WebUtility.HtmlEncode(code.ToString().TrimEnd('\r', '\n')));
                     body.AppendLine("</code></pre>");
                     inCode = false;
@@ -344,7 +347,8 @@ internal static partial class MarkdownRenderer
                 CloseList();
                 var headers = SplitTableRow(line);
                 index += 2;
-                body.AppendLine("<div class=\"table-wrap\"><table><thead><tr>");
+                tableCount++;
+                body.AppendLine($"<div class=\"table-wrap\" role=\"region\" aria-label=\"数据表 {tableCount}，可横向滚动\" tabindex=\"0\"><table><thead><tr>");
                 foreach (var header in headers)
                 {
                     body.AppendLine($"<th>{RenderInline(header)}</th>");
@@ -592,7 +596,7 @@ internal static partial class MarkdownRenderer
                 code { padding: .12em .35em; border-radius: 3px; background: #eef1f5; font: 9.2pt/1.45 "Cascadia Mono", Consolas, monospace; }
                 pre { margin: 3mm 0 5mm; padding: 4mm; border: 1px solid #27364d; border-radius: 5px; background: #101827; color: #eef5ff; font: 8.1pt/1.48 "Cascadia Mono", Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; box-decoration-break: clone; }
                 pre code { padding: 0; background: transparent; color: inherit; font: inherit; }
-                .table-wrap { margin: 3mm 0 5mm; }
+                .table-wrap { max-width: 100%; margin: 3mm 0 5mm; }
                 table { width: 100%; border-collapse: collapse; font-size: 9.3pt; }
                 thead { display: table-header-group; }
                 tr { break-inside: avoid; }
@@ -601,7 +605,24 @@ internal static partial class MarkdownRenderer
                 tr:nth-child(even) td { background: #f7f9fc; }
                 hr { margin: 7mm 0; border: 0; border-top: 1px solid var(--line); }
                 .page-break { break-before: page; }
-                @media screen { body { background: #edf1f7; padding: 12mm 0; } main { padding: 18mm 16mm; background: white; box-shadow: 0 3px 18px #25344b33; } }
+                @media screen {
+                  body { background: #edf1f7; padding: 32px 16px; }
+                  main { min-width: 0; padding: clamp(32px, 6vw, 68px) clamp(22px, 5vw, 60px); background: white; box-shadow: 0 3px 18px #25344b33; }
+                  .table-wrap { min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; }
+                  .table-wrap:focus-visible { outline: 3px solid #275dad; outline-offset: 3px; }
+                  .table-wrap table { min-width: 640px; }
+                  pre { max-width: 100%; white-space: pre; overflow-x: auto; overflow-wrap: normal; }
+                  pre:focus-visible { outline: 3px solid #5a85c2; outline-offset: 3px; }
+                }
+                @media screen and (max-width: 720px) {
+                  body { padding: 0; }
+                  main { width: 100%; padding: 30px 18px 48px; box-shadow: none; }
+                  h1 { margin-top: 0; font-size: clamp(28px, 9vw, 40px); text-align: left; }
+                  h2 { font-size: clamp(24px, 7vw, 31px); }
+                  h3 { font-size: clamp(20px, 5.5vw, 25px); }
+                  p { text-align: left; overflow-wrap: anywhere; }
+                  th, td { overflow-wrap: anywhere; }
+                }
                 @media print { h1:first-child { margin-top: 48mm; } a { color: inherit; } }
               </style>
             </head>

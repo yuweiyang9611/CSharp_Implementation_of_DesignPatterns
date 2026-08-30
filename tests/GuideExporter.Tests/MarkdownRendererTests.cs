@@ -40,9 +40,25 @@ public sealed class MarkdownRendererTests
         string html = Render(markdown);
 
         Assert.Contains("<table>", html, StringComparison.Ordinal);
+        Assert.Contains("role=\"region\" aria-label=\"数据表 1，可横向滚动\" tabindex=\"0\"", html, StringComparison.Ordinal);
         Assert.Contains("<code>&lt;tag&gt;</code>", html, StringComparison.Ordinal);
         Assert.Contains("<strong>safe</strong>", html, StringComparison.Ordinal);
         Assert.Contains("if (left &lt; right) return;", html, StringComparison.Ordinal);
+        Assert.Contains("<pre tabindex=\"0\" aria-label=\"代码块 1，可横向滚动\">", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Render_ProvidesResponsiveScreenStylesWithoutChangingThePrintContract()
+    {
+        string html = Render("# Demo\n\n| Long | Value |\n| --- | --- |\n| path/to/a/very/long/file.cs | ok |");
+
+        Assert.Contains("@media screen and (max-width: 720px)", html, StringComparison.Ordinal);
+        Assert.Contains(".table-wrap { min-width: 0; overflow-x: auto", html, StringComparison.Ordinal);
+        Assert.Contains(".table-wrap:focus-visible { outline: 3px solid #275dad", html, StringComparison.Ordinal);
+        Assert.Contains("pre:focus-visible { outline: 3px solid #5a85c2", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("width: max-content", html, StringComparison.Ordinal);
+        Assert.Contains("@media print", html, StringComparison.Ordinal);
+        Assert.Contains("<body><main>", html, StringComparison.Ordinal);
     }
 
     [Fact]

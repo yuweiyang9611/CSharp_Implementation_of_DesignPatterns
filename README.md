@@ -2,7 +2,7 @@
 
 这是基于《图解设计模式》学习顺序重新编写的现代 C# 14 / .NET 10 课程：覆盖 GoF 23 种模式、23 个可独立运行的示例、3 个模式组合教学项目、2 个高级实验，以及可一次生成 5 份 PDF 的课程交付链。
 
-> **在线学习：** [打开 C# 设计模式学习地图](https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/)——按时间选择路线、检索 23 种模式并记录学习进度。
+> **在线学习：** [打开 C# 设计模式学习地图](https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/)——按时间或实际问题选择路线，在 23 个独立课件、3 个项目和 2 个实验之间持续记录“阅读 → 运行 → 改造 → 验证”进度。
 
 > 第一次打开仓库？请从 [START_HERE：选择你的学习路线](START_HERE.md) 开始。需要快速定位源码时使用 [23 种模式索引](docs/模式索引.md)。
 
@@ -99,17 +99,24 @@ dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
 
 ## 持续集成
 
-GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。PDF 由手动或版本标签工作流生成，避免浏览器打印影响常规代码验证。
+GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。站点还会在系统 Chrome 中执行桌面与 390px 移动端回归、进度持久化、深链接、横向溢出和 axe 严重级可访问性检查。只有 Windows/Linux 验证与浏览器检查全部通过，主分支才会发布 GitHub Pages，并核对线上 commit 与关键资源。PDF 由手动或版本标签工作流生成。
 
 ## 在线学习站
 
-GitHub Pages 首页位于 `site/`；主分支更新时，[Pages 工作流](.github/workflows/pages.yml) 会把交互式模式索引与仓库中的 12 篇 Markdown 指南一起生成和发布。可在本地复现同一份静态产物：
+GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流](.github/workflows/ci.yml) 会生成并发布 1 个学习仪表盘、12 篇 Markdown 指南和 23 个独立模式课件。模式名称、顺序、分类和意图来自真实 `PatternCatalog`，网站增量字段集中在 `site/data/learning-catalog.json`，Markdown 模式索引由二者同步生成。可在本地复现同一份静态产物：
 
 ```powershell
 pwsh -File ./scripts/build-pages.ps1
 ```
 
-生成结果位于 `output/pages-site/`。构建会校验 23 个模式条目、源码与实战路径、教程锚点及全部站内链接。
+生成结果位于 `output/pages-site/`。构建会校验 36 个 canonical URL、JSON-LD、sitemap、23 个模式条目、源码与实战路径、教程锚点及全部站内链接。需要验证真实浏览器行为时先安装锁定的轻量测试依赖：
+
+```powershell
+npm ci
+npm run test:site
+```
+
+修改模式目录后可运行 `pwsh -File ./scripts/sync-pattern-index.ps1` 更新 [23 种模式索引](docs/模式索引.md)；CI 会拒绝未同步的索引。
 
 ## 生成 PDF
 

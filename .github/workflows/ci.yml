@@ -1,17 +1,32 @@
-name: CI
+name: CI and Pages
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
 
 jobs:
+  privacy:
+    name: Require GitHub noreply commit emails
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out full reachable history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Verify author and committer email privacy
+        run: ./scripts/verify-commit-email-privacy.sh --all
+
   verify:
     name: Verify on ${{ matrix.os }} with .NET 10
     runs-on: ${{ matrix.os }}
@@ -29,10 +44,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up .NET 10 SDK
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: 10.0.x
           cache: true
@@ -74,7 +89,7 @@ jobs:
         shell: pwsh
         run: ./scripts/verify-coverage.ps1 -ResultsDirectory output/test-results
 
-      - name: Verify documentation links and pattern index
+      - name: Verify documentation links and generated pattern index
         shell: pwsh
         run: ./scripts/verify-docs.ps1 -NoBuild
 
@@ -84,7 +99,7 @@ jobs:
 
       - name: Upload test and coverage results
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-results-${{ runner.os }}
           path: output/test-results/
@@ -93,9 +108,101 @@ jobs:
 
       - name: Upload HTML guide previews
         if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: guide-html-previews
           path: output/pdf/*.html
           if-no-files-found: error
           retention-days: 14
+
+  site:
+    name: Verify learning site
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: true
+      CSHARP_DESIGN_PATTERNS_REPOSITORY_BLOB_BASE: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+      CSHARP_DESIGN_PATTERNS_PAGES_BASE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up .NET 10 SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Restore locked dependencies
+        run: dotnet restore DesignPatterns.sln --locked-mode
+
+      - name: Build solution for the site generators
+        run: dotnet build DesignPatterns.sln --configuration Release --no-restore
+
+      - name: Build and validate the static learning site
+        shell: pwsh
+        run: ./scripts/build-pages.ps1 -NoBuild
+
+      - name: Install browser regression dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Show system Chrome version
+        run: google-chrome --version
+
+      - name: Run real-browser and accessibility regression
+        run: npm run test:site
+
+      - name: Upload browser failure screenshot
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-regression-failure
+          path: output/site-regression/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload the verified GitHub Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: output/pages-site
+
+  deploy:
+    name: Deploy verified learning site
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [privacy, verify, site]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out deployment smoke test
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+      - name: Verify the deployed revision and critical resources
+        shell: pwsh
+        run: >-
+          ./scripts/test-pages-deployment.ps1
+          -BaseUrl "${{ steps.deployment.outputs.page_url }}"
+          -ExpectedRevision "${{ github.sha }}"

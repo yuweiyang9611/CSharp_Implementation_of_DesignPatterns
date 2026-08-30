@@ -43,7 +43,7 @@ try {
   $checkedAnchors = 0
   $markdownFiles = Get-ChildItem -Path $root -Recurse -File -Filter '*.md' |
     Where-Object {
-      $_.FullName -notmatch '[\\/](\.git|bin|obj|output|tmp)[\\/]'
+      $_.FullName -notmatch '[\\/](\.git|bin|node_modules|obj|output|tmp)[\\/]'
     }
 
   foreach ($markdownFile in $markdownFiles) {
@@ -86,44 +86,14 @@ try {
     }
   }
 
-  $indexPath = Join-Path (Join-Path $root 'docs') ([Text.Encoding]::UTF8.GetString(
-      [Convert]::FromBase64String('5qih5byP57Si5byVLm1k')))
-  $indexRows = @(Get-Content -LiteralPath $indexPath -Encoding utf8 |
-      Where-Object { $_ -match '^\|\s*\d+\s*\|' })
-  $indexKeys = @($indexRows | ForEach-Object { (($_ -split '\|')[4]).Trim().Trim('`') })
-
-  if ($indexKeys.Count -ne 23) {
-    $issues.Add("Pattern index must contain 23 rows; found $($indexKeys.Count).")
-  }
-
-  $runnerArguments = @(
-    'run',
-    '--project', 'src/DesignPatterns.Runner',
-    '--configuration', 'Release'
-  )
-  if ($NoBuild) { $runnerArguments += '--no-build' }
-  $runnerArguments += @('--', '--list')
-  $runnerOutput = @(dotnet @runnerArguments)
-  if ($LASTEXITCODE -ne 0) {
-    throw 'Runner catalog command failed while verifying documentation.'
-  }
-
-  $runnerKeys = @($runnerOutput | ForEach-Object {
-      if ($_ -match '^\s*\d+\.\s+(\S+)') { $Matches[1] }
-    })
-  if ($runnerKeys.Count -ne 23) {
-    $issues.Add("Runner must expose 23 keys; found $($runnerKeys.Count).")
-  }
-
-  foreach ($difference in @(Compare-Object $runnerKeys $indexKeys)) {
-    $issues.Add("Pattern key mismatch: $($difference.InputObject) ($($difference.SideIndicator)).")
-  }
+  $syncParameters = @{ Check = $true; NoBuild = [bool]$NoBuild }
+  & (Join-Path $PSScriptRoot 'sync-pattern-index.ps1') @syncParameters
 
   if ($issues.Count -gt 0) {
     Write-Error ("Documentation verification failed:`n- " + ($issues -join "`n- "))
   }
 
-  Write-Host "Documentation verification passed: $($markdownFiles.Count) files, $checkedLinks local links, $checkedAnchors anchors, 23 pattern keys."
+  Write-Host "Documentation verification passed: $($markdownFiles.Count) files, $checkedLinks local links, $checkedAnchors anchors, and a synchronized 23-row pattern index."
 }
 finally {
   Pop-Location

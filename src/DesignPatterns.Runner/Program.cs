@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using DesignPatterns;
 
 Console.OutputEncoding = Encoding.UTF8;
@@ -11,6 +12,12 @@ if (args.Length == 0 || args.Contains("--help", StringComparer.OrdinalIgnoreCase
 if (args.Contains("--list", StringComparer.OrdinalIgnoreCase))
 {
     PrintCatalog(PatternCatalog.All);
+    return 0;
+}
+
+if (args.Contains("--catalog-json", StringComparer.OrdinalIgnoreCase))
+{
+    PrintCatalogJson(PatternCatalog.All);
     return 0;
 }
 
@@ -84,12 +91,29 @@ static void PrintCatalog(IEnumerable<IPatternDemo> demos)
     }
 }
 
+static void PrintCatalogJson(IEnumerable<IPatternDemo> demos)
+{
+    var catalog = demos.Select((demo, index) => new
+    {
+        number = index + 1,
+        key = demo.Key,
+        name = demo.Name,
+        category = demo.Category,
+        intent = demo.Intent,
+    });
+    Console.WriteLine(JsonSerializer.Serialize(catalog, new JsonSerializerOptions
+    {
+        WriteIndented = true,
+    }));
+}
+
 static void PrintUsage()
 {
     Console.WriteLine("C# Design Patterns Runner");
     Console.WriteLine();
     Console.WriteLine("用法：");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --list");
+    Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --catalog-json");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- iterator");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --category Behavioral");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --all");

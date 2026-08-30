@@ -1,0 +1,143 @@
+:root { --guide-header-offset: 72px; }
+
+html { scroll-padding-top: calc(var(--guide-header-offset) + 16px); }
+body { padding: 0 !important; background: #edf1f7 !important; }
+body > .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; background: #f0b429; color: #10252a; font-weight: 800; }
+body > .skip-link:focus { top: 1rem; }
+[id] { scroll-margin-top: calc(var(--guide-header-offset) + 16px); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #f0b429; outline-offset: 3px; }
+
+.learning-site-header {
+  max-width: none !important;
+  min-height: 64px;
+  margin: 0 auto;
+  padding: 12px clamp(18px, 5vw, 64px) !important;
+  background: #10252a;
+  color: #fffdf8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  box-shadow: 0 6px 20px #10252a30;
+}
+.learning-site-header a { color: inherit; text-decoration: none; }
+.learning-site-brand { min-height: 44px; display: flex; align-items: center; gap: 10px; font-weight: 800; }
+.learning-site-mark { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #f0b429; color: #f0b429; font: 700 10px Consolas, monospace; }
+.learning-site-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; font-size: 14px; }
+.learning-site-nav a { color: #bdd0cd; }
+.learning-site-nav a:hover { color: #ffd874; }
+.learning-nav-toggle {
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #587074;
+  background: transparent;
+  color: #fffdf8;
+  font: 700 14px "Microsoft YaHei", sans-serif;
+  cursor: pointer;
+}
+.learning-site-nav a { display: inline-flex; min-height: 44px; align-items: center; }
+.learning-site-nav a[aria-current="page"] { color: #ffd874; text-decoration: underline; text-underline-offset: 5px; }
+
+.learning-layout {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 760px);
+  justify-content: center;
+  align-items: start;
+  gap: 28px;
+}
+.learning-layout.without-toc { grid-template-columns: minmax(0, 760px); }
+.learning-layout > main {
+  width: 100%;
+  min-width: 0;
+  max-width: 760px !important;
+  margin: 0 !important;
+  padding: clamp(34px, 6vw, 68px) clamp(28px, 5vw, 60px) !important;
+}
+.guide-toc {
+  position: sticky;
+  top: calc(var(--guide-header-offset) + 20px);
+  max-height: calc(100vh - var(--guide-header-offset) - 40px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid #ced8e7;
+  background: #fff;
+  box-shadow: 0 3px 18px #25344b18;
+  font: 14px/1.45 "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+.guide-toc-title { margin: 0; color: #13294b; font-size: 16px; font-weight: 800; }
+.guide-toc-toggle { display: none; }
+.guide-toc-list { margin-top: 12px; }
+.guide-toc-list ol { margin: 0; padding: 0; list-style: none; }
+.guide-toc-list li { margin: 0; }
+.guide-toc-list li.depth-2 a { padding-left: 14px; color: #556176; font-size: 12px; }
+.guide-toc-list a { display: block; padding: 6px 8px; border-left: 3px solid transparent; color: #24466f; text-decoration: none; }
+.guide-toc-list a:hover, .guide-toc-list a:focus-visible { background: #eef4fc; }
+.guide-toc-list a[aria-current="location"] { border-left-color: #275dad; background: #eef4fc; color: #13294b; font-weight: 800; }
+.guide-continue { display: block; margin-top: 14px; padding: 10px; background: #eef4fc; color: #1c57a5; text-decoration: none; font-weight: 800; }
+.guide-chapter-nav { display: grid; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #ced8e7; }
+.guide-chapter-nav a { color: #24466f; text-decoration: none; font-size: 12px; }
+.guide-top-link { display: inline-block; margin-top: 12px; color: #556176; }
+.learning-site-footer { max-width: none !important; margin: 0 auto; padding: 18px; background: #10252a; color: #bdd0cd; text-align: center; font: 14px "Microsoft YaHei", "PingFang SC", sans-serif; }
+.learning-site-footer a { color: #ffd874; text-decoration: underline; text-underline-offset: 3px; }
+
+@media screen {
+  .learning-layout > main h1 { font-size: clamp(34px, 5vw, 48px); text-align: left; letter-spacing: 0; }
+  .learning-layout > main h2 { font-size: clamp(28px, 4vw, 36px); }
+  .learning-layout > main h3 { font-size: clamp(21px, 3vw, 26px); }
+  .learning-layout > main p { text-align: left; }
+  .learning-layout > main p a { text-decoration: underline; text-underline-offset: 3px; }
+  .learning-layout > main pre { max-width: 100%; white-space: pre; overflow-x: auto; overflow-wrap: normal; }
+  .learning-layout > main pre:focus-visible { outline: 3px solid #5a85c2; outline-offset: 3px; }
+  .learning-layout > main .table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .learning-layout > main .table-wrap:focus-visible { outline: 3px solid #275dad; outline-offset: 3px; }
+  .learning-layout > main .table-wrap table { min-width: 640px; }
+}
+
+@media (max-width: 900px) {
+  .learning-site-header { align-items: center !important; flex-flow: row wrap !important; gap: 8px !important; }
+  .learning-site-brand { min-width: 0; flex: 1; }
+  .js .learning-nav-toggle { display: inline-grid; place-items: center; }
+  .learning-site-nav { width: 100%; padding-top: 8px; border-top: 1px solid #355057; }
+  .js .learning-site-nav { display: none !important; }
+  .js .learning-site-nav.open { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px !important; }
+  .learning-site-nav a { min-height: 44px; }
+  .learning-layout { display: block; width: 100%; padding: 0; }
+  .guide-toc { position: relative; top: auto; z-index: 20; max-height: none; padding: 10px 18px; border-width: 0 0 1px; box-shadow: 0 5px 14px #25344b20; }
+  .guide-toc-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .js .guide-toc-toggle { display: inline-flex; min-height: 44px; align-items: center; padding: 0 12px; border: 1px solid #8ca0ba; background: #fff; color: #13294b; font: 700 14px "Microsoft YaHei", sans-serif; }
+  .js .guide-toc-list, .js .guide-continue, .js .guide-chapter-nav, .js .guide-top-link { display: none; }
+  .guide-toc.open { max-height: calc(100vh - var(--guide-header-offset)); overflow: auto; }
+  .js .guide-toc.open .guide-toc-list, .js .guide-toc.open .guide-continue:not([hidden]), .js .guide-toc.open .guide-chapter-nav, .js .guide-toc.open .guide-top-link { display: block; }
+  .js .guide-toc.open .guide-chapter-nav { display: grid; }
+  .learning-layout > main { max-width: none !important; padding: 30px 18px 48px !important; box-shadow: none !important; }
+  .learning-layout > main h1 { margin-top: 0; font-size: clamp(30px, 9vw, 42px); line-height: 1.22; }
+  .learning-layout > main h2 { margin-top: 38px; padding-bottom: 10px; font-size: clamp(25px, 7vw, 32px); }
+  .learning-layout > main h3 { margin-top: 30px; font-size: clamp(20px, 5.5vw, 25px); }
+  .learning-layout > main h4 { font-size: 18px; }
+  .learning-layout > main p { text-align: left; overflow-wrap: anywhere; }
+  .learning-layout > main ul, .learning-layout > main ol { margin-left: 0; padding-left: 24px; }
+  .learning-layout > main th, .learning-layout > main td { overflow-wrap: anywhere; }
+  .learning-site-footer { max-width: none !important; }
+}
+
+@media print {
+  body { background: white !important; }
+  .learning-site-header, .learning-site-footer, .guide-toc, body > .skip-link { display: none !important; }
+  .learning-layout { display: block; width: auto; margin: 0; padding: 0; }
+  .learning-layout > main { max-width: 178mm !important; padding: 0 !important; box-shadow: none !important; }
+}
