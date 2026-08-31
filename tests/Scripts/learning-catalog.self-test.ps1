@@ -34,9 +34,16 @@ function Assert-Rejected {
   )
 
   $path = Write-MutatedCatalog -Name $Name -Mutation $Mutation
-  $output = & pwsh -NoLogo -NoProfile -File $validator -CatalogPath $path -SchemaPath $schemaPath -SkipRunner 2>&1
-  if ($LASTEXITCODE -eq 0) { throw "Catalog self-test '$Name' should have failed." }
-  $diagnostic = $output | Out-String
+  $rejected = $false
+  $diagnostic = ''
+  try {
+    & $validator -CatalogPath $path -SchemaPath $schemaPath -SkipRunner | Out-Null
+  }
+  catch {
+    $rejected = $true
+    $diagnostic = $_.Exception.Message
+  }
+  if (-not $rejected) { throw "Catalog self-test '$Name' should have failed." }
   if ([string]::IsNullOrWhiteSpace($diagnostic)) { throw "Catalog self-test '$Name' returned no diagnostic." }
   if ($diagnostic -notmatch $ExpectedMessage) { throw "Catalog self-test '$Name' failed for the wrong reason: $diagnostic" }
 }
