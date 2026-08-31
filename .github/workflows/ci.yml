@@ -150,9 +150,28 @@ jobs:
       - name: Build solution for the site generators
         run: dotnet build DesignPatterns.sln --configuration Release --no-restore
 
+      - name: Validate learning catalog schema and references
+        shell: pwsh
+        run: ./scripts/test-learning-catalog.ps1 -NoBuild
+
+      - name: Self-test the learning catalog validator
+        shell: pwsh
+        run: ./tests/Scripts/learning-catalog.self-test.ps1
+
       - name: Build and validate the static learning site
         shell: pwsh
         run: ./scripts/build-pages.ps1 -NoBuild
+
+      - name: Verify the staged Pages artifact independently
+        shell: pwsh
+        run: >-
+          ./scripts/verify-pages-site.ps1
+          -SiteDirectory output/pages-site
+          -ExpectedPagesBase "$env:CSHARP_DESIGN_PATTERNS_PAGES_BASE"
+
+      - name: Self-test the Pages artifact verifier
+        shell: pwsh
+        run: ./tests/Scripts/pages-site-verifier.self-test.ps1 -SiteDirectory output/pages-site
 
       - name: Install browser regression dependencies
         run: npm ci --ignore-scripts

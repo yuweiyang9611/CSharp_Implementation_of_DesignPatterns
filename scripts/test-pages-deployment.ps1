@@ -69,12 +69,22 @@ if ($guide.Content -notmatch 'learning-site-header' -or $guide.Content -notmatch
 $lesson = Get-SiteResource -RelativePath 'patterns/adapter.html'
 if ($lesson.Content -notmatch 'data-pattern-key="adapter"' -or $lesson.Content -notmatch 'LearningResource') { throw 'Adapter lesson markers are missing.' }
 
+$quiz = Get-SiteResource -RelativePath 'quiz.html'
+if ([string]$quiz.Headers.'Content-Type' -notmatch 'text/html' -or $quiz.Content -notmatch 'question-options' -or $quiz.Content -notmatch 'assets/review\.js') {
+  throw 'Scenario quiz page markers are missing.'
+}
+
+$searchIndexResponse = Get-SiteResource -RelativePath 'assets/search-index.json'
+if ([string]$searchIndexResponse.Headers.'Content-Type' -notmatch '(application/json|text/plain)') { throw 'Search index has an unexpected content type.' }
+$searchIndex = $searchIndexResponse.Content | ConvertFrom-Json
+if (@($searchIndex.entries).Count -lt 35) { throw 'Search index is missing guide sections or pattern lessons.' }
+
 $sitemapResponse = Get-SiteResource -RelativePath 'sitemap.xml'
 if ([string]$sitemapResponse.Headers.'Content-Type' -notmatch '(xml|text/plain)') { throw 'sitemap.xml has an unexpected content type.' }
 $sitemap = [xml]$sitemapResponse.Content
 $locations = @($sitemap.urlset.url | ForEach-Object { [string]$_.loc })
-if ($locations.Count -ne 36 -or @($locations | Sort-Object -Unique).Count -ne 36) {
-  throw "sitemap.xml must contain 36 unique URLs; found $($locations.Count)."
+if ($locations.Count -ne 37 -or @($locations | Sort-Object -Unique).Count -ne 37) {
+  throw "sitemap.xml must contain 37 unique URLs; found $($locations.Count)."
 }
 
 $robots = Get-SiteResource -RelativePath 'robots.txt'
@@ -90,4 +100,4 @@ $socialImage = Get-SiteResource -RelativePath 'assets/og.jpg'
 if ([string]$socialImage.Headers.'Content-Type' -notmatch '^image/jpeg') { throw 'Open Graph image is not served as JPEG.' }
 if ($socialImage.RawContentLength -lt 10kb) { throw 'Open Graph image is unexpectedly small.' }
 
-Write-Host "GitHub Pages smoke test passed for commit ${expected}: homepage, app, guide, lesson, sitemap, robots, and social image."
+Write-Host "GitHub Pages smoke test passed for commit ${expected}: homepage, app, guide, lesson, quiz, search index, sitemap, robots, and social image."

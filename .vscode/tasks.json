@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Site: build",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "scripts/build-pages.ps1", "-NoBuild"],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "Site: preview",
+      "type": "shell",
+      "command": "node",
+      "args": ["tests/site-server.mjs", "output/pages-site", "4173"],
+      "dependsOn": "Site: build",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Project: verify all",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "scripts/verify.ps1", "-SkipPdf"],
+      "problemMatcher": [],
+      "group": "test"
+    }
+  ]
+}

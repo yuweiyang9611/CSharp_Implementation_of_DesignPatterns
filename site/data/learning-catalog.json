@@ -1,4 +1,5 @@
 {
+  "$schema": "./learning-catalog.schema.json",
   "problemTags": [
     { "id": "collection-traversal", "label": "集合遍历", "aliases": ["迭代", "惰性序列", "不暴露集合"] },
     { "id": "interface-integration", "label": "接口不兼容", "aliases": ["旧接口", "第三方接口", "协议适配", "单位转换"] },
@@ -319,11 +320,159 @@
       "related": ["composite", "visitor"]
     }
   ],
+  "exerciseTemplates": {
+    "creation-extension": "新增一种产品、配置或构建变体，不在客户端增加类型判断。",
+    "single-lifecycle": "新增一个注册项或配置，不创建第二个全局实例，并证明状态没有跨场景泄漏。",
+    "boundary-extension": "新增一种外部实现、访问规则或协议，保持客户端协议不变。",
+    "composition-extension": "新增一个叶子、包装层或共享状态场景，并保持现有组合可用。",
+    "behavior-extension": "新增一种算法、规则、状态转换或表达式，并补充一个边界输入。",
+    "collaboration-extension": "新增一个订阅者、命令、快照、遍历方式或结构操作，不修改无关协作者。"
+  },
+  "tagToExerciseTemplate": {
+    "object-creation": "creation-extension",
+    "single-lifecycle": "single-lifecycle",
+    "interface-integration": "boundary-extension",
+    "multi-axis-extension": "boundary-extension",
+    "access-control": "boundary-extension",
+    "simplify-subsystem": "boundary-extension",
+    "tree-structure": "composition-extension",
+    "dynamic-responsibility": "composition-extension",
+    "memory-sharing": "composition-extension",
+    "algorithm-variation": "behavior-extension",
+    "state-transition": "behavior-extension",
+    "request-pipeline": "behavior-extension",
+    "small-dsl": "behavior-extension",
+    "notification-coordination": "collaboration-extension",
+    "undo-recovery": "collaboration-extension",
+    "collection-traversal": "collaboration-extension",
+    "stable-structure-operations": "collaboration-extension"
+  },
   "learningItems": [
-    { "id": "project:online-store", "type": "project", "title": "OnlineStore", "url": "guides/online-store.html" },
-    { "id": "project:smart-home", "type": "project", "title": "SmartHome", "url": "guides/smart-home.html" },
-    { "id": "project:document-workflow", "type": "project", "title": "DocumentWorkflow", "url": "guides/document-workflow.html" },
-    { "id": "lab:checkout-refactoring", "type": "lab", "title": "Checkout Refactoring Kata", "url": "guides/refactoring.html" },
-    { "id": "lab:reliable-checkout", "type": "lab", "title": "Reliable Checkout", "url": "guides/reliable-checkout.html" }
+    {
+      "id": "project:online-store",
+      "type": "project",
+      "title": "OnlineStore",
+      "url": "guides/online-store.html",
+      "milestones": [
+        { "id": "understand-flow", "kind": "read", "title": "画出结账调用链", "anchor": "#推荐阅读顺序", "task": "沿 DemoScenario、CheckoutFacade、校验、计价、支付、状态与事件画出调用链。" },
+        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#运行方式", "task": "运行 OnlineStore 自检并确认 5/5 通过。", "command": "dotnet run --project examples/OnlineStore/DesignPatterns.TeachingProjects.OnlineStore.csproj -c Release -- --self-test", "successContains": "SELF-TEST PASS: 5/5" },
+        { "id": "extend-discount", "kind": "change", "title": "增加折扣边界", "anchor": "#练习题", "task": "实现“满 300 减 40”，覆盖 299、300、500 三个边界。" },
+        { "id": "verify-suite", "kind": "verify", "title": "验证项目与测试", "anchor": "#项目边界", "task": "运行 TeachingProjects.Tests 和项目自检，确认原行为与新增边界都通过。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+      ]
+    },
+    {
+      "id": "project:smart-home",
+      "type": "project",
+      "title": "SmartHome",
+      "url": "guides/smart-home.html",
+      "milestones": [
+        { "id": "understand-flow", "kind": "read", "title": "画出设备协作链", "anchor": "#协作时序", "task": "按 Adapter、Bridge、Proxy、Composite、Command、Mediator、Memento 追踪一次安全场景。" },
+        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#运行", "task": "运行 SmartHome 自检并确认 13/13 通过。", "command": "dotnet run --project examples/SmartHome/DesignPatterns.TeachingProjects.SmartHome.csproj -c Release -- --self-test", "successContains": "结果：13/13 通过" },
+        { "id": "extend-channel", "kind": "change", "title": "接入 MatterChannel", "anchor": "#练习题", "task": "新增 MatterChannel，并保持 DimmableLight 不需要修改。" },
+        { "id": "verify-suite", "kind": "verify", "title": "验证权限与回退", "anchor": "#自检覆盖内容", "task": "运行 TeachingProjects.Tests 和项目自检，确认权限、撤销与恢复没有回归。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+      ]
+    },
+    {
+      "id": "project:document-workflow",
+      "type": "project",
+      "title": "DocumentWorkflow",
+      "url": "guides/document-workflow.html",
+      "milestones": [
+        { "id": "understand-flow", "kind": "read", "title": "追踪七阶段流水线", "anchor": "#端到端数据流", "task": "从输入模板追踪到筛选、检查、渲染、装饰与打包。" },
+        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#快速运行", "task": "运行 DocumentWorkflow 自检并确认 15/15 通过。", "command": "dotnet run --project examples/DocumentWorkflow/DesignPatterns.TeachingProjects.DocumentWorkflow.csproj -c Release -- --self-test", "successContains": "SELF-TEST PASSED: 15/15" },
+        { "id": "extend-compliance", "kind": "change", "title": "增加合规规则", "anchor": "#分层练习", "task": "给 ComplianceVisitor 增加“对外正文至少 8 个单词”规则并补充自检。" },
+        { "id": "verify-suite", "kind": "verify", "title": "验证流水线取舍", "anchor": "#设计复盘问题", "task": "运行 TeachingProjects.Tests 和项目自检，确认 15 项基线与新规则都通过。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+      ]
+    },
+    {
+      "id": "lab:checkout-refactoring",
+      "type": "lab",
+      "title": "Checkout Refactoring Kata",
+      "url": "guides/refactoring.html",
+      "milestones": [
+        { "id": "read-smells", "kind": "read", "title": "识别业务规则与坏味道", "anchor": "#5-为什么-starter-值得重构", "task": "先列出 Starter 的耦合点，不提前套用模式名称。" },
+        { "id": "run-baseline", "kind": "run", "title": "建立测试基线", "anchor": "#4-先运行再阅读", "task": "运行工坊测试，确认 22 项基线通过。", "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release" },
+        { "id": "characterization", "kind": "change", "title": "阶段 0：特征测试", "anchor": "#7-阶段-0用特征测试建立安全网", "task": "先用特征测试锁定可观察行为。" },
+        { "id": "strategy", "kind": "change", "title": "阶段 1：Strategy", "anchor": "#8-阶段-1strategy-隔离价格政策", "task": "隔离价格政策并保持行为等价。" },
+        { "id": "chain", "kind": "change", "title": "阶段 2：责任链", "anchor": "#9-阶段-2chain-of-responsibility-组织校验", "task": "把校验顺序变成显式责任链。" },
+        { "id": "state", "kind": "change", "title": "阶段 3：State", "anchor": "#10-阶段-3state-保护订单生命周期", "task": "把合法状态转换收进状态对象。" },
+        { "id": "facade", "kind": "change", "title": "阶段 4：Facade", "anchor": "#11-阶段-4facade-收拢用例入口", "task": "用 Facade 收拢结账用例入口。" },
+        { "id": "verify-suite", "kind": "verify", "title": "完成等价性证明", "anchor": "#15-完成定义", "task": "运行完整测试，证明 Starter 与 Reference 行为等价。", "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release" }
+      ]
+    },
+    {
+      "id": "lab:reliable-checkout",
+      "type": "lab",
+      "title": "Reliable Checkout",
+      "url": "guides/reliable-checkout.html",
+      "milestones": [
+        { "id": "understand-failures", "kind": "read", "title": "识别故障不变量", "anchor": "#故障矩阵", "task": "解释重复请求、并发库存、崩溃恢复、乱序回调等故障下必须守住什么。" },
+        { "id": "run-baseline", "kind": "run", "title": "通过毕业场景", "anchor": "#自动化测试", "task": "运行完整测试并确认五个 HTTP + SQLite 场景通过。", "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release" },
+        { "id": "extend-state", "kind": "change", "title": "扩展取消与退款", "anchor": "#场景三支付-adapter-与合法状态转换", "task": "先写非法转换测试，再增加 Cancelled 与 Refunded。" },
+        { "id": "verify-suite", "kind": "verify", "title": "复盘生产边界", "anchor": "#推荐练习顺序", "task": "再次通过五个毕业场景，并写下至少三个仍未解决的生产问题。", "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release" }
+      ]
+    }
+  ],
+  "quizzes": [
+    {
+      "id": "strategy-state-order",
+      "version": 1,
+      "title": "Strategy 还是 State",
+      "scenario": "订单处于待支付、已支付、已发货时允许的操作不同，并且必须拒绝非法转换。",
+      "prompt": "哪个模式应承担这些行为与转换规则？",
+      "patternKeys": ["strategy", "state"],
+      "correctKey": "state",
+      "decisionRule": "行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
+    },
+    {
+      "id": "adapter-bridge-facade-device",
+      "version": 1,
+      "title": "Adapter、Bridge 还是 Facade",
+      "scenario": "新系统只接受摄氏温度接口，旧设备只提供华氏接口，而且旧设备不能修改。",
+      "prompt": "哪个模式最直接地填平这个接口与单位差异？",
+      "patternKeys": ["adapter", "bridge", "facade"],
+      "correctKey": "adapter",
+      "decisionRule": "已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+    },
+    {
+      "id": "factory-family-rendering",
+      "version": 1,
+      "title": "Factory Method、Abstract Factory 还是 Builder",
+      "scenario": "Web 或 Print 模式下必须同时创建彼此兼容的 Renderer 与 Packager，不能混搭。",
+      "prompt": "哪个模式最适合保证整套产品兼容？",
+      "patternKeys": ["factory-method", "abstract-factory", "builder"],
+      "correctKey": "abstract-factory",
+      "decisionRule": "一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+    },
+    {
+      "id": "command-memento-editor",
+      "version": 1,
+      "title": "Command 还是 Memento",
+      "scenario": "每次编辑操作都要独立排队、记录、重放和撤销。",
+      "prompt": "哪个模式应把一次编辑行为变成可管理对象？",
+      "patternKeys": ["command", "memento"],
+      "correctKey": "command",
+      "decisionRule": "需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
+    },
+    {
+      "id": "observer-mediator-alarm",
+      "version": 1,
+      "title": "Observer 还是 Mediator",
+      "scenario": "烟感触发后，需要一个中心规则协调灯、空调和警报器，并在最后一个报警解除后统一恢复。",
+      "prompt": "哪个模式最适合承载跨设备协调规则？",
+      "patternKeys": ["observer", "mediator"],
+      "correctKey": "mediator",
+      "decisionRule": "多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
+    },
+    {
+      "id": "proxy-decorator-access",
+      "version": 1,
+      "title": "Proxy 还是 Decorator",
+      "scenario": "客户端接口保持不变，但访问设备前必须执行权限拒绝、审计和延迟连接。",
+      "prompt": "哪个模式最适合控制访问路径？",
+      "patternKeys": ["proxy", "decorator"],
+      "correctKey": "proxy",
+      "decisionRule": "控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
+    }
   ]
 }

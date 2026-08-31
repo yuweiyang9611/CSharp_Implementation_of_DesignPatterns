@@ -24,8 +24,10 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
   <script src="assets/progress.js" defer></script>
+  <script src="assets/review.js" defer></script>
   <script src="assets/catalog.js" defer></script>
   <script src="assets/app.js" defer></script>
+  <script src="assets/search.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
@@ -38,6 +40,8 @@
     <nav id="site-nav" aria-label="主导航">
       <a href="#routes">学习路线</a>
       <a href="#patterns">23 种模式</a>
+      <a href="#site-search">全文搜索</a>
+      <a href="quiz.html">辨析训练</a>
       <a href="#projects">实战项目</a>
       <a href="#labs">高级实验</a>
       <a class="nav-github" href="{{REPOSITORY_URL}}">GitHub ↗</a>
@@ -53,8 +57,9 @@
         <div class="hero-actions">
           <a class="button button-primary" href="guides/learning-path.html#路线-a30-分钟快速体验">30 分钟开始</a>
           <a class="button button-ghost" href="#patterns">浏览全部模式</a>
+          <a class="button button-codespaces" href="https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1">在 Codespaces 中运行 ↗</a>
         </div>
-        <p class="environment-note">需要 .NET 10 SDK · 克隆仓库后从根目录运行命令 · <a href="guides/learning-path.html#路线-a30-分钟快速体验">查看三步准备</a></p>
+        <p class="environment-note">本地需要 .NET 10 SDK；也可使用预配置 Codespaces（可能消耗 GitHub 使用额度）· <a href="guides/learning-path.html#路线-a30-分钟快速体验">查看三步准备</a></p>
         <dl class="hero-stats" aria-label="课程规模">
           <div><dt>23</dt><dd>独立模式</dd></div>
           <div><dt>3</dt><dd>组合项目</dd></div>
@@ -64,8 +69,8 @@
       </div>
 
       <aside class="terminal-card" aria-label="快速运行示例">
-        <div class="terminal-bar"><span></span><span></span><span></span><b>PatternRunner</b><button class="terminal-copy" type="button" data-copy-command="dotnet run --project src/DesignPatterns.Runner -- adapter">复制</button></div>
-        <div class="terminal-body">
+        <div class="terminal-bar"><span></span><span></span><span></span><b>PatternRunner</b><button class="terminal-toggle" id="terminal-toggle" type="button" aria-expanded="true" aria-controls="terminal-body">收起输出</button><button class="terminal-copy" type="button" data-copy-command="dotnet run --project src/DesignPatterns.Runner -- adapter">复制</button></div>
+        <div class="terminal-body" id="terminal-body">
           <p><span class="prompt">❯</span> dotnet run --project<br><span class="indent">src/DesignPatterns.Runner -- adapter</span></p>
           <div class="terminal-output">
             <p>=== Adapter / 适配器模式 [Structural] ===</p>
@@ -78,6 +83,17 @@
           <div class="terminal-note"><span>01</span><p>先看输出，再沿调用链读角色，最后用自检证明理解。</p></div>
         </div>
       </aside>
+    </section>
+
+    <section class="site-search-section" id="site-search" aria-labelledby="site-search-title">
+      <div class="site-search-intro"><p class="section-kicker">SEARCH THE COURSE</p><h2 id="site-search-title">搜索全部学习内容</h2><p id="site-search-help">检索 12 篇指南的具体章节和 23 个模式课件，结果可直接跳到对应锚点。</p></div>
+      <form id="site-search-form" role="search" action="./" method="get">
+        <label for="site-search-input">课程关键词</label>
+        <div><input id="site-search-input" name="search" type="search" autocomplete="off" aria-describedby="site-search-help" placeholder="例如：幂等、撤销、接口不兼容"><button type="submit">搜索</button><button type="reset">清除</button></div>
+      </form>
+      <p id="site-search-status" role="status" aria-live="polite" aria-atomic="true">输入关键词后搜索全部课程。</p>
+      <ol id="site-search-results" aria-label="全文搜索结果" hidden></ol>
+      <noscript><style>#site-search-form,#site-search-status,.progress-actions{display:none}</style><p>全文搜索需要 JavaScript；仍可使用 <a href="guides/pattern-index.html">完整模式索引</a>。</p></noscript>
     </section>
 
     <section class="route-section" id="routes" aria-labelledby="routes-title">
@@ -110,10 +126,11 @@
         <div><p class="section-kicker">PATTERN ATLAS</p><h2 id="patterns-title">23 种模式，<br>按问题查找</h2></div>
         <div class="progress-panel">
           <div class="progress-copy"><span>我的学习进度</span><strong id="progress-count">0%</strong></div>
-          <div class="progress-track" id="progress-track" role="progressbar" aria-label="课程学习进度" aria-valuemin="0" aria-valuemax="112" aria-valuenow="0"><span id="progress-bar"></span></div>
-          <p id="progress-stage-summary">0 / 112 个阶段 · 0 / 28 已验证</p>
-          <a class="continue-learning" id="continue-learning" href="patterns/iterator.html">继续学习：Iterator · 已阅读 →</a>
-          <p>进度按“阅读 → 运行 → 改造 → 验证”记录，只保存在当前浏览器中。<button type="button" id="reset-progress">清空记录</button></p>
+          <div class="progress-track" id="progress-track" role="progressbar" aria-label="课程学习任务进度" aria-valuemin="0" aria-valuemax="116" aria-valuenow="0"><span id="progress-bar"></span></div>
+          <p id="progress-stage-summary">0 / 116 个任务 · 0 / 28 已验证</p>
+          <a class="continue-learning" id="continue-learning" href="patterns/iterator.html#evidence-read">从 Iterator 开始：说清变化轴 →</a>
+          <p>证据与里程碑只保存在当前浏览器，可随时备份或迁移。</p>
+          <div class="progress-actions"><button type="button" id="export-progress">备份 JSON</button><button type="button" id="export-markdown">导出学习记录</button><label for="import-progress">导入备份<input id="import-progress" type="file" accept="application/json,.json"></label><button type="button" id="reset-progress">清空记录</button></div>
         </div>
       </div>
 
@@ -132,7 +149,8 @@
       </div>
 
       <div class="pattern-meta"><p id="pattern-result" aria-live="polite">按初学者顺序显示全部 23 种模式</p><a href="guides/pattern-index.html">打开完整模式索引 ↗</a></div>
-      <div class="pattern-grid" id="pattern-grid">{{PATTERN_FALLBACK}}</div>
+      <div class="pattern-grid" id="pattern-grid" aria-describedby="pattern-result">{{PATTERN_FALLBACK}}</div>
+      <div class="pattern-list-actions"><button id="pattern-list-toggle" type="button" aria-controls="pattern-grid" aria-expanded="false" hidden>显示其余模式</button></div>
       <noscript><style>.pattern-toolbar,.problem-filter-panel{display:none}</style><p class="no-results">当前显示全部 23 个静态课件；启用 JavaScript 后可使用检索、筛选和学习进度。</p></noscript>
       <p class="no-results" id="no-results" hidden>没有找到匹配的模式。试试“状态”“创建”或“缓存”。</p>
     </section>
@@ -148,7 +166,7 @@
           <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>¥</b></div>
           <h3>OnlineStore</h3><p>购物车、计价、支付、库存与订单生命周期的完整结算链。</p>
           <ul class="chip-list" aria-label="使用的模式"><li>Builder</li><li>Strategy</li><li>State</li><li>Facade</li><li>+3</li></ul>
-          <label class="project-progress"><span>学习阶段</span><select data-progress-id="project:online-store" aria-label="OnlineStore 学习阶段"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label>
+          <div class="project-progress" data-learning-summary="project:online-store"><span>0 / 4 里程碑</span><a href="guides/online-store.html#推荐阅读顺序">开始第一个里程碑 →</a></div>
           <div class="project-links"><a href="guides/online-store.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/OnlineStore" aria-label="查看 OnlineStore 源码">源码 ↗</a></div>
         </article>
         <article class="project-card project-home">
@@ -156,7 +174,7 @@
           <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>⌂</b></div>
           <h3>SmartHome</h3><p>多协议设备接入、权限控制、设备联动、撤销与安全场景恢复。</p>
           <ul class="chip-list" aria-label="使用的模式"><li>Adapter</li><li>Bridge</li><li>Command</li><li>Memento</li><li>+4</li></ul>
-          <label class="project-progress"><span>学习阶段</span><select data-progress-id="project:smart-home" aria-label="SmartHome 学习阶段"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label>
+          <div class="project-progress" data-learning-summary="project:smart-home"><span>0 / 4 里程碑</span><a href="guides/smart-home.html#协作时序">开始第一个里程碑 →</a></div>
           <div class="project-links"><a href="guides/smart-home.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/SmartHome" aria-label="查看 SmartHome 源码">源码 ↗</a></div>
         </article>
         <article class="project-card project-docs">
@@ -164,7 +182,7 @@
           <div class="project-visual" aria-hidden="true"><i></i><i></i><i></i><b>¶</b></div>
           <h3>DocumentWorkflow</h3><p>模板复制、DSL 筛选、合规检查和多渠道发布的报表流水线。</p>
           <ul class="chip-list" aria-label="使用的模式"><li>Prototype</li><li>Visitor</li><li>Decorator</li><li>Interpreter</li><li>+4</li></ul>
-          <label class="project-progress"><span>学习阶段</span><select data-progress-id="project:document-workflow" aria-label="DocumentWorkflow 学习阶段"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label>
+          <div class="project-progress" data-learning-summary="project:document-workflow"><span>0 / 4 里程碑</span><a href="guides/document-workflow.html#端到端数据流">开始第一个里程碑 →</a></div>
           <div class="project-links"><a href="guides/document-workflow.html">阅读项目教程 →</a><a href="https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/tree/main/examples/DocumentWorkflow" aria-label="查看 DocumentWorkflow 源码">源码 ↗</a></div>
         </article>
       </div>
@@ -173,9 +191,14 @@
     <section class="labs-section" id="labs" aria-labelledby="labs-title">
       <div class="labs-intro"><p class="section-kicker">BEYOND THE CATALOG</p><h2 id="labs-title">模式之外，<br><em>结果必须可靠。</em></h2><p>学会组织变化之后，继续训练安全改变遗留代码，以及在并发、重试、乱序和崩溃后保护业务不变量。</p><a href="guides/labs.html">查看高级实验地图 →</a></div>
       <div class="lab-stack">
-        <article class="lab-card"><span>LAB 01 · 4～7 天</span><h3><a href="guides/refactoring.html">Checkout Refactoring Kata</a></h3><p>坏代码 → 特征测试 → Strategy / Chain / State / Facade → 等价性证明</p><div class="lab-footer"><a href="guides/refactoring.html"><b>安全重构工坊 ↗</b></a><label><span>学习阶段</span><select data-progress-id="lab:checkout-refactoring" aria-label="Checkout Refactoring Kata 学习阶段"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label></div></article>
-        <article class="lab-card"><span>LAB 02 · 2～3 周</span><h3><a href="guides/reliable-checkout.html">Reliable Checkout</a></h3><p>HTTP + SQLite · 幂等 · 原子库存 · Outbox · 重试 · 乱序回调</p><div class="lab-footer"><a href="guides/reliable-checkout.html"><b>生产可靠性毕业项目 ↗</b></a><label><span>学习阶段</span><select data-progress-id="lab:reliable-checkout" aria-label="Reliable Checkout 学习阶段"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label></div></article>
+        <article class="lab-card"><span>LAB 01 · 4～7 天</span><h3><a href="guides/refactoring.html">Checkout Refactoring Kata</a></h3><p>坏代码 → 特征测试 → Strategy / Chain / State / Facade → 等价性证明</p><div class="lab-footer"><a href="guides/refactoring.html"><b>安全重构工坊 ↗</b></a><div data-learning-summary="lab:checkout-refactoring"><span>0 / 8 里程碑</span><a href="guides/refactoring.html#5-为什么-starter-值得重构">开始第一个里程碑 →</a></div></div></article>
+        <article class="lab-card"><span>LAB 02 · 2～3 周</span><h3><a href="guides/reliable-checkout.html">Reliable Checkout</a></h3><p>HTTP + SQLite · 幂等 · 原子库存 · Outbox · 重试 · 乱序回调</p><div class="lab-footer"><a href="guides/reliable-checkout.html"><b>生产可靠性毕业项目 ↗</b></a><div data-learning-summary="lab:reliable-checkout"><span>0 / 4 里程碑</span><a href="guides/reliable-checkout.html#故障矩阵">开始第一个里程碑 →</a></div></div></article>
       </div>
+    </section>
+
+    <section class="quiz-section" id="quiz" aria-labelledby="quiz-title">
+      <div><p class="section-kicker">DECISION PRACTICE</p><h2 id="quiz-title">会辨析，才算会选择</h2><p>用 6 个业务场景区分最容易混淆的模式；答错题会进入本地间隔复习队列。</p></div>
+      <aside><strong id="review-due-count">6</strong><span>道待练习题</span><a class="button button-primary" href="quiz.html">开始辨析训练 →</a></aside>
     </section>
 
     <section class="guides-section" id="guides" aria-labelledby="guides-title">
@@ -196,7 +219,7 @@
 
   <footer class="site-footer">
     <div class="footer-brand"><span class="brand-mark" aria-hidden="true">{ }</span><p><strong>C# 设计模式学习地图</strong><br><span>独立 Demo → 组合项目 → 安全重构 → 生产可靠性</span></p></div>
-    <div class="footer-links"><a href="guides/repository-overview.html">项目说明</a><a href="guides/learning-path.html">学习路线</a><a href="{{REPOSITORY_URL}}">GitHub 源码 ↗</a></div>
+    <div class="footer-links"><a href="guides/repository-overview.html">项目说明</a><a href="#site-search">全文搜索</a><a href="quiz.html">辨析训练</a><a href="guides/learning-path.html">学习路线</a><a href="{{REPOSITORY_URL}}">GitHub 源码 ↗</a></div>
   </footer>
 
   <dialog class="pattern-dialog" id="pattern-dialog" aria-labelledby="dialog-title">
@@ -207,10 +230,10 @@
     <p class="dialog-intent" id="dialog-intent"></p>
     <div class="dialog-scenario"><span>示例场景</span><p id="dialog-scenario"></p></div>
     <div class="dialog-command"><div><span>运行这个 Demo</span><button type="button" id="dialog-copy">复制命令</button></div><code id="dialog-command"></code></div>
-    <label class="dialog-progress"><span>我的学习阶段</span><select id="dialog-progress"><option value="0">未开始</option><option value="1">已阅读</option><option value="2">已运行</option><option value="3">已改造</option><option value="4">已验证</option></select></label>
+    <div class="dialog-progress"><span>我的证据进度</span><strong id="dialog-progress-summary">0 / 4</strong></div>
     <div class="dialog-actions"><a class="button button-primary" id="dialog-guide" href="#">打开完整课件</a><a class="button button-dark" id="dialog-source" href="#">查看源码 ↗</a><a class="dialog-practice" id="dialog-practice" href="#">查看实战落点 ↗</a></div>
   </dialog>
-  <div class="progress-toast" id="progress-toast" role="status" hidden>学习进度已清空。<button type="button" id="undo-reset">撤销</button></div>
+  <div class="progress-toast" id="progress-toast" hidden><span id="progress-toast-message" role="status">学习进度已清空。</span><button type="button" id="undo-reset">撤销</button></div>
   <p class="sr-only" id="site-announcement" aria-live="polite"></p>
 </body>
 </html>

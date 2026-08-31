@@ -31,3 +31,8 @@ updates:
         patterns:
           - playwright-core
           - axe-core
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: weekly

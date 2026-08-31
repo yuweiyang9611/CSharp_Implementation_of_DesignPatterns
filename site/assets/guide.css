@@ -76,6 +76,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .guide-toc-toggle { display: none; }
 .guide-toc-list { margin-top: 12px; }
 .guide-toc-list ol { margin: 0; padding: 0; list-style: none; }
+.guide-toc-list .toc-sections { margin: 2px 0 8px; }
 .guide-toc-list li { margin: 0; }
 .guide-toc-list li.depth-2 a { padding-left: 14px; color: #556176; font-size: 12px; }
 .guide-toc-list a { display: block; padding: 6px 8px; border-left: 3px solid transparent; color: #24466f; text-decoration: none; }
@@ -87,6 +88,26 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .guide-top-link { display: inline-block; margin-top: 12px; color: #556176; }
 .learning-site-footer { max-width: none !important; margin: 0 auto; padding: 18px; background: #10252a; color: #bdd0cd; text-align: center; font: 14px "Microsoft YaHei", "PingFang SC", sans-serif; }
 .learning-site-footer a { color: #ffd874; text-decoration: underline; text-underline-offset: 3px; }
+.guide-milestones { margin: -18px 0 38px; padding: 24px; border: 1px solid #c9d3df; background: #f1f6fb; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+.guide-milestones > div:first-child { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: end; }
+.guide-milestones > div:first-child p { grid-column: 1 / -1; margin: 0; color: #1d5b9e; font-size: 11px; font-weight: 900; letter-spacing: .14em; }
+.guide-milestones h2 { margin: 0 !important; padding: 0 !important; border: 0 !important; font-size: 24px !important; }
+#guide-milestone-summary { color: #52647a; font-size: 13px; font-weight: 800; }
+.guide-milestone-list { display: grid; gap: 8px; margin-top: 18px; }
+.guide-milestone { min-height: 58px; padding: 13px; border: 1px solid #b7c7d9; background: #fff; }
+.guide-milestone span,.guide-milestone strong,.guide-milestone code { display: block; }
+.guide-milestone strong { color: #13294b; }
+.guide-milestone-copy p { margin: 3px 0 0 !important; color: #526176; font-size: 13px; }
+.guide-milestone-command { margin-top: 9px; padding: 9px; background: #e9f0f8; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.guide-milestone-command code { color: #24466f; overflow-wrap: anywhere; font-size: 11px; }
+.guide-milestone-command button { min-height: 44px; padding: 0 10px; border: 1px solid #7891af; background: #fff; color: #163e70; font-weight: 800; cursor: pointer; }
+.guide-milestone-check { min-height: 48px; margin-top: 9px; padding-top: 9px; border-top: 1px dashed #c5d1de; display: flex; align-items: center; gap: 10px; color: #304b69; font-size: 13px; font-weight: 800; cursor: pointer; }
+.guide-milestone-check input { width: 22px; height: 22px; margin: 0; accent-color: #275dad; }
+.guide-milestone.completed { border-color: #56806b; box-shadow: inset 4px 0 #56806b; }
+.guide-milestone.locked { background: #f4f5f6; border-color: #d2d7dc; }
+.guide-milestone.locked .guide-milestone-check { cursor: not-allowed; }
+.guide-milestone-note { margin: 12px 0 0 !important; color: #626e7b; font-size: 12px; }
+.guide-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
 @media screen {
   .learning-layout > main h1 { font-size: clamp(34px, 5vw, 48px); text-align: left; letter-spacing: 0; }
@@ -125,6 +146,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
   .js .guide-toc.open .guide-toc-list, .js .guide-toc.open .guide-continue:not([hidden]), .js .guide-toc.open .guide-chapter-nav, .js .guide-toc.open .guide-top-link { display: block; }
   .js .guide-toc.open .guide-chapter-nav { display: grid; }
   .learning-layout > main { max-width: none !important; padding: 30px 18px 48px !important; box-shadow: none !important; }
+  .guide-milestones { margin: 0 0 30px; padding: 18px; }
+  .guide-milestones > div:first-child { grid-template-columns: 1fr; }
   .learning-layout > main h1 { margin-top: 0; font-size: clamp(30px, 9vw, 42px); line-height: 1.22; }
   .learning-layout > main h2 { margin-top: 38px; padding-bottom: 10px; font-size: clamp(25px, 7vw, 32px); }
   .learning-layout > main h3 { margin-top: 30px; font-size: clamp(20px, 5.5vw, 25px); }

@@ -4,6 +4,8 @@
 
 > **在线学习：** [打开 C# 设计模式学习地图](https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/)——按时间或实际问题选择路线，在 23 个独立课件、3 个项目和 2 个实验之间持续记录“阅读 → 运行 → 改造 → 验证”进度。
 
+> **免配置运行：** [在 GitHub Codespaces 中打开](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)——预配置 .NET 10、Node.js 24、站点构建与预览任务；创建 Codespace 可能消耗 GitHub 使用额度。
+
 > 第一次打开仓库？请从 [START_HERE：选择你的学习路线](START_HERE.md) 开始。需要快速定位源码时使用 [23 种模式索引](docs/模式索引.md)。
 
 详细教程： [C# 设计模式学习指导](docs/CSharp设计模式学习指南.md)
@@ -39,10 +41,12 @@ GitHub noreply 邮箱可在 GitHub 的 **Settings → Emails** 中查看。建�
 
 ## 快速开始
 
+不想先配置本地环境时，直接使用上面的 Codespaces 入口；容器创建后会锁定还原依赖、构建解决方案并生成学习站。VS Code 中运行 `Site: preview` 任务即可在 4173 端口预览。真实浏览器回归需要系统 Chrome 或 Edge，由 GitHub Actions 或安装了浏览器的本机执行。
+
 先用一条命令完成环境体检、构建、正式测试、23 个 Demo 烟雾测试、3 个教学项目自检和高级实验验证：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -SkipPdf
 ```
 
 也可以分步运行：
@@ -99,17 +103,25 @@ dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
 
 ## 持续集成
 
-GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。站点还会在系统 Chrome 中执行桌面与 390px 移动端回归、进度持久化、深链接、横向溢出和 axe 严重级可访问性检查。只有 Windows/Linux 验证与浏览器检查全部通过，主分支才会发布 GitHub Pages，并核对线上 commit 与关键资源。PDF 由手动或版本标签工作流生成。
+GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。站点还会校验学习目录 JSON Schema 与交叉引用，对 Pages 验证器执行故障注入自测，并在系统 Chrome 中执行桌面与 390px 移动端回归、顺序证据、进度备份、全文搜索、测验复习、深链接、横向溢出和 axe 严重级可访问性检查。只有 Windows/Linux 验证与浏览器检查全部通过，主分支才会发布 GitHub Pages，并核对线上 commit 与关键资源。PDF 由手动或版本标签工作流生成。
 
 ## 在线学习站
 
-GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流](.github/workflows/ci.yml) 会生成并发布 1 个学习仪表盘、12 篇 Markdown 指南和 23 个独立模式课件。模式名称、顺序、分类和意图来自真实 `PatternCatalog`，网站增量字段集中在 `site/data/learning-catalog.json`，Markdown 模式索引由二者同步生成。可在本地复现同一份静态产物：
+GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流](.github/workflows/ci.yml) 会生成并发布 1 个学习仪表盘、1 个辨析训练页、12 篇 Markdown 指南和 23 个独立模式课件。每个模式都有“阅读 → 运行 → 改造 → 验证”四项真实证据，三个项目与两个实验共有 24 个顺序里程碑，合计 116 个可持久化任务；首页还提供跨指南全文搜索、JSON/Markdown 进度备份及 6 道带间隔复习的场景题。
+
+模式名称、顺序、分类、意图与真实预期输出来自 `PatternCatalog` 和 Runner；网站增量字段集中在 `site/data/learning-catalog.json`，并由 `learning-catalog.schema.json` 与语义验证器约束。指南清单、搜索索引生成和 Pages 产物验证已经拆成独立脚本，Markdown 模式索引仍由同一目录同步生成。可在本地复现同一份静态产物：
 
 ```powershell
 pwsh -File ./scripts/build-pages.ps1
 ```
 
-生成结果位于 `output/pages-site/`。构建会校验 36 个 canonical URL、JSON-LD、sitemap、23 个模式条目、源码与实战路径、教程锚点及全部站内链接。需要验证真实浏览器行为时先安装锁定的轻量测试依赖：
+生成结果位于 `output/pages-site/`。构建会校验 37 个 canonical URL、JSON-LD、sitemap、23 个模式条目、24 个里程碑、6 道题、搜索索引、源码与实战路径、教程锚点及全部站内链接。也可以独立复核已生成产物：
+
+```powershell
+pwsh -File ./scripts/verify-pages-site.ps1 -SiteDirectory output/pages-site
+```
+
+需要验证真实浏览器行为时先安装锁定的轻量测试依赖：
 
 ```powershell
 npm ci
@@ -147,13 +159,13 @@ output/pdf/Reliable-Checkout-Graduation-Project.pdf
 全量验证（编译、运行 23 个示例、列出目录、生成 PDF）：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/verify.ps1
+pwsh -File scripts/verify.ps1
 ```
 
 只验证代码：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -SkipPdf
 ```
 
 ## 项目结构

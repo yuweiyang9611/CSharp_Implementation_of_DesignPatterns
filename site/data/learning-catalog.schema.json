@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/schema/learning-catalog.schema.json",
+  "title": "C# Design Patterns learning catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "problemTags",
+    "patterns",
+    "exerciseTemplates",
+    "tagToExerciseTemplate",
+    "learningItems",
+    "quizzes"
+  ],
+  "properties": {
+    "$schema": { "const": "./learning-catalog.schema.json" },
+    "problemTags": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/problemTag" }
+    },
+    "patterns": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/pattern" }
+    },
+    "exerciseTemplates": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/slug" },
+      "additionalProperties": { "$ref": "#/$defs/nonEmptyText" }
+    },
+    "tagToExerciseTemplate": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/slug" },
+      "additionalProperties": { "$ref": "#/$defs/slug" }
+    },
+    "learningItems": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/learningItem" }
+    },
+    "quizzes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/quiz" }
+    }
+  },
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nonEmptyText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relativeCodePath": {
+      "type": "string",
+      "pattern": "^(?:src|examples)/[A-Za-z0-9._/-]+\\.cs$"
+    },
+    "problemTag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "aliases"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "label": { "$ref": "#/$defs/nonEmptyText" },
+        "aliases": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyText" }
+        }
+      }
+    },
+    "pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "scenario",
+        "source",
+        "practice",
+        "practiceLabel",
+        "guide",
+        "problemTags",
+        "changeAxis",
+        "whenUse",
+        "avoidWhen",
+        "related"
+      ],
+      "properties": {
+        "key": { "$ref": "#/$defs/slug" },
+        "scenario": { "$ref": "#/$defs/nonEmptyText" },
+        "source": { "$ref": "#/$defs/relativeCodePath" },
+        "practice": { "$ref": "#/$defs/relativeCodePath" },
+        "practiceLabel": { "$ref": "#/$defs/nonEmptyText" },
+        "guide": { "type": "string", "pattern": "^#[^\\s]+$" },
+        "problemTags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        },
+        "changeAxis": { "$ref": "#/$defs/nonEmptyText" },
+        "whenUse": { "$ref": "#/$defs/nonEmptyText" },
+        "avoidWhen": { "$ref": "#/$defs/nonEmptyText" },
+        "related": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        }
+      }
+    },
+    "milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "title", "anchor", "task"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "kind": { "enum": ["read", "run", "change", "verify"] },
+        "title": { "$ref": "#/$defs/nonEmptyText" },
+        "anchor": { "type": "string", "pattern": "^#[^\\s]+$" },
+        "task": { "$ref": "#/$defs/nonEmptyText" },
+        "command": { "$ref": "#/$defs/nonEmptyText" },
+        "successContains": { "$ref": "#/$defs/nonEmptyText" }
+      }
+    },
+    "learningItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "title", "url", "milestones"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(?:project|lab):[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "type": { "enum": ["project", "lab"] },
+        "title": { "$ref": "#/$defs/nonEmptyText" },
+        "url": { "type": "string", "pattern": "^guides/[a-z0-9-]+\\.html$" },
+        "milestones": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/milestone" }
+        }
+      }
+    },
+    "quiz": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "title", "scenario", "prompt", "patternKeys", "correctKey", "decisionRule"],
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "version": { "type": "integer", "minimum": 1 },
+        "title": { "$ref": "#/$defs/nonEmptyText" },
+        "scenario": { "$ref": "#/$defs/nonEmptyText" },
+        "prompt": { "$ref": "#/$defs/nonEmptyText" },
+        "patternKeys": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/slug" }
+        },
+        "correctKey": { "$ref": "#/$defs/slug" },
+        "decisionRule": { "$ref": "#/$defs/nonEmptyText" }
+      }
+    }
+  }
+}

@@ -16,14 +16,9 @@ $exportScript = Join-Path $PSScriptRoot 'export-guide.ps1'
 $solution = Join-Path $root 'DesignPatterns.sln'
 $runnerProject = Join-Path (Join-Path (Join-Path $root 'src') 'DesignPatterns.Runner') 'DesignPatterns.Runner.csproj'
 $learningCatalogPath = Join-Path (Join-Path $siteSource 'data') 'learning-catalog.json'
+$siteManifestPath = Join-Path $PSScriptRoot 'site-manifest.psd1'
 $defaultBlobBase = 'https://github.com/yuweiyang9611/CSharp_Implementation_of_DesignPatterns/blob/main/'
 $defaultPagesBase = 'https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/'
-
-function Decode-Name {
-  param([Parameter(Mandatory)][string]$Base64)
-
-  return [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($Base64))
-}
 
 function Encode-Html {
   param([AllowEmptyString()][string]$Value)
@@ -59,20 +54,10 @@ function Get-JsonLdScript {
   return "<script type=`"application/ld+json`">$json</script>"
 }
 
-$pages = @(
-  [pscustomobject]@{ Input = 'README.md'; Output = 'repository-overview.html'; Description = 'C# 设计模式学习项目的课程结构、运行方式与仓库说明。'; Type = 'Guide' },
-  [pscustomobject]@{ Input = 'START_HERE.md'; Output = 'learning-path.html'; Description = '从 30 分钟到 14 周的 C# 设计模式学习路线。'; Type = 'Learning Path' },
-  [pscustomobject]@{ Input = 'docs/' + (Decode-Name '5qih5byP57Si5byVLm1k'); Output = 'pattern-index.html'; Description = 'GoF 23 种设计模式的 Runner key、源码、实战落点与教程索引。'; Type = 'Reference' },
-  [pscustomobject]@{ Input = 'docs/' + (Decode-Name 'Q1NoYXJw6K6+6K6h5qih5byP5a2m5Lmg5oyH5Y2XLm1k'); Output = 'fundamentals.html'; Description = 'GoF 23 种设计模式的现代 C# 实现、意图、角色、取舍与练习。'; Type = 'Guide' },
-  [pscustomobject]@{ Input = 'docs/' + (Decode-Name '6K6+6K6h5qih5byP5a6e5oiY6aG555uu5a2m5Lmg5oyH5Y2XLm1k'); Output = 'practice.html'; Description = 'OnlineStore、SmartHome 与 DocumentWorkflow 的设计模式组合实战指南。'; Type = 'Guide' },
-  [pscustomobject]@{ Input = 'examples/README.md'; Output = 'projects.html'; Description = '三个教学项目的模式覆盖、运行方式与建议学习顺序。'; Type = 'Reference' },
-  [pscustomobject]@{ Input = 'examples/OnlineStore/README.md'; Output = 'online-store.html'; Description = '用电商结算、支付与订单生命周期学习七种设计模式。'; Type = 'Project Guide' },
-  [pscustomobject]@{ Input = 'examples/SmartHome/README.md'; Output = 'smart-home.html'; Description = '用智能家居设备接入、联动、撤销与恢复学习八种设计模式。'; Type = 'Project Guide' },
-  [pscustomobject]@{ Input = 'examples/DocumentWorkflow/README.md'; Output = 'document-workflow.html'; Description = '用报表筛选、合规检查与多渠道发布学习八种设计模式。'; Type = 'Project Guide' },
-  [pscustomobject]@{ Input = 'labs/README.md'; Output = 'labs.html'; Description = '从模式组合继续走向安全重构与生产可靠性的高级实验地图。'; Type = 'Lab Index' },
-  [pscustomobject]@{ Input = 'labs/CheckoutRefactoringKata/README.md'; Output = 'refactoring.html'; Description = '从坏代码经特征测试逐步重构出 Strategy、Chain、State 与 Facade。'; Type = 'Lab' },
-  [pscustomobject]@{ Input = 'labs/ReliableCheckout/README.md'; Output = 'reliable-checkout.html'; Description = '用 HTTP、SQLite、幂等、Outbox 与重试保护结账业务不变量。'; Type = 'Lab' }
-)
+if (-not (Test-Path -LiteralPath $siteManifestPath)) { throw "Site manifest is missing: $siteManifestPath" }
+$siteManifest = Import-PowerShellDataFile -LiteralPath $siteManifestPath
+$pages = @($siteManifest.Guides | ForEach-Object { [pscustomobject]$_ })
+if ($pages.Count -ne 12) { throw "Site manifest must define 12 guides; found $($pages.Count)." }
 
 $resolvedRoot = [IO.Path]::GetFullPath($root).TrimEnd([IO.Path]::DirectorySeparatorChar)
 $resolvedStage = [IO.Path]::GetFullPath($stageDirectory)
@@ -94,6 +79,7 @@ if (-not $NoBuild) {
 }
 
 & (Join-Path $PSScriptRoot 'sync-pattern-index.ps1') -Check -NoBuild
+& (Join-Path $PSScriptRoot 'test-learning-catalog.ps1') -NoBuild
 
 $blobBaseVariable = 'CSHARP_DESIGN_PATTERNS_REPOSITORY_BLOB_BASE'
 $hadBlobBase = Test-Path "Env:$blobBaseVariable"
@@ -113,6 +99,16 @@ $runnerArguments = @(
 $coreCatalogJson = (& dotnet @runnerArguments | Out-String)
 if ($LASTEXITCODE -ne 0) { throw 'Runner catalog JSON export failed.' }
 $coreCatalog = @($coreCatalogJson | ConvertFrom-Json)
+$evidenceArguments = @(
+  'run', '--project', $runnerProject, '--configuration', 'Release', '--no-build', '--', '--evidence-json'
+)
+$evidenceCatalogJson = (& dotnet @evidenceArguments | Out-String)
+if ($LASTEXITCODE -ne 0) { throw 'Runner evidence JSON export failed.' }
+$evidenceByKey = @{}
+foreach ($entry in @($evidenceCatalogJson | ConvertFrom-Json)) {
+  if ($evidenceByKey.ContainsKey($entry.key)) { throw "Duplicate Runner evidence key: $($entry.key)" }
+  $evidenceByKey[$entry.key] = $entry
+}
 $learningCatalog = Get-Content -LiteralPath $learningCatalogPath -Raw -Encoding utf8 | ConvertFrom-Json
 $enrichmentByKey = @{}
 foreach ($entry in $learningCatalog.patterns) {
@@ -123,10 +119,43 @@ foreach ($entry in $learningCatalog.patterns) {
 $patterns = [Collections.Generic.List[object]]::new()
 foreach ($core in $coreCatalog) {
   if (-not $enrichmentByKey.ContainsKey($core.key)) { throw "Missing learning catalog entry: $($core.key)" }
+  if (-not $evidenceByKey.ContainsKey($core.key)) { throw "Missing Runner evidence entry: $($core.key)" }
   $extra = $enrichmentByKey[$core.key]
+  $runnerEvidence = $evidenceByKey[$core.key]
   $nameParts = @($core.name -split '\s*/\s*', 2)
   $english = $nameParts[0].Trim()
   $chinese = if ($nameParts.Count -gt 1) { ($nameParts[1].Trim() -replace '模式$', '') } else { $english }
+  $templateMapping = $learningCatalog.tagToExerciseTemplate.PSObject.Properties[[string]$extra.problemTags[0]]
+  if ($null -eq $templateMapping) { throw "Missing exercise template mapping for $($core.key): $($extra.problemTags[0])" }
+  $templateId = [string]$templateMapping.Value
+  $templateText = [string]$learningCatalog.exerciseTemplates.PSObject.Properties[$templateId].Value
+  $expectedOutput = @($runnerEvidence.output)
+  $evidenceCards = @(
+    [pscustomobject][ordered]@{
+      id = 'read'; kind = 'read'; title = '说清变化轴'; href = '#evidence-read'
+      task = "先不看实现，用一句话说明 $english 隔离了什么变化。"
+      acceptance = @("我能说明：$($extra.changeAxis)", "我能指出不适用场景：$($extra.avoidWhen)")
+    },
+    [pscustomobject][ordered]@{
+      id = 'run'; kind = 'run'; title = '运行并核对输出'; href = '#evidence-run'
+      task = '先预测哪一行会变化，再运行命令并核对真实输出。'
+      command = "dotnet run --project src/DesignPatterns.Runner -- $($core.key)"
+      expectedOutput = $expectedOutput
+    },
+    [pscustomobject][ordered]@{
+      id = 'change'; kind = 'change'; title = '制造一个最小变化'; href = '#evidence-change'
+      task = $templateText
+      target = [string]$extra.source
+      acceptance = @('修改前写下输出预测。', ('只修改“{0}”附近的代码。' -f $extra.changeAxis), '客户端原有使用方式保持不变。')
+    },
+    [pscustomobject][ordered]@{
+      id = 'verify'; kind = 'verify'; title = '验证并解释取舍'; href = '#evidence-verify'
+      task = "运行全部模式烟雾测试，再回答为什么此场景不优先使用 $($extra.related[0])。"
+      command = 'dotnet run --project tests/DesignPatterns.SmokeTests --configuration Release'
+      reflectionPattern = [string]$extra.related[0]
+      acceptance = @('烟雾测试通过 23/23。', ('我能结合“{0}”解释选择。' -f $extra.whenUse))
+    }
+  )
   $patterns.Add([pscustomobject][ordered]@{
       number = [int]$core.number
       key = [string]$core.key
@@ -144,6 +173,7 @@ foreach ($core in $coreCatalog) {
       whenUse = [string]$extra.whenUse
       avoidWhen = [string]$extra.avoidWhen
       related = @($extra.related)
+      evidenceCards = $evidenceCards
       sourceUrl = Get-RepositoryUrl -RelativePath $extra.source -BlobBase $blobBase
       practiceUrl = Get-RepositoryUrl -RelativePath $extra.practice -BlobBase $blobBase
       guideUrl = $pagesBase + 'guides/fundamentals.html' + $extra.guide
@@ -158,6 +188,7 @@ $publishedCatalog = [pscustomobject][ordered]@{
   problemTags = @($learningCatalog.problemTags)
   patterns = @($patterns)
   learningItems = @($learningCatalog.learningItems)
+  quizzes = @($learningCatalog.quizzes)
 }
 $publishedCatalogJson = $publishedCatalog | ConvertTo-Json -Depth 12
 
@@ -166,6 +197,7 @@ if (Test-Path -LiteralPath $stageDirectory) {
 }
 New-Item -ItemType Directory -Path $stageDirectory, $guideDirectory, $patternDirectory -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $siteSource 'index.html') -Destination $stageDirectory
+Copy-Item -LiteralPath (Join-Path $siteSource 'quiz.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'assets') -Destination $stageDirectory -Recurse
 
 [IO.File]::WriteAllText(
@@ -264,16 +296,31 @@ foreach ($page in $pages) {
   $layoutClass = 'learning-layout without-toc'
   if ($chapters.Count -gt 0) {
     $layoutClass = 'learning-layout'
-    $tocItems = $headingEntries | ForEach-Object {
-      $depth = if ($_.Level -eq 2) { 1 } else { 2 }
-      $chapter = if ($_.Level -eq 2) { 'true' } else { 'false' }
-      '<li class="depth-' + $depth + '"><a href="#' + (Encode-Html $_.Id) + '" data-heading-id="' +
-        (Encode-Html $_.Id) + '" data-chapter="' + $chapter + '">' + (Encode-Html $_.Text) + '</a></li>'
+    $tocBuilder = [Text.StringBuilder]::new('<ol class="toc-chapters">')
+    $chapterOpen = $false
+    $sectionsOpen = $false
+    foreach ($heading in $headingEntries) {
+      $id = Encode-Html $heading.Id
+      $text = Encode-Html $heading.Text
+      if ($heading.Level -eq 2) {
+        if ($sectionsOpen) { [void]$tocBuilder.Append('</ol>'); $sectionsOpen = $false }
+        if ($chapterOpen) { [void]$tocBuilder.Append('</li>') }
+        [void]$tocBuilder.Append('<li class="depth-1"><a href="#' + $id + '" data-heading-id="' + $id + '" data-chapter="true">' + $text + '</a>')
+        $chapterOpen = $true
+      } else {
+        if (-not $chapterOpen) { continue }
+        if (-not $sectionsOpen) { [void]$tocBuilder.Append('<ol class="toc-sections">'); $sectionsOpen = $true }
+        [void]$tocBuilder.Append('<li class="depth-2"><a href="#' + $id + '" data-heading-id="' + $id + '" data-chapter="false">' + $text + '</a></li>')
+      }
     }
+    if ($sectionsOpen) { [void]$tocBuilder.Append('</ol>') }
+    if ($chapterOpen) { [void]$tocBuilder.Append('</li>') }
+    [void]$tocBuilder.Append('</ol>')
+    $tocItems = $tocBuilder.ToString()
     $toc = @"
 <aside class="guide-toc" aria-label="本页学习导航">
   <div class="guide-toc-head"><p class="guide-toc-title">本页目录</p><button class="guide-toc-toggle" type="button" aria-expanded="false" aria-controls="guide-toc-list">展开目录</button></div>
-  <nav class="guide-toc-list" id="guide-toc-list" aria-label="本页目录"><ol>$($tocItems -join '')</ol></nav>
+  <nav class="guide-toc-list" id="guide-toc-list" aria-label="本页目录">$tocItems</nav>
   <a class="guide-continue" data-guide-continue hidden></a>
   <nav class="guide-chapter-nav" aria-label="章节导航"><a data-guide-prev hidden></a><a data-guide-next hidden></a></nav>
   <a class="guide-top-link" href="#main">返回顶部 ↑</a>
@@ -285,18 +332,35 @@ foreach ($page in $pages) {
   $currentPatterns = if ($page.Output -in @('pattern-index.html', 'fundamentals.html')) { ' aria-current="page"' } else { '' }
   $currentProjects = if ($page.Output -in @('projects.html', 'practice.html', 'online-store.html', 'smart-home.html', 'document-workflow.html')) { ' aria-current="page"' } else { '' }
   $currentLabs = if ($page.Output -in @('labs.html', 'refactoring.html', 'reliable-checkout.html')) { ' aria-current="page"' } else { '' }
+  $learningItem = @($learningCatalog.learningItems | Where-Object url -eq ('guides/' + $page.Output) | Select-Object -First 1)
+  $learningAttribute = ''
+  $milestonePanel = ''
+  if ($learningItem.Count -eq 1) {
+    $item = $learningItem[0]
+    $learningAttribute = ' data-learning-item-id="' + (Encode-Html $item.id) + '"'
+    $milestoneCards = @($item.milestones | ForEach-Object {
+        $milestone = $_
+        $commandHtml = if ($milestone.PSObject.Properties.Name -contains 'command') {
+          '<div class="guide-milestone-command"><code>' + (Encode-Html $milestone.command) + '</code><button type="button" data-copy-command="' + (Encode-Html $milestone.command) + '">复制命令</button></div>'
+        } else { '' }
+        '<article class="guide-milestone"><div class="guide-milestone-copy"><strong>' + (Encode-Html $milestone.title) + '</strong><p>' +
+          (Encode-Html $milestone.task) + '</p>' + $commandHtml + '</div><label class="guide-milestone-check"><input type="checkbox" data-progress-task="' +
+          (Encode-Html $milestone.id) + '"><span>我已完成：' + (Encode-Html $milestone.title) + '</span></label></article>'
+      }) -join ''
+    $milestonePanel = '<section class="guide-milestones" aria-labelledby="guide-milestones-title"><div><p>PROJECT MILESTONES</p><h2 id="guide-milestones-title">用可验证里程碑推进</h2><span id="guide-milestone-summary">0 / ' + $item.milestones.Count + ' 已完成</span></div><div class="guide-milestone-list">' + $milestoneCards + '</div><p class="guide-milestone-note">里程碑必须按顺序完成；记录会与首页的课程进度同步。</p></section>'
+  }
   $header = @"
 <header class="learning-site-header">
   <a class="learning-site-brand" href="../index.html"><span class="learning-site-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
   <button class="learning-nav-toggle" type="button" aria-expanded="false" aria-controls="learning-site-nav">菜单</button>
-  <nav class="learning-site-nav" id="learning-site-nav" aria-label="课程导航"><a href="learning-path.html"$currentLearning>学习路线</a><a href="pattern-index.html"$currentPatterns>23 种模式</a><a href="projects.html"$currentProjects>实战项目</a><a href="labs.html"$currentLabs>高级实验</a><a href="../index.html">返回首页</a></nav>
+  <nav class="learning-site-nav" id="learning-site-nav" aria-label="课程导航"><a href="learning-path.html"$currentLearning>学习路线</a><a href="pattern-index.html"$currentPatterns>23 种模式</a><a href="projects.html"$currentProjects>实战项目</a><a href="labs.html"$currentLabs>高级实验</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../index.html">返回首页</a></nav>
 </header>
 "@
   $footer = '<footer class="learning-site-footer">内容来自同一 GitHub 仓库并随主分支自动更新 · <a href="../index.html">返回学习地图</a></footer>'
 
   $html = $html.Replace('</head>', $metadata + '</head>')
-  $html = $html.Replace('<body><main>', '<body data-guide-id="' + $guideId + '"><a class="skip-link" href="#main">跳到正文</a>' + $header + '<div class="' + $layoutClass + '">' + $toc + '<main id="main">')
-  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<script src="../assets/guide.js" defer></script></body>')
+  $html = $html.Replace('<body><main>', '<body data-guide-id="' + $guideId + '"' + $learningAttribute + '><a class="skip-link" href="#main">跳到正文</a>' + $header + '<div class="' + $layoutClass + '">' + $toc + '<main id="main">' + $milestonePanel)
+  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script></body>')
   [IO.File]::WriteAllText($outputPath, $html, [Text.UTF8Encoding]::new($false))
 }
 
@@ -336,6 +400,37 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       isPartOf = [ordered]@{ '@type' = 'Course'; name = 'C# 设计模式学习地图'; url = $pagesBase }
     })
   $command = 'dotnet run --project src/DesignPatterns.Runner -- ' + $pattern.key
+  $evidenceCardsHtml = @($pattern.evidenceCards | ForEach-Object {
+      $card = $_
+      $commandHtml = ''
+      if ($card.PSObject.Properties.Name -contains 'command') {
+        $encodedCommand = Encode-Html $card.command
+        $commandHtml = '<div class="evidence-command"><button type="button" data-copy-command="' + $encodedCommand + '">复制命令</button><code>' + $encodedCommand + '</code></div>'
+      }
+      $expectedHtml = ''
+      if ($card.PSObject.Properties.Name -contains 'expectedOutput') {
+        $outputText = Encode-Html (@($card.expectedOutput) -join "`n")
+        $expectedHtml = '<details class="expected-output"><summary>查看真实预期输出</summary><pre>' + $outputText + '</pre></details>'
+      }
+      $targetHtml = ''
+      if ($card.PSObject.Properties.Name -contains 'target') {
+        $targetHtml = '<p class="evidence-target">修改入口：<a href="' + (Encode-Html $pattern.sourceUrl) + '"><code>' + (Encode-Html $card.target) + '</code> ↗</a></p>'
+      }
+      $acceptanceHtml = ''
+      if ($card.PSObject.Properties.Name -contains 'acceptance') {
+        $items = @($card.acceptance | ForEach-Object { '<li>' + (Encode-Html $_) + '</li>' }) -join ''
+        $acceptanceHtml = '<ul class="evidence-acceptance">' + $items + '</ul>'
+      }
+      @"
+<article class="evidence-card" id="evidence-$($card.id)" data-evidence-card="$($card.id)">
+  <p class="evidence-kind">$(Encode-Html $card.kind)</p>
+  <h3 id="$($pattern.key)-evidence-$($card.id)-title">$(Encode-Html $card.title)</h3>
+  <p>$(Encode-Html $card.task)</p>
+  $targetHtml$commandHtml$expectedHtml$acceptanceHtml
+  <label class="evidence-complete"><input type="checkbox" data-progress-task="$($card.id)" aria-labelledby="$($pattern.key)-evidence-$($card.id)-title"><span>我已完成：$(Encode-Html $card.title)</span></label>
+</article>
+"@
+    }) -join "`n"
   $patternHtml = @"
 <!doctype html>
 <html lang="zh-CN">
@@ -371,14 +466,15 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <header class="lesson-header">
     <a class="lesson-brand" href="../index.html"><span class="lesson-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
     <button class="lesson-nav-toggle" id="lesson-nav-toggle" type="button" aria-expanded="false" aria-controls="lesson-nav">菜单</button>
-    <nav class="lesson-nav" id="lesson-nav" aria-label="课程导航"><a href="../guides/learning-path.html">学习路线</a><a href="../index.html#patterns" aria-current="page">23 种模式</a><a href="../guides/projects.html">实战项目</a><a href="$repositoryUrl">GitHub ↗</a></nav>
+    <nav class="lesson-nav" id="lesson-nav" aria-label="课程导航"><a href="../guides/learning-path.html">学习路线</a><a href="../index.html#patterns" aria-current="page">23 种模式</a><a href="../guides/projects.html">实战项目</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="$repositoryUrl">GitHub ↗</a></nav>
   </header>
   <main class="lesson-main" id="main">
     <p class="lesson-breadcrumb"><a href="../index.html#patterns">模式地图</a> / $(Encode-Html $categoryLabels[$pattern.category]) / $(Encode-Html $pattern.english)</p>
     <section class="lesson-hero" data-number="$(('{0:00}' -f $pattern.number))">
       <div class="lesson-copy"><p class="lesson-kicker">$(Encode-Html $categoryLabels[$pattern.category]) · Pattern $(('{0:00}' -f $pattern.number))</p><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
-      <aside class="lesson-progress"><label for="lesson-progress">我的学习阶段<select id="lesson-progress" aria-label="$(Encode-Html $pattern.english) 学习阶段"></select></label><p id="lesson-progress-summary">全课程 0% · 0 / 28 已验证</p></aside>
+      <aside class="lesson-progress"><p>我的证据进度</p><strong id="lesson-progress-count">0 / 4</strong><div class="lesson-progress-track" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / 28 已验证</p></aside>
     </section>
+    <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><p class="lesson-kicker">LEARNING EVIDENCE</p><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
       <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
       <section class="lesson-panel"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="command-box"><div><span>从仓库根目录运行</span><button type="button" data-copy-command="$command">复制命令</button></div><code>$command</code></div><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码 <span>↗</span></a><a href="$($pattern.practiceUrl)">实战项目落点 <span>↗</span></a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节 <span>→</span></a></div></section>
@@ -431,7 +527,29 @@ $homeHtml = $homeHtml.Replace('https://github.com/yuweiyang9611/CSharp_Implement
 $homeHtml = $homeHtml.Replace('</head>', '  ' + $courseJsonLd + "`n</head>")
 [IO.File]::WriteAllText($homePath, $homeHtml, [Text.UTF8Encoding]::new($false))
 
+$quizPath = Join-Path $stageDirectory 'quiz.html'
+$quizHtml = Get-Content -LiteralPath $quizPath -Raw -Encoding utf8
+$quizUrl = $pagesBase + 'quiz.html'
+$quizJsonLd = Get-JsonLdScript -Value ([ordered]@{
+    '@context' = 'https://schema.org'
+    '@type' = 'LearningResource'
+    name = '设计模式辨析训练'
+    description = '用六个业务场景辨析相似的 C# 设计模式，并通过本地间隔复习巩固决策规则。'
+    url = $quizUrl
+    inLanguage = 'zh-CN'
+    isAccessibleForFree = $true
+    learningResourceType = 'Quiz'
+    isPartOf = [ordered]@{ '@type' = 'Course'; name = 'C# 设计模式学习地图'; url = $pagesBase }
+  })
+$quizHtml = $quizHtml.Replace('{{PAGES_BASE}}', $pagesBase)
+$quizHtml = $quizHtml.Replace('{{REPOSITORY_URL}}', $repositoryUrl)
+$quizHtml = $quizHtml.Replace('</head>', '  ' + $quizJsonLd + "`n</head>")
+[IO.File]::WriteAllText($quizPath, $quizHtml, [Text.UTF8Encoding]::new($false))
+
+& (Join-Path $PSScriptRoot 'new-pages-search-index.ps1') -SiteDirectory $stageDirectory
+
 $allUrls = @($pagesBase) +
+  @($quizUrl) +
   @($pages | ForEach-Object { $pagesBase + 'guides/' + $_.Output }) +
   @($patterns | ForEach-Object { $_.pageUrl })
 $sitemapItems = $allUrls | ForEach-Object { '  <url><loc>' + [Security.SecurityElement]::Escape($_) + '</loc></url>' }
@@ -452,163 +570,11 @@ $revision = if ($env:GITHUB_SHA -match '^[0-9a-fA-F]{40}$') {
 $version = [ordered]@{ commit = $revision } | ConvertTo-Json
 [IO.File]::WriteAllText((Join-Path $stageDirectory 'version.json'), $version, [Text.UTF8Encoding]::new($false))
 
-$requiredFiles = @(
-  (Join-Path $stageDirectory 'index.html'),
-  (Join-Path $stageDirectory 'sitemap.xml'),
-  (Join-Path $stageDirectory 'robots.txt'),
-  (Join-Path $stageDirectory 'version.json'),
-  (Join-Path $assetsDirectory 'styles.css'),
-  (Join-Path $assetsDirectory 'guide.css'),
-  (Join-Path $assetsDirectory 'pattern.css'),
-  (Join-Path $assetsDirectory 'app.js'),
-  (Join-Path $assetsDirectory 'guide.js'),
-  (Join-Path $assetsDirectory 'lesson.js'),
-  (Join-Path $assetsDirectory 'progress.js'),
-  (Join-Path $assetsDirectory 'catalog.js'),
-  (Join-Path $assetsDirectory 'catalog.json'),
-  (Join-Path $assetsDirectory 'favicon.svg'),
-  (Join-Path $assetsDirectory 'og.jpg')
-) + @($pages | ForEach-Object { Join-Path $guideDirectory $_.Output }) +
-  @($patterns | ForEach-Object { Join-Path $patternDirectory ($_.key + '.html') })
-
-$issues = [Collections.Generic.List[string]]::new()
-foreach ($path in $requiredFiles) {
-  if (-not (Test-Path -LiteralPath $path) -or (Get-Item -LiteralPath $path).Length -eq 0) {
-    $issues.Add("Missing or empty Pages output: $path")
-  }
-}
-$socialImagePath = Join-Path $assetsDirectory 'og.jpg'
-if ((Test-Path -LiteralPath $socialImagePath) -and (Get-Item -LiteralPath $socialImagePath).Length -gt 600kb) {
-  $issues.Add("Open Graph image must stay below 600 KB: $socialImagePath")
-}
-
-if ($patterns.Count -ne 23) { $issues.Add("Pattern catalog must contain 23 entries; found $($patterns.Count).") }
-if (@($patterns.key | Sort-Object -Unique).Count -ne 23) { $issues.Add('Pattern catalog keys must be unique.') }
-$expectedCategoryCounts = @{ Creational = 5; Structural = 7; Behavioral = 11 }
-foreach ($category in $expectedCategoryCounts.Keys) {
-  $actualCount = @($patterns | Where-Object category -eq $category).Count
-  if ($actualCount -ne $expectedCategoryCounts[$category]) {
-    $issues.Add("Pattern category $category must contain $($expectedCategoryCounts[$category]) entries; found $actualCount.")
-  }
-}
-foreach ($pattern in $patterns) {
-  if ($pattern.problemTags.Count -eq 0) { $issues.Add("Pattern has no problem tags: $($pattern.key)") }
-  foreach ($tagId in $pattern.problemTags) {
-    if (-not $tagById.ContainsKey($tagId)) { $issues.Add("Unknown problem tag for $($pattern.key): $tagId") }
-  }
-  foreach ($relativeTarget in @($pattern.source, $pattern.practice)) {
-    $targetPath = Join-Path $root ($relativeTarget -replace '/', [IO.Path]::DirectorySeparatorChar)
-    if (-not (Test-Path -LiteralPath $targetPath)) { $issues.Add("Pattern points to a missing repository file: $relativeTarget") }
-  }
-}
-
-$fundamentalsContent = Get-Content -LiteralPath (Join-Path $guideDirectory 'fundamentals.html') -Raw -Encoding utf8
-foreach ($pattern in $patterns) {
-  $anchor = $pattern.guide.TrimStart('#')
-  if ($fundamentalsContent -notmatch ('id="' + [regex]::Escape($anchor) + '"')) {
-    $issues.Add("Pattern points to a missing guide anchor: $($pattern.key) -> $anchor")
-  }
-}
-
-foreach ($page in $pages) {
-  $content = Get-Content -LiteralPath (Join-Path $guideDirectory $page.Output) -Raw -Encoding utf8
-  if ($content -notmatch 'learning-site-header') { $issues.Add("Generated guide is missing site navigation: $($page.Output)") }
-  if ($content -notmatch 'assets/guide\.js') { $issues.Add("Generated guide is missing online behavior: $($page.Output)") }
-  if ($content -match '@@(?:CODE|LINK)\d+@@') { $issues.Add("Generated guide contains an unresolved inline token: $($page.Output)") }
-  $h2Count = [regex]::Matches($content, '<h2\s').Count
-  if ($h2Count -gt 0 -and $content -notmatch 'class="guide-toc"') { $issues.Add("Generated guide is missing a table of contents: $($page.Output)") }
-}
-
-$sitemapDocument = [xml]$sitemap
-$sitemapLocations = @($sitemapDocument.urlset.url | ForEach-Object { [string]$_.loc })
-if ($sitemapLocations.Count -ne $allUrls.Count) { $issues.Add("Sitemap must contain $($allUrls.Count) URLs; found $($sitemapLocations.Count).") }
-if (@($sitemapLocations | Sort-Object -Unique).Count -ne $sitemapLocations.Count) { $issues.Add('Sitemap URLs must be unique.') }
-if (@($sitemapLocations | Where-Object { $_ -notmatch '^https://' -or $_ -match '[#?]' }).Count -gt 0) { $issues.Add('Sitemap URLs must be canonical HTTPS URLs without query strings or fragments.') }
-
-$checkedLocalLinks = 0
-$htmlCache = @{}
-$htmlCanonicalUrls = [Collections.Generic.List[string]]::new()
-foreach ($htmlFile in Get-ChildItem -LiteralPath $stageDirectory -Recurse -File -Filter '*.html') {
-  $content = Get-Content -LiteralPath $htmlFile.FullName -Raw -Encoding utf8
-  if ($content -match '\{\{(?:PAGES_BASE|REPOSITORY_URL|PATTERN_FALLBACK)\}\}') { $issues.Add("Unresolved site placeholder: $($htmlFile.FullName)") }
-
-  $canonicalMatches = [regex]::Matches($content, '<link\s+rel="canonical"\s+href="(?<url>[^"]+)"')
-  $ogUrlMatches = [regex]::Matches($content, '<meta\s+property="og:url"\s+content="(?<url>[^"]+)"')
-  if ($canonicalMatches.Count -ne 1) { $issues.Add("HTML page must contain exactly one canonical URL: $($htmlFile.FullName)") }
-  if ($ogUrlMatches.Count -ne 1) { $issues.Add("HTML page must contain exactly one Open Graph URL: $($htmlFile.FullName)") }
-  if ($canonicalMatches.Count -eq 1) { $htmlCanonicalUrls.Add($canonicalMatches[0].Groups['url'].Value) }
-  if ($canonicalMatches.Count -eq 1 -and $ogUrlMatches.Count -eq 1 -and $canonicalMatches[0].Groups['url'].Value -ne $ogUrlMatches[0].Groups['url'].Value) {
-    $issues.Add("Canonical and Open Graph URL differ: $($htmlFile.FullName)")
-  }
-  $jsonLdMatches = [regex]::Matches($content, '<script\s+type="application/ld\+json">(?<json>.*?)</script>', [Text.RegularExpressions.RegexOptions]::Singleline)
-  if ($jsonLdMatches.Count -ne 1) {
-    $issues.Add("HTML page must contain one JSON-LD resource: $($htmlFile.FullName)")
-  } else {
-    try {
-      $jsonLd = $jsonLdMatches[0].Groups['json'].Value | ConvertFrom-Json
-      $expectedType = if ($htmlFile.FullName.Equals($homePath, [StringComparison]::OrdinalIgnoreCase)) { 'Course' } else { 'LearningResource' }
-      if ($jsonLd.'@type' -ne $expectedType) { $issues.Add("Unexpected JSON-LD type in $($htmlFile.FullName): $($jsonLd.'@type')") }
-      if ($canonicalMatches.Count -eq 1 -and $jsonLd.url -ne $canonicalMatches[0].Groups['url'].Value) {
-        $issues.Add("JSON-LD URL differs from canonical: $($htmlFile.FullName)")
-      }
-    } catch {
-      $issues.Add("Invalid JSON-LD in $($htmlFile.FullName): $($_.Exception.Message)")
-    }
-  }
-  if ($content -notmatch '<meta\s+property="og:image"\s+content="https://') {
-    $issues.Add("HTML page is missing an HTTPS Open Graph image: $($htmlFile.FullName)")
-  }
-  if ($content -notmatch '<meta\s+name="twitter:card"\s+content="summary_large_image"') {
-    $issues.Add("HTML page is missing a Twitter large-image card: $($htmlFile.FullName)")
-  }
-  if ($content -notmatch '<meta\s+name="twitter:image"\s+content="https://') {
-    $issues.Add("HTML page is missing an HTTPS Twitter image: $($htmlFile.FullName)")
-  }
-
-  $ids = @([regex]::Matches($content, '\sid="(?<id>[^"]+)"') | ForEach-Object { $_.Groups['id'].Value })
-  foreach ($duplicate in @($ids | Group-Object | Where-Object Count -gt 1)) {
-    $issues.Add("Duplicate HTML id '$($duplicate.Name)': $($htmlFile.FullName)")
-  }
-
-  foreach ($match in [regex]::Matches($content, '(?:href|src)="(?<target>[^"]+)"')) {
-    $target = $match.Groups['target'].Value
-    if ($target -match '^(https?:|mailto:|data:)') { continue }
-    $pathPart = ($target -split '[#?]', 2)[0]
-    $fragment = if ($target.Contains('#')) {
-      [Uri]::UnescapeDataString(($target -split '#', 2)[1].Split('?', 2)[0])
-    } else { '' }
-    $candidate = if ([string]::IsNullOrWhiteSpace($pathPart)) {
-      $htmlFile.FullName
-    } else {
-      $decodedPath = [Uri]::UnescapeDataString($pathPart).Replace('/', [IO.Path]::DirectorySeparatorChar)
-      [IO.Path]::GetFullPath((Join-Path $htmlFile.DirectoryName $decodedPath))
-    }
-    if (Test-Path -LiteralPath $candidate -PathType Container) { $candidate = Join-Path $candidate 'index.html' }
-    $insideStage = $candidate.Equals($resolvedStage, [StringComparison]::OrdinalIgnoreCase) -or
-      $candidate.StartsWith($resolvedStage.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)
-    $checkedLocalLinks++
-    if (-not $insideStage -or -not (Test-Path -LiteralPath $candidate)) {
-      $relativeHtml = $htmlFile.FullName.Substring($resolvedStage.Length).TrimStart([char[]]'\/')
-      $issues.Add("Broken local link: $relativeHtml -> $target")
-    } elseif (-not [string]::IsNullOrWhiteSpace($fragment) -and [IO.Path]::GetExtension($candidate).Equals('.html', [StringComparison]::OrdinalIgnoreCase)) {
-      if (-not $htmlCache.ContainsKey($candidate)) { $htmlCache[$candidate] = Get-Content -LiteralPath $candidate -Raw -Encoding utf8 }
-      if ($htmlCache[$candidate] -notmatch ('id="' + [regex]::Escape($fragment) + '"')) {
-        $relativeHtml = $htmlFile.FullName.Substring($resolvedStage.Length).TrimStart([char[]]'\/')
-        $issues.Add("Broken local anchor: $relativeHtml -> $target")
-      }
-    }
-  }
-}
-
-foreach ($difference in @(Compare-Object -ReferenceObject $sitemapLocations -DifferenceObject @($htmlCanonicalUrls))) {
-  $issues.Add("Sitemap/canonical mismatch: $($difference.InputObject) ($($difference.SideIndicator)).")
-}
-if ($revision -notmatch '^[0-9a-f]{40}$') { $issues.Add("version.json commit must be a 40-character SHA; found '$revision'.") }
-
-if ($issues.Count -gt 0) {
-  throw "GitHub Pages validation failed:`n- $($issues -join "`n- ")"
-}
+& (Join-Path $PSScriptRoot 'verify-pages-site.ps1') `
+  -SiteDirectory $stageDirectory `
+  -RepositoryRoot $root `
+  -ExpectedPagesBase $pagesBase
 
 Write-Host "GitHub Pages site generated: 1 learning dashboard, $($pages.Count) guides, $($patterns.Count) pattern lessons."
-Write-Host "Validated $checkedLocalLinks local links and $($allUrls.Count) canonical sitemap URLs."
+Write-Host "Validated by verify-pages-site.ps1: $($allUrls.Count) canonical sitemap URLs."
 Write-Host "Output: $stageDirectory"

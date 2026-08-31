@@ -11,6 +11,7 @@
   const tocToggle = document.querySelector(".guide-toc-toggle");
   const tocList = document.querySelector("#guide-toc-list");
   const guideId = document.body.dataset.guideId;
+  const learningItemId = document.body.dataset.learningItemId;
   const storageKey = `csharp-design-patterns-guide-position-v1:${guideId}`;
   const headings = toc
     ? [...toc.querySelectorAll("a[data-heading-id]")]
@@ -168,6 +169,70 @@
     continueLink.hidden = false;
     continueLink.href = `#${saved.headingId}`;
     continueLink.textContent = `继续阅读：${savedHeading.textContent.trim()} →`;
+  }
+
+  const catalog = window.PatternCatalog;
+  const progress = window.LearningProgress;
+  if (learningItemId && catalog && progress) {
+    const curriculum = [
+      ...catalog.patterns.map((pattern) => ({
+        id: `pattern:${pattern.key}`,
+        type: "pattern",
+        title: `${pattern.english} / ${pattern.chinese}`,
+        url: `../patterns/${pattern.key}.html`,
+        tasks: pattern.evidenceCards,
+      })),
+      ...catalog.learningItems.map((item) => ({
+        ...item,
+        url: `../${item.url}`,
+        tasks: item.milestones.map((milestone) => ({ ...milestone, href: milestone.anchor })),
+      })),
+    ];
+    progress.configure(curriculum);
+    const milestoneList = document.querySelector(".guide-milestone-list");
+    const announcement = document.querySelector("#guide-announcement");
+
+    function renderMilestones() {
+      const current = progress.itemProgress(learningItemId);
+      if (!current) return;
+      document.querySelector("#guide-milestone-summary").textContent = `${current.completed} / ${current.total} 已完成`;
+      for (const task of current.tasks) {
+        const input = milestoneList.querySelector(`[data-progress-task="${task.id}"]`);
+        const label = input?.closest(".guide-milestone");
+        if (!input || !label) continue;
+        input.checked = task.completed;
+        input.disabled = !task.available;
+        label.classList.toggle("completed", task.completed);
+        label.classList.toggle("locked", !task.available);
+      }
+    }
+
+    milestoneList.addEventListener("change", (event) => {
+      const input = event.target.closest("[data-progress-task]");
+      if (!input) return;
+      if (!progress.setTaskComplete(learningItemId, input.dataset.progressTask, input.checked)) {
+        input.checked = progress.isTaskComplete(learningItemId, input.dataset.progressTask);
+        announcement.textContent = "请先完成前一个里程碑。";
+        return;
+      }
+      const title = input.closest(".guide-milestone").querySelector("strong").textContent.trim();
+      announcement.textContent = input.checked ? `${title}已完成。` : `${title}及其后续里程碑已撤销。`;
+    });
+    milestoneList.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-command]");
+      if (!button) return;
+      const original = button.textContent;
+      try {
+        await navigator.clipboard.writeText(button.dataset.copyCommand);
+        button.textContent = "已复制 ✓";
+        announcement.textContent = "里程碑运行命令已复制。";
+      } catch {
+        button.textContent = "请手动复制";
+        announcement.textContent = "无法访问剪贴板，请手动复制命令。";
+      }
+      window.setTimeout(() => { button.textContent = original; }, 1600);
+    });
+    progress.subscribe(renderMilestones);
   }
   updateReadingPosition();
 })();

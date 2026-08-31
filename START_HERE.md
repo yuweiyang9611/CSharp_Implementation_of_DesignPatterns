@@ -4,6 +4,8 @@
 
 ## 先做 2 分钟环境检查
 
+没有本地 .NET 10 时，可先 [在 GitHub Codespaces 中打开本项目](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)。预配置容器会自动还原、构建并生成学习站；Codespaces 可能消耗 GitHub 使用额度。
+
 在仓库根目录执行：
 
 ```powershell
@@ -192,7 +194,7 @@ powershell -ExecutionPolicy Bypass -File scripts/run-teaching-projects.ps1 -Self
 ### 最终验证与结束标准
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -SkipPdf
 powershell -ExecutionPolicy Bypass -File scripts/export-all-guides.ps1
 ```
 

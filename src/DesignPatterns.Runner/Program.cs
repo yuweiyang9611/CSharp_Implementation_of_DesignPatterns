@@ -21,6 +21,12 @@ if (args.Contains("--catalog-json", StringComparer.OrdinalIgnoreCase))
     return 0;
 }
 
+if (args.Contains("--evidence-json", StringComparer.OrdinalIgnoreCase))
+{
+    PrintEvidenceJson(PatternCatalog.All);
+    return 0;
+}
+
 if (args.Contains("--all", StringComparer.OrdinalIgnoreCase))
 {
     foreach (var demo in PatternCatalog.All)
@@ -107,6 +113,23 @@ static void PrintCatalogJson(IEnumerable<IPatternDemo> demos)
     }));
 }
 
+static void PrintEvidenceJson(IEnumerable<IPatternDemo> demos)
+{
+    var evidence = demos.Select((demo, index) => new
+    {
+        number = index + 1,
+        key = demo.Key,
+        name = demo.Name,
+        category = demo.Category,
+        intent = demo.Intent,
+        output = demo.Run().ToArray(),
+    });
+    Console.WriteLine(JsonSerializer.Serialize(evidence, new JsonSerializerOptions
+    {
+        WriteIndented = true,
+    }));
+}
+
 static void PrintUsage()
 {
     Console.WriteLine("C# Design Patterns Runner");
@@ -114,6 +137,7 @@ static void PrintUsage()
     Console.WriteLine("用法：");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --list");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --catalog-json");
+    Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --evidence-json");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- iterator");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --category Behavioral");
     Console.WriteLine("  dotnet run --project src/DesignPatterns.Runner -- --all");

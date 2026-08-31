@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:site": "node tests/site-regression.mjs"
+    "test:review": "node tests/review-scheduler.mjs",
+    "test:site": "node tests/review-scheduler.mjs && node tests/site-regression.mjs"
   },
   "devDependencies": {
     "axe-core": "4.13.0",
