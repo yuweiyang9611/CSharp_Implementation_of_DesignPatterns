@@ -21,7 +21,9 @@ public sealed record OrderResponse(
     string? ExternalPaymentId,
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt,
-    bool Replayed = false)
+    bool Replayed = false,
+    string ReservationState = "Held",
+    DateTimeOffset? ReservationExpiresAt = null)
 {
     public static OrderResponse From(OrderSnapshot order, bool replayed = false) => new(
         order.Id,
@@ -34,7 +36,9 @@ public sealed record OrderResponse(
         order.ExternalPaymentId,
         order.CreatedAt,
         order.UpdatedAt,
-        replayed);
+        replayed,
+        order.ReservationState,
+        order.ReservationExpiresAt);
 }
 
 public sealed record ApiError(string Code, string Message);

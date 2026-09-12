@@ -1,23 +1,165 @@
 {
   "$schema": "./learning-catalog.schema.json",
   "problemTags": [
-    { "id": "collection-traversal", "label": "集合遍历", "aliases": ["迭代", "惰性序列", "不暴露集合"] },
-    { "id": "interface-integration", "label": "接口不兼容", "aliases": ["旧接口", "第三方接口", "协议适配", "单位转换"] },
-    { "id": "algorithm-variation", "label": "算法经常变化", "aliases": ["运行时切换", "流程变化", "规则替换"] },
-    { "id": "object-creation", "label": "对象创建", "aliases": ["延迟创建", "复杂构建", "产品族", "克隆"] },
-    { "id": "state-transition", "label": "状态转换", "aliases": ["状态机", "生命周期", "非法转换"] },
-    { "id": "notification-coordination", "label": "通知与协调", "aliases": ["发布订阅", "事件", "对象协作", "中介"] },
-    { "id": "undo-recovery", "label": "撤销与恢复", "aliases": ["undo", "redo", "快照", "历史"] },
-    { "id": "access-control", "label": "访问控制", "aliases": ["权限", "代理", "缓存", "延迟加载"] },
-    { "id": "tree-structure", "label": "树形结构", "aliases": ["层级", "叶子", "容器", "对象树"] },
-    { "id": "dynamic-responsibility", "label": "动态叠加职责", "aliases": ["包装", "装饰", "组合顺序"] },
-    { "id": "request-pipeline", "label": "请求处理流水线", "aliases": ["审批链", "校验链", "逐级处理"] },
-    { "id": "multi-axis-extension", "label": "多维度独立扩展", "aliases": ["组合爆炸", "抽象与实现", "自由组合"] },
-    { "id": "simplify-subsystem", "label": "简化复杂子系统", "aliases": ["统一入口", "用例入口", "编排"] },
-    { "id": "stable-structure-operations", "label": "稳定结构增加操作", "aliases": ["访问者", "双分派", "增加操作"] },
-    { "id": "memory-sharing", "label": "大量对象内存复用", "aliases": ["享元", "共享状态", "内在状态"] },
-    { "id": "small-dsl", "label": "小型 DSL", "aliases": ["解释器", "表达式树", "语法"] },
-    { "id": "single-lifecycle", "label": "唯一生命周期", "aliases": ["单例", "全局实例", "惰性初始化"] }
+    {
+      "id": "collection-traversal",
+      "label": "集合遍历",
+      "aliases": [
+        "迭代",
+        "惰性序列",
+        "不暴露集合"
+      ]
+    },
+    {
+      "id": "interface-integration",
+      "label": "接口不兼容",
+      "aliases": [
+        "旧接口",
+        "第三方接口",
+        "协议适配",
+        "单位转换"
+      ]
+    },
+    {
+      "id": "algorithm-variation",
+      "label": "算法经常变化",
+      "aliases": [
+        "运行时切换",
+        "流程变化",
+        "规则替换"
+      ]
+    },
+    {
+      "id": "object-creation",
+      "label": "对象创建",
+      "aliases": [
+        "延迟创建",
+        "复杂构建",
+        "产品族",
+        "克隆"
+      ]
+    },
+    {
+      "id": "state-transition",
+      "label": "状态转换",
+      "aliases": [
+        "状态机",
+        "生命周期",
+        "非法转换"
+      ]
+    },
+    {
+      "id": "notification-coordination",
+      "label": "通知与协调",
+      "aliases": [
+        "发布订阅",
+        "事件",
+        "对象协作",
+        "中介"
+      ]
+    },
+    {
+      "id": "undo-recovery",
+      "label": "撤销与恢复",
+      "aliases": [
+        "undo",
+        "redo",
+        "快照",
+        "历史"
+      ]
+    },
+    {
+      "id": "access-control",
+      "label": "访问控制",
+      "aliases": [
+        "权限",
+        "代理",
+        "缓存",
+        "延迟加载"
+      ]
+    },
+    {
+      "id": "tree-structure",
+      "label": "树形结构",
+      "aliases": [
+        "层级",
+        "叶子",
+        "容器",
+        "对象树"
+      ]
+    },
+    {
+      "id": "dynamic-responsibility",
+      "label": "动态叠加职责",
+      "aliases": [
+        "包装",
+        "装饰",
+        "组合顺序"
+      ]
+    },
+    {
+      "id": "request-pipeline",
+      "label": "请求处理流水线",
+      "aliases": [
+        "审批链",
+        "校验链",
+        "逐级处理"
+      ]
+    },
+    {
+      "id": "multi-axis-extension",
+      "label": "多维度独立扩展",
+      "aliases": [
+        "组合爆炸",
+        "抽象与实现",
+        "自由组合"
+      ]
+    },
+    {
+      "id": "simplify-subsystem",
+      "label": "简化复杂子系统",
+      "aliases": [
+        "统一入口",
+        "用例入口",
+        "编排"
+      ]
+    },
+    {
+      "id": "stable-structure-operations",
+      "label": "稳定结构增加操作",
+      "aliases": [
+        "访问者",
+        "双分派",
+        "增加操作"
+      ]
+    },
+    {
+      "id": "memory-sharing",
+      "label": "大量对象内存复用",
+      "aliases": [
+        "享元",
+        "共享状态",
+        "内在状态"
+      ]
+    },
+    {
+      "id": "small-dsl",
+      "label": "小型 DSL",
+      "aliases": [
+        "解释器",
+        "表达式树",
+        "语法"
+      ]
+    },
+    {
+      "id": "single-lifecycle",
+      "label": "唯一生命周期",
+      "aliases": [
+        "单例",
+        "全局实例",
+        "惰性初始化"
+      ]
+    }
   ],
   "patterns": [
     {
@@ -27,11 +169,16 @@
       "practice": "examples/DocumentWorkflow/Domain/SectionCollection.cs",
       "practiceLabel": "DocumentWorkflow · 章节集合",
       "guide": "#31-第-1-章-iterator迭代器一个一个遍历",
-      "problemTags": ["collection-traversal"],
+      "problemTags": [
+        "collection-traversal"
+      ],
       "changeAxis": "集合的内部表示与遍历方式彼此独立变化。",
       "whenUse": "自定义容器需要多种遍历、惰性序列或隐藏内部结构时。",
       "avoidWhen": "普通集合已经能用 foreach 或 LINQ 清楚表达时，不要再包一层。",
-      "related": ["visitor", "composite"]
+      "related": [
+        "visitor",
+        "composite"
+      ]
     },
     {
       "key": "adapter",
@@ -40,11 +187,17 @@
       "practice": "examples/SmartHome/Patterns/Structural/LegacyAirConditionerAdapter.cs",
       "practiceLabel": "SmartHome · 旧空调接入",
       "guide": "#32-第-2-章-adapter适配器填平接口与单位差异",
-      "problemTags": ["interface-integration"],
+      "problemTags": [
+        "interface-integration"
+      ],
       "changeAxis": "外部协议变化被隔离在系统边界，核心业务继续依赖稳定接口。",
       "whenUse": "接入遗留代码、第三方 SDK、不同协议或单位体系时。",
       "avoidWhen": "双方接口都能直接修改，或包装只会复制同名方法而没有形成边界时。",
-      "related": ["bridge", "facade", "proxy"]
+      "related": [
+        "bridge",
+        "facade",
+        "proxy"
+      ]
     },
     {
       "key": "template-method",
@@ -53,11 +206,16 @@
       "practice": "examples/DocumentWorkflow/Pipeline/PublishingPipeline.cs",
       "practiceLabel": "DocumentWorkflow · 发布流水线",
       "guide": "#41-第-3-章-template-method模板方法父类守住流程",
-      "problemTags": ["algorithm-variation"],
+      "problemTags": [
+        "algorithm-variation"
+      ],
       "changeAxis": "稳定的流程骨架与少量可覆写步骤分离。",
       "whenUse": "流程顺序和前后条件必须统一守住，而个别步骤允许子类变化时。",
       "avoidWhen": "只有一两个可替换步骤，组合 Strategy 或委托会更直接时。",
-      "related": ["strategy", "factory-method"]
+      "related": [
+        "strategy",
+        "factory-method"
+      ]
     },
     {
       "key": "factory-method",
@@ -66,11 +224,17 @@
       "practice": "examples/OnlineStore/Payments/PaymentProcessorCreator.cs",
       "practiceLabel": "OnlineStore · 支付处理器创建",
       "guide": "#42-第-4-章-factory-method工厂方法把创建哪一种留给子类",
-      "problemTags": ["object-creation"],
+      "problemTags": [
+        "object-creation"
+      ],
       "changeAxis": "通用流程与具体产品类型的选择分离。",
       "whenUse": "父类掌握流程，但子类应决定实例化哪一种产品时。",
       "avoidWhen": "只需在组合根根据配置创建对象，一个简单工厂函数已经足够时。",
-      "related": ["abstract-factory", "builder", "template-method"]
+      "related": [
+        "abstract-factory",
+        "builder",
+        "template-method"
+      ]
     },
     {
       "key": "singleton",
@@ -79,11 +243,17 @@
       "practice": "examples/SmartHome/Patterns/Creational/DeviceTypeRegistry.cs",
       "practiceLabel": "SmartHome · 设备类型注册表",
       "guide": "#51-第-5-章-singleton单例先问生命周期再写全局入口",
-      "problemTags": ["single-lifecycle", "object-creation"],
+      "problemTags": [
+        "single-lifecycle",
+        "object-creation"
+      ],
       "changeAxis": "实例生命周期与调用者访问方式被集中管理。",
       "whenUse": "进程内确实只能有一个无状态或不可变协调对象，且生命周期边界明确时。",
       "avoidWhen": "可变全局状态会隐藏依赖、污染测试或跨请求共享时。",
-      "related": ["factory-method", "facade"]
+      "related": [
+        "factory-method",
+        "facade"
+      ]
     },
     {
       "key": "prototype",
@@ -92,11 +262,16 @@
       "practice": "examples/DocumentWorkflow/Domain/ReportDocument.cs",
       "practiceLabel": "DocumentWorkflow · 报表深克隆",
       "guide": "#52-第-6-章-prototype原型复制的是值还是共享引用",
-      "problemTags": ["object-creation"],
+      "problemTags": [
+        "object-creation"
+      ],
       "changeAxis": "昂贵初始化与后续按模板复制分离。",
       "whenUse": "创建成本高、配置复杂，且从现有对象复制比重新构建更清楚时。",
       "avoidWhen": "对象持有文件句柄、事件订阅等无法安全复制的资源时。",
-      "related": ["builder", "flyweight"]
+      "related": [
+        "builder",
+        "flyweight"
+      ]
     },
     {
       "key": "builder",
@@ -105,11 +280,17 @@
       "practice": "examples/OnlineStore/Building/OrderBuilder.cs",
       "practiceLabel": "OnlineStore · 合法订单构建",
       "guide": "#53-第-7-章-builder建造者让复杂对象只能以合法方式完成",
-      "problemTags": ["object-creation"],
+      "problemTags": [
+        "object-creation"
+      ],
       "changeAxis": "复杂对象的构建过程与最终表示分离。",
       "whenUse": "构造参数很多、存在必填组合或需要分步校验时。",
       "avoidWhen": "对象只有少量清晰参数，普通构造函数或工厂方法更容易理解时。",
-      "related": ["factory-method", "abstract-factory", "prototype"]
+      "related": [
+        "factory-method",
+        "abstract-factory",
+        "prototype"
+      ]
     },
     {
       "key": "abstract-factory",
@@ -118,11 +299,16 @@
       "practice": "examples/DocumentWorkflow/Output/OutputComponentFactories.cs",
       "practiceLabel": "DocumentWorkflow · 输出产品族",
       "guide": "#54-第-8-章-abstract-factory抽象工厂一次选择一整套兼容产品",
-      "problemTags": ["object-creation"],
+      "problemTags": [
+        "object-creation"
+      ],
       "changeAxis": "产品族的整体选择与具体产品的使用分离。",
       "whenUse": "客户端必须一次获得相互兼容的一组产品时。",
       "avoidWhen": "只有一个产品维度，或产品族并不存在兼容性约束时。",
-      "related": ["factory-method", "builder"]
+      "related": [
+        "factory-method",
+        "builder"
+      ]
     },
     {
       "key": "bridge",
@@ -131,11 +317,16 @@
       "practice": "examples/SmartHome/Patterns/Structural/BridgeDevices.cs",
       "practiceLabel": "SmartHome · 设备与通信通道",
       "guide": "#61-第-9-章-bridge桥接不要为每种组合建立子类",
-      "problemTags": ["multi-axis-extension"],
+      "problemTags": [
+        "multi-axis-extension"
+      ],
       "changeAxis": "抽象维度与实现维度分别扩展，避免子类组合爆炸。",
       "whenUse": "两个正交维度都在变化，并且需要运行时自由组合时。",
       "avoidWhen": "只有一个变化维度，额外抽象会比直接组合更难理解时。",
-      "related": ["adapter", "strategy"]
+      "related": [
+        "adapter",
+        "strategy"
+      ]
     },
     {
       "key": "strategy",
@@ -144,11 +335,17 @@
       "practice": "examples/OnlineStore/Pricing/PricingStrategies.cs",
       "practiceLabel": "OnlineStore · 定价算法",
       "guide": "#62-第-10-章-strategy策略整体替换算法",
-      "problemTags": ["algorithm-variation"],
+      "problemTags": [
+        "algorithm-variation"
+      ],
       "changeAxis": "可替换算法与使用算法的上下文分离。",
       "whenUse": "同一业务目标存在多套算法，需要独立测试或运行时选择时。",
       "avoidWhen": "只有一个纯函数或简单条件，接口层次会掩盖真实逻辑时。",
-      "related": ["state", "template-method", "bridge"]
+      "related": [
+        "state",
+        "template-method",
+        "bridge"
+      ]
     },
     {
       "key": "composite",
@@ -157,11 +354,17 @@
       "practice": "examples/SmartHome/Patterns/Structural/HomeComposite.cs",
       "practiceLabel": "SmartHome · 家庭设备树",
       "guide": "#71-第-11-章-composite组合让叶子和容器共享协议",
-      "problemTags": ["tree-structure"],
+      "problemTags": [
+        "tree-structure"
+      ],
       "changeAxis": "单个对象与对象组合共享统一协议。",
       "whenUse": "领域天然形成树形结构，客户端应一致处理叶子和容器时。",
       "avoidWhen": "叶子与容器行为差异很大，强行统一会制造大量无意义方法时。",
-      "related": ["decorator", "iterator", "visitor"]
+      "related": [
+        "decorator",
+        "iterator",
+        "visitor"
+      ]
     },
     {
       "key": "decorator",
@@ -170,11 +373,17 @@
       "practice": "examples/DocumentWorkflow/Output/ArtifactDecorators.cs",
       "practiceLabel": "DocumentWorkflow · 水印签名审计",
       "guide": "#72-第-12-章-decorator装饰器按顺序叠加职责",
-      "problemTags": ["dynamic-responsibility"],
+      "problemTags": [
+        "dynamic-responsibility"
+      ],
       "changeAxis": "核心职责与可按顺序组合的附加职责分离。",
       "whenUse": "需要在运行时叠加缓存、审计、费用或格式等横切行为时。",
       "avoidWhen": "包装顺序难以说明，或少量固定组合用显式流程更清楚时。",
-      "related": ["proxy", "composite", "chain-of-responsibility"]
+      "related": [
+        "proxy",
+        "composite",
+        "chain-of-responsibility"
+      ]
     },
     {
       "key": "visitor",
@@ -183,11 +392,16 @@
       "practice": "examples/DocumentWorkflow/Analysis/ReportStatisticsVisitor.cs",
       "practiceLabel": "DocumentWorkflow · 报表统计",
       "guide": "#81-第-13-章-visitor访问者数据类型稳定操作经常增加",
-      "problemTags": ["stable-structure-operations"],
+      "problemTags": [
+        "stable-structure-operations"
+      ],
       "changeAxis": "稳定的元素类型集合与不断增加的操作分离。",
       "whenUse": "对象结构稳定，而报表、导出、审计等操作频繁增加时。",
       "avoidWhen": "元素类型经常增加，因为每个 Visitor 都会随之修改时。",
-      "related": ["iterator", "composite"]
+      "related": [
+        "iterator",
+        "composite"
+      ]
     },
     {
       "key": "chain-of-responsibility",
@@ -196,11 +410,17 @@
       "practice": "examples/OnlineStore/Validation/CheckoutValidationChain.cs",
       "practiceLabel": "OnlineStore · 结账校验链",
       "guide": "#82-第-14-章-chain-of-responsibility责任链请求沿链传递",
-      "problemTags": ["request-pipeline"],
+      "problemTags": [
+        "request-pipeline"
+      ],
       "changeAxis": "请求发送者与一系列可重排处理者分离。",
       "whenUse": "校验、审批或处理步骤需要按顺序组合，并可能提前终止时。",
       "avoidWhen": "处理顺序是固定且强耦合的业务流程，显式编排更容易观察时。",
-      "related": ["decorator", "command", "facade"]
+      "related": [
+        "decorator",
+        "command",
+        "facade"
+      ]
     },
     {
       "key": "facade",
@@ -209,11 +429,17 @@
       "practice": "examples/OnlineStore/Application/CheckoutFacade.cs",
       "practiceLabel": "OnlineStore · 结账入口",
       "guide": "#91-第-15-章-facade外观暴露一个用例级窗口",
-      "problemTags": ["simplify-subsystem"],
+      "problemTags": [
+        "simplify-subsystem"
+      ],
       "changeAxis": "复杂子系统演进与客户端使用的用例级入口分离。",
       "whenUse": "多个子系统必须按固定业务顺序协作，而调用者只关心一个用例时。",
       "avoidWhen": "Facade 只是把所有子系统方法原样暴露，成为没有边界的万能服务时。",
-      "related": ["adapter", "mediator", "proxy"]
+      "related": [
+        "adapter",
+        "mediator",
+        "proxy"
+      ]
     },
     {
       "key": "mediator",
@@ -222,11 +448,16 @@
       "practice": "examples/SmartHome/Patterns/Behavioral/HomeMediator.cs",
       "practiceLabel": "SmartHome · 设备联动",
       "guide": "#92-第-16-章-mediator中介者同事只认识协调者",
-      "problemTags": ["notification-coordination"],
+      "problemTags": [
+        "notification-coordination"
+      ],
       "changeAxis": "参与对象自身行为与跨对象协调规则分离。",
       "whenUse": "多个对象形成网状依赖，交互规则需要集中观察与修改时。",
       "avoidWhen": "中介者持续吸收所有业务规则，演变成难以测试的上帝对象时。",
-      "related": ["observer", "facade"]
+      "related": [
+        "observer",
+        "facade"
+      ]
     },
     {
       "key": "observer",
@@ -235,11 +466,16 @@
       "practice": "examples/OnlineStore/Events/OrderEventPublisher.cs",
       "practiceLabel": "OnlineStore · 订单事件发布",
       "guide": "#101-第-17-章-observer观察者状态变化后通知订阅者",
-      "problemTags": ["notification-coordination"],
+      "problemTags": [
+        "notification-coordination"
+      ],
       "changeAxis": "发布者状态变化与订阅者的后续反应分离。",
       "whenUse": "一个事件需要通知数量不定、可动态订阅的多个响应者时。",
       "avoidWhen": "调用顺序、失败语义或事务边界必须显式可见时。",
-      "related": ["mediator", "command"]
+      "related": [
+        "mediator",
+        "command"
+      ]
     },
     {
       "key": "memento",
@@ -248,11 +484,16 @@
       "practice": "examples/SmartHome/Patterns/Behavioral/SafetySceneMemento.cs",
       "practiceLabel": "SmartHome · 安全场景快照",
       "guide": "#102-第-18-章-memento备忘录保存状态但不泄露内部字段",
-      "problemTags": ["undo-recovery"],
+      "problemTags": [
+        "undo-recovery"
+      ],
       "changeAxis": "对象内部状态与负责保存历史的看护者分离。",
       "whenUse": "需要撤销或恢复完整状态，同时不能暴露对象内部表示时。",
       "avoidWhen": "状态很大、快照频繁，或外部资源无法通过内存快照恢复时。",
-      "related": ["command", "prototype"]
+      "related": [
+        "command",
+        "prototype"
+      ]
     },
     {
       "key": "state",
@@ -261,11 +502,17 @@
       "practice": "examples/OnlineStore/States/OrderStates.cs",
       "practiceLabel": "OnlineStore · 订单生命周期",
       "guide": "#103-第-19-章-state状态让当前状态对象决定行为",
-      "problemTags": ["state-transition", "algorithm-variation"],
+      "problemTags": [
+        "state-transition",
+        "algorithm-variation"
+      ],
       "changeAxis": "对象当前状态与每种状态允许的行为分离。",
       "whenUse": "行为明显依赖生命周期状态，转换规则需要被对象模型保护时。",
       "avoidWhen": "状态很少且稳定，一个清晰 switch 已经足够时。",
-      "related": ["strategy", "memento"]
+      "related": [
+        "strategy",
+        "memento"
+      ]
     },
     {
       "key": "flyweight",
@@ -274,11 +521,16 @@
       "practice": "examples/DocumentWorkflow/Domain/StyleFlyweightFactory.cs",
       "practiceLabel": "DocumentWorkflow · 样式缓存",
       "guide": "#111-第-20-章-flyweight享元把内在状态和外在状态分开",
-      "problemTags": ["memory-sharing"],
+      "problemTags": [
+        "memory-sharing"
+      ],
       "changeAxis": "可共享的内在状态与每个对象独有的外在状态分离。",
       "whenUse": "经过测量确认，大量相似细粒度对象造成显著内存成本时。",
       "avoidWhen": "对象数量不大，或共享缓存的同步和生命周期成本更高时。",
-      "related": ["prototype", "singleton"]
+      "related": [
+        "prototype",
+        "singleton"
+      ]
     },
     {
       "key": "proxy",
@@ -287,11 +539,17 @@
       "practice": "examples/SmartHome/Patterns/Structural/AuthorizedDeviceProxy.cs",
       "practiceLabel": "SmartHome · 权限与审计",
       "guide": "#112-第-21-章-proxy代理客户端不变访问路径受控",
-      "problemTags": ["access-control"],
+      "problemTags": [
+        "access-control"
+      ],
       "changeAxis": "真实对象的职责与访问路径上的控制策略分离。",
       "whenUse": "需要延迟加载、权限、缓存、远程访问或审计，而客户端协议应保持不变时。",
       "avoidWhen": "代理隐藏了远程或昂贵调用的重要语义，使调用者误判成本时。",
-      "related": ["decorator", "adapter", "facade"]
+      "related": [
+        "decorator",
+        "adapter",
+        "facade"
+      ]
     },
     {
       "key": "command",
@@ -300,11 +558,18 @@
       "practice": "examples/SmartHome/Patterns/Behavioral/Commands.cs",
       "practiceLabel": "SmartHome · 执行与撤销",
       "guide": "#121-第-22-章-command命令让一次请求拥有历史",
-      "problemTags": ["undo-recovery", "request-pipeline"],
+      "problemTags": [
+        "undo-recovery",
+        "request-pipeline"
+      ],
       "changeAxis": "请求的发起、执行、排队与历史记录分离。",
       "whenUse": "操作需要排队、重试、日志、撤销或宏组合时。",
       "avoidWhen": "操作简单且不需要生命周期，额外命令类型只会增加间接层时。",
-      "related": ["memento", "chain-of-responsibility", "observer"]
+      "related": [
+        "memento",
+        "chain-of-responsibility",
+        "observer"
+      ]
     },
     {
       "key": "interpreter",
@@ -313,11 +578,17 @@
       "practice": "examples/DocumentWorkflow/Filtering/SectionExpressions.cs",
       "practiceLabel": "DocumentWorkflow · 章节筛选 DSL",
       "guide": "#122-第-23-章-interpreter解释器用对象树表达小语言",
-      "problemTags": ["small-dsl", "tree-structure"],
+      "problemTags": [
+        "small-dsl",
+        "tree-structure"
+      ],
       "changeAxis": "语言语法结构与具体输入的解释过程分离。",
       "whenUse": "语法很小、领域受控，并且组合表达式比硬编码条件更清楚时。",
       "avoidWhen": "需求接近 SQL、正则或通用脚本语言，应使用成熟解析器时。",
-      "related": ["composite", "visitor"]
+      "related": [
+        "composite",
+        "visitor"
+      ]
     }
   ],
   "exerciseTemplates": {
@@ -354,10 +625,37 @@
       "title": "OnlineStore",
       "url": "guides/online-store.html",
       "milestones": [
-        { "id": "understand-flow", "kind": "read", "title": "画出结账调用链", "anchor": "#推荐阅读顺序", "task": "沿 DemoScenario、CheckoutFacade、校验、计价、支付、状态与事件画出调用链。" },
-        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#运行方式", "task": "运行 OnlineStore 自检并确认 5/5 通过。", "command": "dotnet run --project examples/OnlineStore/DesignPatterns.TeachingProjects.OnlineStore.csproj -c Release -- --self-test", "successContains": "SELF-TEST PASS: 5/5" },
-        { "id": "extend-discount", "kind": "change", "title": "增加折扣边界", "anchor": "#练习题", "task": "实现“满 300 减 40”，覆盖 299、300、500 三个边界。" },
-        { "id": "verify-suite", "kind": "verify", "title": "验证项目与测试", "anchor": "#项目边界", "task": "运行 TeachingProjects.Tests 和项目自检，确认原行为与新增边界都通过。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+        {
+          "id": "understand-flow",
+          "kind": "read",
+          "title": "画出结账调用链",
+          "anchor": "#推荐阅读顺序",
+          "task": "沿 DemoScenario、CheckoutFacade、校验、计价、支付、状态与事件画出调用链。"
+        },
+        {
+          "id": "run-baseline",
+          "kind": "run",
+          "title": "通过项目自检",
+          "anchor": "#运行方式",
+          "task": "运行 OnlineStore 自检并确认 5/5 通过。",
+          "command": "dotnet run --project examples/OnlineStore/DesignPatterns.TeachingProjects.OnlineStore.csproj -c Release -- --self-test",
+          "successContains": "SELF-TEST PASS: 5/5"
+        },
+        {
+          "id": "extend-discount",
+          "kind": "change",
+          "title": "增加折扣边界",
+          "anchor": "#练习题",
+          "task": "实现“满 300 减 40”，覆盖 299、300、500 三个边界。"
+        },
+        {
+          "id": "verify-suite",
+          "kind": "verify",
+          "title": "验证项目与测试",
+          "anchor": "#项目边界",
+          "task": "运行 TeachingProjects.Tests 和项目自检，确认原行为与新增边界都通过。",
+          "command": "dotnet test tests/TeachingProjects.Tests -c Release"
+        }
       ]
     },
     {
@@ -366,10 +664,37 @@
       "title": "SmartHome",
       "url": "guides/smart-home.html",
       "milestones": [
-        { "id": "understand-flow", "kind": "read", "title": "画出设备协作链", "anchor": "#协作时序", "task": "按 Adapter、Bridge、Proxy、Composite、Command、Mediator、Memento 追踪一次安全场景。" },
-        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#运行", "task": "运行 SmartHome 自检并确认 13/13 通过。", "command": "dotnet run --project examples/SmartHome/DesignPatterns.TeachingProjects.SmartHome.csproj -c Release -- --self-test", "successContains": "结果：13/13 通过" },
-        { "id": "extend-channel", "kind": "change", "title": "接入 MatterChannel", "anchor": "#练习题", "task": "新增 MatterChannel，并保持 DimmableLight 不需要修改。" },
-        { "id": "verify-suite", "kind": "verify", "title": "验证权限与回退", "anchor": "#自检覆盖内容", "task": "运行 TeachingProjects.Tests 和项目自检，确认权限、撤销与恢复没有回归。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+        {
+          "id": "understand-flow",
+          "kind": "read",
+          "title": "画出设备协作链",
+          "anchor": "#协作时序",
+          "task": "按 Adapter、Bridge、Proxy、Composite、Command、Mediator、Memento 追踪一次安全场景。"
+        },
+        {
+          "id": "run-baseline",
+          "kind": "run",
+          "title": "通过项目自检",
+          "anchor": "#运行",
+          "task": "运行 SmartHome 自检并确认 13/13 通过。",
+          "command": "dotnet run --project examples/SmartHome/DesignPatterns.TeachingProjects.SmartHome.csproj -c Release -- --self-test",
+          "successContains": "结果：13/13 通过"
+        },
+        {
+          "id": "extend-channel",
+          "kind": "change",
+          "title": "接入 MatterChannel",
+          "anchor": "#练习题",
+          "task": "新增 MatterChannel，并保持 DimmableLight 不需要修改。"
+        },
+        {
+          "id": "verify-suite",
+          "kind": "verify",
+          "title": "验证权限与回退",
+          "anchor": "#自检覆盖内容",
+          "task": "运行 TeachingProjects.Tests 和项目自检，确认权限、撤销与恢复没有回归。",
+          "command": "dotnet test tests/TeachingProjects.Tests -c Release"
+        }
       ]
     },
     {
@@ -378,10 +703,37 @@
       "title": "DocumentWorkflow",
       "url": "guides/document-workflow.html",
       "milestones": [
-        { "id": "understand-flow", "kind": "read", "title": "追踪七阶段流水线", "anchor": "#端到端数据流", "task": "从输入模板追踪到筛选、检查、渲染、装饰与打包。" },
-        { "id": "run-baseline", "kind": "run", "title": "通过项目自检", "anchor": "#快速运行", "task": "运行 DocumentWorkflow 自检并确认 15/15 通过。", "command": "dotnet run --project examples/DocumentWorkflow/DesignPatterns.TeachingProjects.DocumentWorkflow.csproj -c Release -- --self-test", "successContains": "SELF-TEST PASSED: 15/15" },
-        { "id": "extend-compliance", "kind": "change", "title": "增加合规规则", "anchor": "#分层练习", "task": "给 ComplianceVisitor 增加“对外正文至少 8 个单词”规则并补充自检。" },
-        { "id": "verify-suite", "kind": "verify", "title": "验证流水线取舍", "anchor": "#设计复盘问题", "task": "运行 TeachingProjects.Tests 和项目自检，确认 15 项基线与新规则都通过。", "command": "dotnet test tests/TeachingProjects.Tests -c Release" }
+        {
+          "id": "understand-flow",
+          "kind": "read",
+          "title": "追踪七阶段流水线",
+          "anchor": "#端到端数据流",
+          "task": "从输入模板追踪到筛选、检查、渲染、装饰与打包。"
+        },
+        {
+          "id": "run-baseline",
+          "kind": "run",
+          "title": "通过项目自检",
+          "anchor": "#快速运行",
+          "task": "运行 DocumentWorkflow 自检并确认 15/15 通过。",
+          "command": "dotnet run --project examples/DocumentWorkflow/DesignPatterns.TeachingProjects.DocumentWorkflow.csproj -c Release -- --self-test",
+          "successContains": "SELF-TEST PASSED: 15/15"
+        },
+        {
+          "id": "extend-compliance",
+          "kind": "change",
+          "title": "增加合规规则",
+          "anchor": "#分层练习",
+          "task": "给 ComplianceVisitor 增加“对外正文至少 8 个单词”规则并补充自检。"
+        },
+        {
+          "id": "verify-suite",
+          "kind": "verify",
+          "title": "验证流水线取舍",
+          "anchor": "#设计复盘问题",
+          "task": "运行 TeachingProjects.Tests 和项目自检，确认 15 项基线与新规则都通过。",
+          "command": "dotnet test tests/TeachingProjects.Tests -c Release"
+        }
       ]
     },
     {
@@ -390,14 +742,64 @@
       "title": "Checkout Refactoring Kata",
       "url": "guides/refactoring.html",
       "milestones": [
-        { "id": "read-smells", "kind": "read", "title": "识别业务规则与坏味道", "anchor": "#5-为什么-starter-值得重构", "task": "先列出 Starter 的耦合点，不提前套用模式名称。" },
-        { "id": "run-baseline", "kind": "run", "title": "建立测试基线", "anchor": "#4-先运行再阅读", "task": "运行工坊测试，确认 22 项基线通过。", "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release" },
-        { "id": "characterization", "kind": "change", "title": "阶段 0：特征测试", "anchor": "#7-阶段-0用特征测试建立安全网", "task": "先用特征测试锁定可观察行为。" },
-        { "id": "strategy", "kind": "change", "title": "阶段 1：Strategy", "anchor": "#8-阶段-1strategy-隔离价格政策", "task": "隔离价格政策并保持行为等价。" },
-        { "id": "chain", "kind": "change", "title": "阶段 2：责任链", "anchor": "#9-阶段-2chain-of-responsibility-组织校验", "task": "把校验顺序变成显式责任链。" },
-        { "id": "state", "kind": "change", "title": "阶段 3：State", "anchor": "#10-阶段-3state-保护订单生命周期", "task": "把合法状态转换收进状态对象。" },
-        { "id": "facade", "kind": "change", "title": "阶段 4：Facade", "anchor": "#11-阶段-4facade-收拢用例入口", "task": "用 Facade 收拢结账用例入口。" },
-        { "id": "verify-suite", "kind": "verify", "title": "完成等价性证明", "anchor": "#15-完成定义", "task": "运行完整测试，证明 Starter 与 Reference 行为等价。", "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release" }
+        {
+          "id": "read-smells",
+          "kind": "read",
+          "title": "识别业务规则与坏味道",
+          "anchor": "#5-为什么-starter-值得重构",
+          "task": "先列出 Starter 的耦合点，不提前套用模式名称。"
+        },
+        {
+          "id": "run-baseline",
+          "kind": "run",
+          "title": "建立测试基线",
+          "anchor": "#4-先运行再阅读",
+          "task": "运行工坊测试，确认 22 项基线通过。",
+          "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release"
+        },
+        {
+          "id": "characterization",
+          "kind": "change",
+          "title": "阶段 0：特征测试",
+          "anchor": "#7-阶段-0用特征测试建立安全网",
+          "task": "先用特征测试锁定可观察行为。"
+        },
+        {
+          "id": "strategy",
+          "kind": "change",
+          "title": "阶段 1：Strategy",
+          "anchor": "#8-阶段-1strategy-隔离价格政策",
+          "task": "隔离价格政策并保持行为等价。"
+        },
+        {
+          "id": "chain",
+          "kind": "change",
+          "title": "阶段 2：责任链",
+          "anchor": "#9-阶段-2chain-of-responsibility-组织校验",
+          "task": "把校验顺序变成显式责任链。"
+        },
+        {
+          "id": "state",
+          "kind": "change",
+          "title": "阶段 3：State",
+          "anchor": "#10-阶段-3state-保护订单生命周期",
+          "task": "把合法状态转换收进状态对象。"
+        },
+        {
+          "id": "facade",
+          "kind": "change",
+          "title": "阶段 4：Facade",
+          "anchor": "#11-阶段-4facade-收拢用例入口",
+          "task": "用 Facade 收拢结账用例入口。"
+        },
+        {
+          "id": "verify-suite",
+          "kind": "verify",
+          "title": "完成等价性证明",
+          "anchor": "#15-完成定义",
+          "task": "运行完整测试，证明 Starter 与 Reference 行为等价。",
+          "command": "dotnet test labs/CheckoutRefactoringKata/Tests/CheckoutRefactoringKata.Tests.csproj -c Release"
+        }
       ]
     },
     {
@@ -406,10 +808,64 @@
       "title": "Reliable Checkout",
       "url": "guides/reliable-checkout.html",
       "milestones": [
-        { "id": "understand-failures", "kind": "read", "title": "识别故障不变量", "anchor": "#故障矩阵", "task": "解释重复请求、并发库存、崩溃恢复、乱序回调等故障下必须守住什么。" },
-        { "id": "run-baseline", "kind": "run", "title": "通过毕业场景", "anchor": "#自动化测试", "task": "运行完整测试并确认五个 HTTP + SQLite 场景通过。", "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release" },
-        { "id": "extend-state", "kind": "change", "title": "扩展取消与退款", "anchor": "#场景三支付-adapter-与合法状态转换", "task": "先写非法转换测试，再增加 Cancelled 与 Refunded。" },
-        { "id": "verify-suite", "kind": "verify", "title": "复盘生产边界", "anchor": "#推荐练习顺序", "task": "再次通过五个毕业场景，并写下至少三个仍未解决的生产问题。", "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release" }
+        {
+          "id": "understand-failures",
+          "kind": "read",
+          "title": "识别故障不变量",
+          "anchor": "#故障矩阵",
+          "task": "解释重复请求、并发库存、崩溃恢复、乱序回调等故障下必须守住什么。"
+        },
+        {
+          "id": "run-baseline",
+          "kind": "run",
+          "title": "通过毕业场景",
+          "anchor": "#自动化测试",
+          "task": "运行完整测试并确认五个 HTTP + SQLite 场景通过。",
+          "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release"
+        },
+        {
+          "id": "extend-state",
+          "kind": "change",
+          "title": "扩展取消与退款",
+          "anchor": "#场景三支付-adapter-与合法状态转换",
+          "task": "先写非法转换测试，再增加 Cancelled 与 Refunded。"
+        },
+        {
+          "id": "verify-suite",
+          "kind": "verify",
+          "title": "复盘生产边界",
+          "anchor": "#推荐练习顺序",
+          "task": "再次通过五个毕业场景，并写下至少三个仍未解决的生产问题。",
+          "command": "dotnet test labs/ReliableCheckout/ReliableCheckout.Tests/ReliableCheckout.Tests.csproj -c Release"
+        },
+        {
+          "id": "reserve-settlement",
+          "title": "补齐预留与取消",
+          "task": "解释失败释放、确认取消和未知结果保留库存的边界。",
+          "anchor": "#库存预留与超时取消",
+          "kind": "change"
+        },
+        {
+          "id": "lease-workers",
+          "title": "验证多进程租约",
+          "task": "运行同机多进程测试，证明抢占与旧租约隔离。",
+          "anchor": "#多进程租约与死信",
+          "kind": "run"
+        },
+        {
+          "id": "dead-letter-replay",
+          "title": "练习死信重放",
+          "task": "查看死信并使用本地命令重放，核对事件标识和审计。",
+          "anchor": "#多进程租约与死信",
+          "kind": "change"
+        },
+        {
+          "id": "process-recovery",
+          "title": "通过真实崩溃验收",
+          "task": "运行进程终止与恢复测试，核对库存、消费收据及支付创建数量。",
+          "anchor": "#真实进程恢复验收",
+          "kind": "verify"
+        }
       ]
     }
   ],
@@ -420,9 +876,27 @@
       "title": "Strategy 还是 State",
       "scenario": "订单处于待支付、已支付、已发货时允许的操作不同，并且必须拒绝非法转换。",
       "prompt": "哪个模式应承担这些行为与转换规则？",
-      "patternKeys": ["strategy", "state"],
+      "patternKeys": [
+        "strategy",
+        "state"
+      ],
       "correctKey": "state",
-      "decisionRule": "行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
+      "decisionRule": "行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。",
+      "options": [
+        {
+          "id": "strategy",
+          "label": "Strategy / 策略",
+          "patternKey": "strategy",
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
+        },
+        {
+          "id": "state",
+          "label": "State / 状态",
+          "patternKey": "state",
+          "explanation": "行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
+        }
+      ],
+      "lessonHref": "patterns/state.html#evidence-read"
     },
     {
       "id": "adapter-bridge-facade-device",
@@ -430,9 +904,34 @@
       "title": "Adapter、Bridge 还是 Facade",
       "scenario": "新系统只接受摄氏温度接口，旧设备只提供华氏接口，而且旧设备不能修改。",
       "prompt": "哪个模式最直接地填平这个接口与单位差异？",
-      "patternKeys": ["adapter", "bridge", "facade"],
+      "patternKeys": [
+        "adapter",
+        "bridge",
+        "facade"
+      ],
       "correctKey": "adapter",
-      "decisionRule": "已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+      "decisionRule": "已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。",
+      "options": [
+        {
+          "id": "adapter",
+          "label": "Adapter / 适配器",
+          "patternKey": "adapter",
+          "explanation": "已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+        },
+        {
+          "id": "bridge",
+          "label": "Bridge / 桥接",
+          "patternKey": "bridge",
+          "explanation": "该方案适用于：两个正交维度都在变化，并且需要运行时自由组合时。 当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+        },
+        {
+          "id": "facade",
+          "label": "Facade / 外观",
+          "patternKey": "facade",
+          "explanation": "该方案适用于：多个子系统必须按固定业务顺序协作，而调用者只关心一个用例时。 当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+        }
+      ],
+      "lessonHref": "patterns/adapter.html#evidence-read"
     },
     {
       "id": "factory-family-rendering",
@@ -440,9 +939,34 @@
       "title": "Factory Method、Abstract Factory 还是 Builder",
       "scenario": "Web 或 Print 模式下必须同时创建彼此兼容的 Renderer 与 Packager，不能混搭。",
       "prompt": "哪个模式最适合保证整套产品兼容？",
-      "patternKeys": ["factory-method", "abstract-factory", "builder"],
+      "patternKeys": [
+        "factory-method",
+        "abstract-factory",
+        "builder"
+      ],
       "correctKey": "abstract-factory",
-      "decisionRule": "一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+      "decisionRule": "一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。",
+      "options": [
+        {
+          "id": "factory-method",
+          "label": "Factory Method / 工厂方法",
+          "patternKey": "factory-method",
+          "explanation": "该方案适用于：父类掌握流程，但子类应决定实例化哪一种产品时。 当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+        },
+        {
+          "id": "abstract-factory",
+          "label": "Abstract Factory / 抽象工厂",
+          "patternKey": "abstract-factory",
+          "explanation": "一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+        },
+        {
+          "id": "builder",
+          "label": "Builder / 建造者",
+          "patternKey": "builder",
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+        }
+      ],
+      "lessonHref": "patterns/abstract-factory.html#evidence-read"
     },
     {
       "id": "command-memento-editor",
@@ -450,9 +974,27 @@
       "title": "Command 还是 Memento",
       "scenario": "每次编辑操作都要独立排队、记录、重放和撤销。",
       "prompt": "哪个模式应把一次编辑行为变成可管理对象？",
-      "patternKeys": ["command", "memento"],
+      "patternKeys": [
+        "command",
+        "memento"
+      ],
       "correctKey": "command",
-      "decisionRule": "需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
+      "decisionRule": "需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。",
+      "options": [
+        {
+          "id": "command",
+          "label": "Command / 命令",
+          "patternKey": "command",
+          "explanation": "需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
+        },
+        {
+          "id": "memento",
+          "label": "Memento / 备忘录",
+          "patternKey": "memento",
+          "explanation": "该方案适用于：需要撤销或恢复完整状态，同时不能暴露对象内部表示时。 当前题目的决定性约束是：需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
+        }
+      ],
+      "lessonHref": "patterns/command.html#evidence-read"
     },
     {
       "id": "observer-mediator-alarm",
@@ -460,9 +1002,27 @@
       "title": "Observer 还是 Mediator",
       "scenario": "烟感触发后，需要一个中心规则协调灯、空调和警报器，并在最后一个报警解除后统一恢复。",
       "prompt": "哪个模式最适合承载跨设备协调规则？",
-      "patternKeys": ["observer", "mediator"],
+      "patternKeys": [
+        "observer",
+        "mediator"
+      ],
       "correctKey": "mediator",
-      "decisionRule": "多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
+      "decisionRule": "多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。",
+      "options": [
+        {
+          "id": "observer",
+          "label": "Observer / 观察者",
+          "patternKey": "observer",
+          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。 当前题目的决定性约束是：多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
+        },
+        {
+          "id": "mediator",
+          "label": "Mediator / 中介者",
+          "patternKey": "mediator",
+          "explanation": "多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
+        }
+      ],
+      "lessonHref": "patterns/mediator.html#evidence-read"
     },
     {
       "id": "proxy-decorator-access",
@@ -470,9 +1030,551 @@
       "title": "Proxy 还是 Decorator",
       "scenario": "客户端接口保持不变，但访问设备前必须执行权限拒绝、审计和延迟连接。",
       "prompt": "哪个模式最适合控制访问路径？",
-      "patternKeys": ["proxy", "decorator"],
+      "patternKeys": [
+        "proxy",
+        "decorator"
+      ],
       "correctKey": "proxy",
-      "decisionRule": "控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
+      "decisionRule": "控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。",
+      "options": [
+        {
+          "id": "proxy",
+          "label": "Proxy / 代理",
+          "patternKey": "proxy",
+          "explanation": "控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
+        },
+        {
+          "id": "decorator",
+          "label": "Decorator / 装饰器",
+          "patternKey": "decorator",
+          "explanation": "该方案适用于：需要在运行时叠加缓存、审计、费用或格式等横切行为时。 当前题目的决定性约束是：控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
+        }
+      ],
+      "lessonHref": "patterns/proxy.html#evidence-read"
+    },
+    {
+      "id": "iterator-playlist",
+      "version": 1,
+      "title": "隐藏集合存储方式",
+      "scenario": "播放列表可能从数组换为树结构，但调用者只需按顺序取下一首，不应访问存储细节。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "iterator",
+        "composite"
+      ],
+      "correctKey": "iterator",
+      "decisionRule": "迭代器封装遍历协议；组合模式统一树节点，但不直接定义遍历游标。",
+      "options": [
+        {
+          "id": "iterator",
+          "label": "Iterator / 迭代器",
+          "patternKey": "iterator",
+          "explanation": "迭代器封装遍历协议；组合模式统一树节点，但不直接定义遍历游标。"
+        },
+        {
+          "id": "composite",
+          "label": "Composite / 组合",
+          "patternKey": "composite",
+          "explanation": "该方案适用于：领域天然形成树形结构，客户端应一致处理叶子和容器时。 当前题目的决定性约束是：迭代器封装遍历协议；组合模式统一树节点，但不直接定义遍历游标。"
+        }
+      ],
+      "lessonHref": "patterns/iterator.html#evidence-read"
+    },
+    {
+      "id": "template-import",
+      "version": 1,
+      "title": "固定导入流程",
+      "scenario": "所有格式都必须依次读取、解析、校验和保存，只允许解析步骤因格式不同而替换。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "template-method",
+        "strategy"
+      ],
+      "correctKey": "template-method",
+      "decisionRule": "模板方法固定骨架并开放步骤；策略更适合整体可替换算法。",
+      "options": [
+        {
+          "id": "template-method",
+          "label": "Template Method / 模板方法",
+          "patternKey": "template-method",
+          "explanation": "模板方法固定骨架并开放步骤；策略更适合整体可替换算法。"
+        },
+        {
+          "id": "strategy",
+          "label": "Strategy / 策略",
+          "patternKey": "strategy",
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：模板方法固定骨架并开放步骤；策略更适合整体可替换算法。"
+        }
+      ],
+      "lessonHref": "patterns/template-method.html#evidence-read"
+    },
+    {
+      "id": "prototype-campaign",
+      "version": 1,
+      "title": "复制已有配置",
+      "scenario": "营销配置构建成本高，地区版本从已有模板复制，并独立修改可变渠道集合。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "prototype",
+        "builder"
+      ],
+      "correctKey": "prototype",
+      "decisionRule": "原型复制现成配置并明确深浅复制边界；建造者负责从步骤组装对象。",
+      "options": [
+        {
+          "id": "prototype",
+          "label": "Prototype / 原型",
+          "patternKey": "prototype",
+          "explanation": "原型复制现成配置并明确深浅复制边界；建造者负责从步骤组装对象。"
+        },
+        {
+          "id": "builder",
+          "label": "Builder / 建造者",
+          "patternKey": "builder",
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：原型复制现成配置并明确深浅复制边界；建造者负责从步骤组装对象。"
+        }
+      ],
+      "lessonHref": "patterns/prototype.html#evidence-read"
+    },
+    {
+      "id": "singleton-registry",
+      "version": 1,
+      "title": "进程内共享注册表",
+      "scenario": "一个进程中的所有设备工厂必须访问同一个注册表实例，生命周期与进程一致。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "singleton",
+        "flyweight"
+      ],
+      "correctKey": "singleton",
+      "decisionRule": "单例约束实例与生命周期；享元共享多种可复用内部状态，不能替代进程级实例约束。",
+      "options": [
+        {
+          "id": "singleton",
+          "label": "Singleton / 单例",
+          "patternKey": "singleton",
+          "explanation": "单例约束实例与生命周期；享元共享多种可复用内部状态，不能替代进程级实例约束。"
+        },
+        {
+          "id": "flyweight",
+          "label": "Flyweight / 享元",
+          "patternKey": "flyweight",
+          "explanation": "该方案适用于：经过测量确认，大量相似细粒度对象造成显著内存成本时。 当前题目的决定性约束是：单例约束实例与生命周期；享元共享多种可复用内部状态，不能替代进程级实例约束。"
+        }
+      ],
+      "lessonHref": "patterns/singleton.html#evidence-read"
+    },
+    {
+      "id": "composite-work",
+      "version": 1,
+      "title": "树形任务汇总",
+      "scenario": "工作项既可能是叶子，也可能包含子工作项，调用者希望统一计算全部工时。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "composite",
+        "iterator"
+      ],
+      "correctKey": "composite",
+      "decisionRule": "组合提供叶子与容器的统一操作；迭代器只负责遍历。",
+      "options": [
+        {
+          "id": "composite",
+          "label": "Composite / 组合",
+          "patternKey": "composite",
+          "explanation": "组合提供叶子与容器的统一操作；迭代器只负责遍历。"
+        },
+        {
+          "id": "iterator",
+          "label": "Iterator / 迭代器",
+          "patternKey": "iterator",
+          "explanation": "该方案适用于：自定义容器需要多种遍历、惰性序列或隐藏内部结构时。 当前题目的决定性约束是：组合提供叶子与容器的统一操作；迭代器只负责遍历。"
+        }
+      ],
+      "lessonHref": "patterns/composite.html#evidence-read"
+    },
+    {
+      "id": "decorator-invoice",
+      "version": 1,
+      "title": "按顺序叠加费用",
+      "scenario": "发票可选叠加税费、保险和服务费，顺序影响结果，调用接口保持不变。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "decorator",
+        "proxy"
+      ],
+      "correctKey": "decorator",
+      "decisionRule": "装饰器组合可选业务职责；代理重点在访问控制或远程边界。",
+      "options": [
+        {
+          "id": "decorator",
+          "label": "Decorator / 装饰器",
+          "patternKey": "decorator",
+          "explanation": "装饰器组合可选业务职责；代理重点在访问控制或远程边界。"
+        },
+        {
+          "id": "proxy",
+          "label": "Proxy / 代理",
+          "patternKey": "proxy",
+          "explanation": "该方案适用于：需要延迟加载、权限、缓存、远程访问或审计，而客户端协议应保持不变时。 当前题目的决定性约束是：装饰器组合可选业务职责；代理重点在访问控制或远程边界。"
+        }
+      ],
+      "lessonHref": "patterns/decorator.html#evidence-read"
+    },
+    {
+      "id": "flyweight-map",
+      "version": 1,
+      "title": "共享地图样式",
+      "scenario": "几十万个标记的位置不同，但颜色、字体和图标样式只有少量组合，希望减少重复内存。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "flyweight",
+        "singleton"
+      ],
+      "correctKey": "flyweight",
+      "decisionRule": "享元共享不可变内在状态，位置留在外部；单例无法表达多种样式。",
+      "options": [
+        {
+          "id": "flyweight",
+          "label": "Flyweight / 享元",
+          "patternKey": "flyweight",
+          "explanation": "享元共享不可变内在状态，位置留在外部；单例无法表达多种样式。"
+        },
+        {
+          "id": "singleton",
+          "label": "Singleton / 单例",
+          "patternKey": "singleton",
+          "explanation": "该方案适用于：进程内确实只能有一个无状态或不可变协调对象，且生命周期边界明确时。 当前题目的决定性约束是：享元共享不可变内在状态，位置留在外部；单例无法表达多种样式。"
+        }
+      ],
+      "lessonHref": "patterns/flyweight.html#evidence-read"
+    },
+    {
+      "id": "visitor-report",
+      "version": 1,
+      "title": "稳定对象结构新增操作",
+      "scenario": "报表节点类型稳定，需要不断新增统计、合规检查和导出操作，避免把所有操作堆进节点类。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "visitor",
+        "strategy"
+      ],
+      "correctKey": "visitor",
+      "decisionRule": "访问者集中跨节点类型的操作；策略解决同一职责下的可替换算法。",
+      "options": [
+        {
+          "id": "visitor",
+          "label": "Visitor / 访问者",
+          "patternKey": "visitor",
+          "explanation": "访问者集中跨节点类型的操作；策略解决同一职责下的可替换算法。"
+        },
+        {
+          "id": "strategy",
+          "label": "Strategy / 策略",
+          "patternKey": "strategy",
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：访问者集中跨节点类型的操作；策略解决同一职责下的可替换算法。"
+        }
+      ],
+      "lessonHref": "patterns/visitor.html#evidence-read"
+    },
+    {
+      "id": "chain-approval",
+      "version": 1,
+      "title": "逐级审批",
+      "scenario": "请求按员工、经理、总监顺序审批，第一个具备权限的处理者处理后停止。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "chain-of-responsibility",
+        "mediator"
+      ],
+      "correctKey": "chain-of-responsibility",
+      "decisionRule": "责任链表达有序传递与短路；中介者集中同事对象之间的协调规则。",
+      "options": [
+        {
+          "id": "chain-of-responsibility",
+          "label": "Chain of Responsibility / 责任链",
+          "patternKey": "chain-of-responsibility",
+          "explanation": "责任链表达有序传递与短路；中介者集中同事对象之间的协调规则。"
+        },
+        {
+          "id": "mediator",
+          "label": "Mediator / 中介者",
+          "patternKey": "mediator",
+          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。 当前题目的决定性约束是：责任链表达有序传递与短路；中介者集中同事对象之间的协调规则。"
+        }
+      ],
+      "lessonHref": "patterns/chain-of-responsibility.html#evidence-read"
+    },
+    {
+      "id": "interpreter-filter",
+      "version": 1,
+      "title": "简单过滤语言",
+      "scenario": "用户需要组合 name=Alice AND NOT draft 的小型过滤表达式，语法结构需要映射为可求值对象。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "interpreter",
+        "strategy"
+      ],
+      "correctKey": "interpreter",
+      "decisionRule": "解释器为简单语法定义求值规则；策略本身不负责解析语言。",
+      "options": [
+        {
+          "id": "interpreter",
+          "label": "Interpreter / 解释器",
+          "patternKey": "interpreter",
+          "explanation": "解释器为简单语法定义求值规则；策略本身不负责解析语言。"
+        },
+        {
+          "id": "strategy",
+          "label": "Strategy / 策略",
+          "patternKey": "strategy",
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：解释器为简单语法定义求值规则；策略本身不负责解析语言。"
+        }
+      ],
+      "lessonHref": "patterns/interpreter.html#evidence-read"
+    },
+    {
+      "id": "memento-checkpoint",
+      "version": 1,
+      "title": "保存编辑器快照",
+      "scenario": "只需保存与恢复编辑器整体状态，不需要排队、重放或解释具体编辑动作。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "memento",
+        "command"
+      ],
+      "correctKey": "memento",
+      "decisionRule": "备忘录保存封装的状态快照；命令将动作变为对象，当前没有管理动作的需求。",
+      "options": [
+        {
+          "id": "memento",
+          "label": "Memento / 备忘录",
+          "patternKey": "memento",
+          "explanation": "备忘录保存封装的状态快照；命令将动作变为对象，当前没有管理动作的需求。"
+        },
+        {
+          "id": "command",
+          "label": "Command / 命令",
+          "patternKey": "command",
+          "explanation": "该方案适用于：操作需要排队、重试、日志、撤销或宏组合时。 当前题目的决定性约束是：备忘录保存封装的状态快照；命令将动作变为对象，当前没有管理动作的需求。"
+        }
+      ],
+      "lessonHref": "patterns/memento.html#evidence-read"
+    },
+    {
+      "id": "factory-method-shipping",
+      "version": 1,
+      "title": "延迟选择单个产品",
+      "scenario": "物流创建者共享下单流程，但子类决定创建哪一种承运商处理器。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "factory-method",
+        "abstract-factory"
+      ],
+      "correctKey": "factory-method",
+      "decisionRule": "工厂方法延迟一个产品的创建；抽象工厂面向一组相关兼容产品。",
+      "options": [
+        {
+          "id": "factory-method",
+          "label": "Factory Method / 工厂方法",
+          "patternKey": "factory-method",
+          "explanation": "工厂方法延迟一个产品的创建；抽象工厂面向一组相关兼容产品。"
+        },
+        {
+          "id": "abstract-factory",
+          "label": "Abstract Factory / 抽象工厂",
+          "patternKey": "abstract-factory",
+          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。 当前题目的决定性约束是：工厂方法延迟一个产品的创建；抽象工厂面向一组相关兼容产品。"
+        }
+      ],
+      "lessonHref": "patterns/factory-method.html#evidence-read"
+    },
+    {
+      "id": "builder-request",
+      "version": 1,
+      "title": "分步骤构建请求",
+      "scenario": "复杂部署请求需要分步添加目标、资源、审批，并在 Build 时检查必需字段是否齐全。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "builder",
+        "prototype"
+      ],
+      "correctKey": "builder",
+      "decisionRule": "建造者收拢组装步骤与最终校验；原型依赖已有可复制的实例。",
+      "options": [
+        {
+          "id": "builder",
+          "label": "Builder / 建造者",
+          "patternKey": "builder",
+          "explanation": "建造者收拢组装步骤与最终校验；原型依赖已有可复制的实例。"
+        },
+        {
+          "id": "prototype",
+          "label": "Prototype / 原型",
+          "patternKey": "prototype",
+          "explanation": "该方案适用于：创建成本高、配置复杂，且从现有对象复制比重新构建更清楚时。 当前题目的决定性约束是：建造者收拢组装步骤与最终校验；原型依赖已有可复制的实例。"
+        }
+      ],
+      "lessonHref": "patterns/builder.html#evidence-read"
+    },
+    {
+      "id": "facade-checkout",
+      "version": 1,
+      "title": "简化结账入口",
+      "scenario": "控制器不应了解库存、计价、支付和通知的调用顺序，希望只提交一份 CheckoutCommand。",
+      "prompt": "哪种模式最贴合当前变化与责任？",
+      "patternKeys": [
+        "facade",
+        "adapter"
+      ],
+      "correctKey": "facade",
+      "decisionRule": "外观提供完整用例入口；适配器解决接口不兼容，不能替代业务用例编排。",
+      "options": [
+        {
+          "id": "facade",
+          "label": "Facade / 外观",
+          "patternKey": "facade",
+          "explanation": "外观提供完整用例入口；适配器解决接口不兼容，不能替代业务用例编排。"
+        },
+        {
+          "id": "adapter",
+          "label": "Adapter / 适配器",
+          "patternKey": "adapter",
+          "explanation": "该方案适用于：接入遗留代码、第三方 SDK、不同协议或单位体系时。 当前题目的决定性约束是：外观提供完整用例入口；适配器解决接口不兼容，不能替代业务用例编排。"
+        }
+      ],
+      "lessonHref": "patterns/facade.html#evidence-read"
+    },
+    {
+      "id": "simple-clamp",
+      "version": 1,
+      "title": "固定边界规则",
+      "scenario": "只需把整数百分比限制在 0～100；规则固定，没有算法切换或状态转换需求。",
+      "prompt": "当前需求应采用哪种做法？",
+      "patternKeys": [
+        "strategy",
+        "state"
+      ],
+      "correctKey": "simple",
+      "decisionRule": "使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。",
+      "options": [
+        {
+          "id": "simple",
+          "label": "不引入设计模式，使用简单实现",
+          "explanation": "使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
+        },
+        {
+          "id": "strategy",
+          "label": "Strategy / 策略",
+          "patternKey": "strategy",
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
+        },
+        {
+          "id": "state",
+          "label": "State / 状态",
+          "patternKey": "state",
+          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。 当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
+        }
+      ],
+      "lessonHref": "guides/learning-path.html"
+    },
+    {
+      "id": "simple-mapping",
+      "version": 1,
+      "title": "只读状态名称映射",
+      "scenario": "一个固定字典把状态码映射成中文名称，不含行为，也没有状态转换。",
+      "prompt": "当前需求应采用哪种做法？",
+      "patternKeys": [
+        "state",
+        "interpreter"
+      ],
+      "correctKey": "simple",
+      "decisionRule": "只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。",
+      "options": [
+        {
+          "id": "simple",
+          "label": "不引入设计模式，使用简单实现",
+          "explanation": "只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
+        },
+        {
+          "id": "state",
+          "label": "State / 状态",
+          "patternKey": "state",
+          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。 当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
+        },
+        {
+          "id": "interpreter",
+          "label": "Interpreter / 解释器",
+          "patternKey": "interpreter",
+          "explanation": "该方案适用于：语法很小、领域受控，并且组合表达式比硬编码条件更清楚时。 当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
+        }
+      ],
+      "lessonHref": "guides/learning-path.html"
+    },
+    {
+      "id": "simple-construction",
+      "version": 1,
+      "title": "只有两个必填参数",
+      "scenario": "对象只有两个必填字段，用一个构造函数即可保证有效，没有复杂组装步骤。",
+      "prompt": "当前需求应采用哪种做法？",
+      "patternKeys": [
+        "builder",
+        "abstract-factory"
+      ],
+      "correctKey": "simple",
+      "decisionRule": "使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。",
+      "options": [
+        {
+          "id": "simple",
+          "label": "不引入设计模式，使用简单实现",
+          "explanation": "使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
+        },
+        {
+          "id": "builder",
+          "label": "Builder / 建造者",
+          "patternKey": "builder",
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
+        },
+        {
+          "id": "abstract-factory",
+          "label": "Abstract Factory / 抽象工厂",
+          "patternKey": "abstract-factory",
+          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。 当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
+        }
+      ],
+      "lessonHref": "guides/learning-path.html"
+    },
+    {
+      "id": "simple-callback",
+      "version": 1,
+      "title": "局部一次回调",
+      "scenario": "一个局部函数接受一个完成回调，调用结束后执行一次，没有多个长期订阅者或协调规则。",
+      "prompt": "当前需求应采用哪种做法？",
+      "patternKeys": [
+        "observer",
+        "mediator"
+      ],
+      "correctKey": "simple",
+      "decisionRule": "一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。",
+      "options": [
+        {
+          "id": "simple",
+          "label": "不引入设计模式，使用简单实现",
+          "explanation": "一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
+        },
+        {
+          "id": "observer",
+          "label": "Observer / 观察者",
+          "patternKey": "observer",
+          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。 当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
+        },
+        {
+          "id": "mediator",
+          "label": "Mediator / 中介者",
+          "patternKey": "mediator",
+          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。 当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
+        }
+      ],
+      "lessonHref": "guides/learning-path.html"
     }
   ]
 }

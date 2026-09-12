@@ -34,7 +34,7 @@ public sealed class ObserverDemo : IPatternDemo
         return output;
     }
 
-    private enum OrderStatus
+    internal enum OrderStatus
     {
         Created,
         Paid,
@@ -43,7 +43,7 @@ public sealed class ObserverDemo : IPatternDemo
     }
 
     // Subject: it publishes changes without knowing what each observer does with them.
-    private sealed class Order
+    internal sealed class Order
     {
         internal Order(string number)
         {
@@ -66,7 +66,7 @@ public sealed class ObserverDemo : IPatternDemo
         }
     }
 
-    private sealed class OrderStatusChangedEventArgs : EventArgs
+    internal sealed class OrderStatusChangedEventArgs : EventArgs
     {
         internal OrderStatusChangedEventArgs(
             string orderNumber,

@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "test:review": "node tests/review-scheduler.mjs",
-    "test:site": "node tests/review-scheduler.mjs && node tests/site-regression.mjs"
+    "test:storage": "node tests/storage-failure.mjs",
+    "test:site": "node tests/review-scheduler.mjs && node tests/storage-failure.mjs && node tests/exercise-state.mjs && node tests/site-regression.mjs",
+    "test:exercises": "node tests/exercise-state.mjs"
   },
   "devDependencies": {
     "axe-core": "4.13.0",

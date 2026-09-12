@@ -155,7 +155,7 @@
     "quiz": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "version", "title", "scenario", "prompt", "patternKeys", "correctKey", "decisionRule"],
+      "required": ["id", "version", "title", "scenario", "prompt", "patternKeys", "correctKey", "decisionRule", "options", "lessonHref"],
       "properties": {
         "id": { "$ref": "#/$defs/slug" },
         "version": { "type": "integer", "minimum": 1 },
@@ -170,7 +170,21 @@
           "items": { "$ref": "#/$defs/slug" }
         },
         "correctKey": { "$ref": "#/$defs/slug" },
-        "decisionRule": { "$ref": "#/$defs/nonEmptyText" }
+        "decisionRule": { "$ref": "#/$defs/nonEmptyText" },
+        "lessonHref": { "type": "string", "pattern": "^(patterns|guides)/[a-z0-9-]+\\.html(?:#[a-z0-9-]+)?$" },
+        "options": {
+          "type": "array", "minItems": 2, "maxItems": 4,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["id", "label", "explanation"],
+            "properties": {
+              "id": { "$ref": "#/$defs/slug" },
+              "label": { "$ref": "#/$defs/nonEmptyText" },
+              "explanation": { "$ref": "#/$defs/nonEmptyText" },
+              "patternKey": { "$ref": "#/$defs/slug" }
+            }
+          }
+        }
       }
     }
   }

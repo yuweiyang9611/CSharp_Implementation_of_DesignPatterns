@@ -57,7 +57,7 @@ function Get-JsonLdScript {
 if (-not (Test-Path -LiteralPath $siteManifestPath)) { throw "Site manifest is missing: $siteManifestPath" }
 $siteManifest = Import-PowerShellDataFile -LiteralPath $siteManifestPath
 $pages = @($siteManifest.Guides | ForEach-Object { [pscustomobject]$_ })
-if ($pages.Count -ne 12) { throw "Site manifest must define 12 guides; found $($pages.Count)." }
+
 
 $resolvedRoot = [IO.Path]::GetFullPath($root).TrimEnd([IO.Path]::DirectorySeparatorChar)
 $resolvedStage = [IO.Path]::GetFullPath($stageDirectory)
@@ -110,6 +110,13 @@ foreach ($entry in @($evidenceCatalogJson | ConvertFrom-Json)) {
   $evidenceByKey[$entry.key] = $entry
 }
 $learningCatalog = Get-Content -LiteralPath $learningCatalogPath -Raw -Encoding utf8 | ConvertFrom-Json
+$exerciseJson = Get-Content -LiteralPath (Join-Path $siteSource 'data/coding-exercises.json') -Raw -Encoding utf8
+$exerciseCatalog = $exerciseJson | ConvertFrom-Json
+$taskCount = @($coreCatalog).Count * 4 + ($learningCatalog.learningItems.milestones | Measure-Object).Count
+$itemCount = @($coreCatalog).Count + @($learningCatalog.learningItems).Count
+function Expand-Counts([string]$Html) {
+  return $Html.Replace('{{QUIZ_COUNT}}', [string]@($learningCatalog.quizzes).Count).Replace('{{EXERCISE_COUNT}}', [string]@($exerciseCatalog.exercises).Count).Replace('{{TASK_COUNT}}', [string]$taskCount).Replace('{{ITEM_COUNT}}', [string]$itemCount)
+}
 $enrichmentByKey = @{}
 foreach ($entry in $learningCatalog.patterns) {
   if ($enrichmentByKey.ContainsKey($entry.key)) { throw "Duplicate learning catalog key: $($entry.key)" }
@@ -198,7 +205,11 @@ if (Test-Path -LiteralPath $stageDirectory) {
 New-Item -ItemType Directory -Path $stageDirectory, $guideDirectory, $patternDirectory -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $siteSource 'index.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'quiz.html') -Destination $stageDirectory
+Copy-Item -LiteralPath (Join-Path $siteSource 'playground.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'assets') -Destination $stageDirectory -Recurse
+[IO.File]::WriteAllText((Join-Path $assetsDirectory 'exercises.js'), "window.ExerciseCatalog = $exerciseJson;`n", [Text.UTF8Encoding]::new($false))
+Copy-Item -LiteralPath (Join-Path $siteSource 'data/coding-exercises.json') -Destination (Join-Path $assetsDirectory 'exercises.json')
+& (Join-Path $PSScriptRoot 'build-browser-exercises.ps1') -Destination (Join-Path $assetsDirectory 'compiler')
 
 [IO.File]::WriteAllText(
   (Join-Path $assetsDirectory 'catalog.json'),
@@ -353,14 +364,15 @@ foreach ($page in $pages) {
 <header class="learning-site-header">
   <a class="learning-site-brand" href="../index.html"><span class="learning-site-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
   <button class="learning-nav-toggle" type="button" aria-expanded="false" aria-controls="learning-site-nav">菜单</button>
-  <nav class="learning-site-nav" id="learning-site-nav" aria-label="课程导航"><a href="learning-path.html"$currentLearning>学习路线</a><a href="pattern-index.html"$currentPatterns>23 种模式</a><a href="projects.html"$currentProjects>实战项目</a><a href="labs.html"$currentLabs>高级实验</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../index.html">返回首页</a></nav>
+  <nav class="learning-site-nav" id="learning-site-nav" aria-label="课程导航"><a href="learning-path.html"$currentLearning>学习路线</a><a href="pattern-index.html"$currentPatterns>23 种模式</a><a href="projects.html"$currentProjects>实战项目</a><a href="labs.html"$currentLabs>高级实验</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../playground.html">编码练习</a><a href="../index.html">返回首页</a></nav>
 </header>
 "@
   $footer = '<footer class="learning-site-footer">内容来自同一 GitHub 仓库并随主分支自动更新 · <a href="../index.html">返回学习地图</a></footer>'
 
   $html = $html.Replace('</head>', $metadata + '</head>')
   $html = $html.Replace('<body><main>', '<body data-guide-id="' + $guideId + '"' + $learningAttribute + '><a class="skip-link" href="#main">跳到正文</a>' + $header + '<div class="' + $layoutClass + '">' + $toc + '<main id="main">' + $milestonePanel)
-  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script></body>')
+  $html = $html.Replace('</head>', '<link rel="stylesheet" href="../assets/storage-status.css"></head>')
+  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/storage-status.js" defer></script><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script></body>')
   [IO.File]::WriteAllText($outputPath, $html, [Text.UTF8Encoding]::new($false))
 }
 
@@ -457,6 +469,8 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <link rel="stylesheet" href="../assets/pattern.css">
   <title>$(Encode-Html $title)</title>
   $jsonLd
+  <link rel="stylesheet" href="../assets/storage-status.css">
+  <script src="../assets/storage-status.js" defer></script>
   <script src="../assets/progress.js" defer></script>
   <script src="../assets/catalog.js" defer></script>
   <script src="../assets/lesson.js" defer></script>
@@ -466,13 +480,13 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <header class="lesson-header">
     <a class="lesson-brand" href="../index.html"><span class="lesson-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
     <button class="lesson-nav-toggle" id="lesson-nav-toggle" type="button" aria-expanded="false" aria-controls="lesson-nav">菜单</button>
-    <nav class="lesson-nav" id="lesson-nav" aria-label="课程导航"><a href="../guides/learning-path.html">学习路线</a><a href="../index.html#patterns" aria-current="page">23 种模式</a><a href="../guides/projects.html">实战项目</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="$repositoryUrl">GitHub ↗</a></nav>
+    <nav class="lesson-nav" id="lesson-nav" aria-label="课程导航"><a href="../guides/learning-path.html">学习路线</a><a href="../index.html#patterns" aria-current="page">23 种模式</a><a href="../guides/projects.html">实战项目</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../playground.html">编码练习</a><a href="$repositoryUrl">GitHub ↗</a></nav>
   </header>
   <main class="lesson-main" id="main">
     <p class="lesson-breadcrumb"><a href="../index.html#patterns">模式地图</a> / $(Encode-Html $categoryLabels[$pattern.category]) / $(Encode-Html $pattern.english)</p>
     <section class="lesson-hero" data-number="$(('{0:00}' -f $pattern.number))">
       <div class="lesson-copy"><p class="lesson-kicker">$(Encode-Html $categoryLabels[$pattern.category]) · Pattern $(('{0:00}' -f $pattern.number))</p><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
-      <aside class="lesson-progress"><p>我的证据进度</p><strong id="lesson-progress-count">0 / 4</strong><div class="lesson-progress-track" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / 28 已验证</p></aside>
+      <aside class="lesson-progress"><p>我的证据进度</p><strong id="lesson-progress-count">0 / 4</strong><div class="lesson-progress-track" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</p></aside>
     </section>
     <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><p class="lesson-kicker">LEARNING EVIDENCE</p><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
@@ -520,6 +534,7 @@ $courseJsonLd = Get-JsonLdScript -Value ([ordered]@{
     provider = [ordered]@{ '@type' = 'Person'; name = $repositoryOwner; url = "https://github.com/$repositoryOwner" }
     hasCourseInstance = [ordered]@{ '@type' = 'CourseInstance'; courseMode = 'online' }
   })
+$homeHtml = Expand-Counts $homeHtml
 $homeHtml = $homeHtml.Replace('{{PAGES_BASE}}', $pagesBase)
 $homeHtml = $homeHtml.Replace('{{REPOSITORY_URL}}', $repositoryUrl)
 $homeHtml = $homeHtml.Replace('{{PATTERN_FALLBACK}}', $fallbackCards)
@@ -534,22 +549,33 @@ $quizJsonLd = Get-JsonLdScript -Value ([ordered]@{
     '@context' = 'https://schema.org'
     '@type' = 'LearningResource'
     name = '设计模式辨析训练'
-    description = '用六个业务场景辨析相似的 C# 设计模式，并通过本地间隔复习巩固决策规则。'
+    description = '用业务场景辨析设计模式和普通重构方案，并通过本地间隔复习巩固决策规则。'
     url = $quizUrl
     inLanguage = 'zh-CN'
     isAccessibleForFree = $true
     learningResourceType = 'Quiz'
     isPartOf = [ordered]@{ '@type' = 'Course'; name = 'C# 设计模式学习地图'; url = $pagesBase }
   })
+$quizHtml = Expand-Counts $quizHtml
 $quizHtml = $quizHtml.Replace('{{PAGES_BASE}}', $pagesBase)
 $quizHtml = $quizHtml.Replace('{{REPOSITORY_URL}}', $repositoryUrl)
 $quizHtml = $quizHtml.Replace('</head>', '  ' + $quizJsonLd + "`n</head>")
 [IO.File]::WriteAllText($quizPath, $quizHtml, [Text.UTF8Encoding]::new($false))
 
+$playgroundUrl = $pagesBase + 'playground.html'
+$playgroundPath = Join-Path $stageDirectory 'playground.html'
+$playgroundHtml = Expand-Counts (Get-Content -LiteralPath $playgroundPath -Raw -Encoding utf8)
+$playgroundJsonLd = Get-JsonLdScript -Value (@{
+  '@context' = 'https://schema.org'; '@type' = 'LearningResource'; name = '浏览器 C# 编码练习'; url = $playgroundUrl
+  inLanguage = 'zh-CN'; isAccessibleForFree = $true; learningResourceType = 'Exercise'
+})
+$playgroundHtml = $playgroundHtml.Replace('{{PAGES_BASE}}', $pagesBase).Replace('{{REPOSITORY_URL}}', $repositoryUrl).Replace('</head>', $playgroundJsonLd + '</head>')
+[IO.File]::WriteAllText($playgroundPath, $playgroundHtml, [Text.UTF8Encoding]::new($false))
+
 & (Join-Path $PSScriptRoot 'new-pages-search-index.ps1') -SiteDirectory $stageDirectory
 
 $allUrls = @($pagesBase) +
-  @($quizUrl) +
+  @($quizUrl, $playgroundUrl) +
   @($pages | ForEach-Object { $pagesBase + 'guides/' + $_.Output }) +
   @($patterns | ForEach-Object { $_.pageUrl })
 $sitemapItems = $allUrls | ForEach-Object { '  <url><loc>' + [Security.SecurityElement]::Escape($_) + '</loc></url>' }
