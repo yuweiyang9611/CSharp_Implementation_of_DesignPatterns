@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10252a">
+  <meta name="description" content="在浏览器中编译、运行并验证 {{EXERCISE_COUNT}} 道 C# 练习。">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="C# 设计模式学习地图">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="浏览器 C# 编码练习 · C# 设计模式学习地图">
+  <meta property="og:description" content="修改 C# 代码，用逐项验收检验设计取舍。">
+  <meta property="og:url" content="{{PAGES_BASE}}playground.html">
+  <meta property="og:image" content="{{PAGES_BASE}}assets/og.jpg">
+  <meta property="og:image:width" content="1672">
+  <meta property="og:image:height" content="941">
+  <meta property="og:image:alt" content="C# 设计模式学习地图">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="浏览器 C# 编码练习 · C# 设计模式学习地图">
+  <meta name="twitter:description" content="修改 C# 代码，用逐项验收检验设计取舍。">
+  <meta name="twitter:image" content="{{PAGES_BASE}}assets/og.jpg">
+  <title>浏览器 C# 编码练习 · C# 设计模式学习地图</title>
+  <link rel="canonical" href="{{PAGES_BASE}}playground.html">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/playground.css">
+  <link rel="stylesheet" href="assets/storage-status.css">
+  <script src="assets/storage-status.js" defer></script>
+  <script src="assets/exercises.js" defer></script>
+  <script src="assets/exercise-progress.js" defer></script>
+  <script src="assets/playground.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到编码练习</a>
+  <header class="quiz-header"><a href="index.html"><span aria-hidden="true">{ }</span>C# 设计模式学习地图</a><nav aria-label="课程导航"><a href="index.html">学习地图</a><a href="quiz.html">辨析训练</a><a href="guides/learning-path.html">学习路线</a></nav></header>
+  <main id="main" class="playground-main">
+    <p>C# CODE PRACTICE</p><h1>把判断写成代码。</h1>
+    <p>{{EXERCISE_COUNT}} 道改错与扩展练习。先预测行为，再运行验收；编码完成度单独统计。</p>
+    <p id="exercise-progress" role="status">正在读取记录…</p>
+    <label for="exercise-select">选择练习</label><select id="exercise-select"></select>
+    <p id="exercise-task"></p><p id="current-result"></p>
+    <div class="editor-grid">
+      <section aria-label="代码编辑"><label for="code-editor">C# 源码</label><textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="runtime-limits"></textarea>
+        <div class="actions"><button id="run-code" type="button">运行验收</button><button id="stop-code" type="button" disabled>停止</button><button id="reset-code" type="button">恢复初始代码</button></div>
+        <p id="runtime-limits">首次运行按需下载编译环境。源码上限 100 KB，输出上限 64 KB；加载、编译、执行分别限时 60、30、5 秒。支持纯 C#、集合和 LINQ；不支持安装 NuGet 包。</p>
+      </section>
+      <section class="results" aria-label="验收结果"><p id="run-status" role="status">准备运行</p><h2>编译诊断</h2><pre id="diagnostics"></pre><h2>逐项验收</h2><ul id="check-results"></ul><h2>输出与异常</h2><pre id="output"></pre></section>
+    </div>
+    <details id="reference-answer"><summary>查看参考答案与解释</summary><p id="reference-explanation"></p><pre id="reference-code"></pre></details>
+    <section aria-labelledby="backup-title"><h2 id="backup-title">保存你的尝试</h2><p>草稿与验收记录按题目版本保存在当前浏览器。修改代码后需要重新验收；可在首页导出包含全部学习记录的备份。</p><button type="button" id="export-exercises">下载编码练习备份</button><label for="import-exercises">导入编码练习或完整学习备份</label><input type="file" id="import-exercises" accept="application/json,.json"></section>
+    <noscript><p>编码练习需要 JavaScript。可在本地打开仓库的 site/data/coding-exercises.json 阅读题目。</p></noscript>
+  </main><footer>代码在当前浏览器运行；每次运行使用独立环境，结束后销毁。</footer>
+</body>
+</html>

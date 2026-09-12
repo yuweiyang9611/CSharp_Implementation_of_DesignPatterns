@@ -4,6 +4,7 @@
   const catalog = window.PatternCatalog;
   const progress = window.LearningProgress;
   const review = window.ReviewScheduler;
+  const exercises = window.ExerciseProgress;
   if (!catalog || !progress) {
     document.querySelector("#pattern-result").textContent = "学习目录加载失败，请刷新页面重试。";
     return;
@@ -302,6 +303,7 @@
     return {
       progress: progress.snapshot(),
       review: review?.snapshot() ?? null,
+      exercises: exercises?.snapshot() ?? null,
     };
   }
 
@@ -309,6 +311,7 @@
     if (!previous) return false;
     const restored = progress.restore(previous.progress ?? previous);
     if (restored && previous.review && review) review.restore(previous.review);
+    if (restored && previous.exercises && exercises) exercises.restore(previous.exercises);
     return restored;
   }
 
@@ -319,17 +322,22 @@
       exportedAt: Date.now(),
       progress: progress.exportData(),
       review: review?.exportData() ?? null,
+      exercises: exercises?.exportData() ?? null,
     };
   }
 
   function importBackup(payload) {
+    if (payload?.format === "csharp-design-patterns-exercises") return exercises?.restore(payload) ?? false;
+    if (payload?.format === "csharp-design-patterns-review" && payload.version === 1) {
+      return review?.restore(payload) ?? false;
+    }
     if (payload?.format !== "csharp-design-patterns-learning-backup" || payload.version !== 1) {
       return progress.importData(payload);
     }
-    if (!payload.progress || (payload.review && !review)) return false;
+    if (!payload.progress || (payload.review && !review) || (payload.exercises && !exercises?.validate(payload.exercises))) return false;
     const previous = backupSnapshot();
     if (!progress.importData(payload.progress)) return false;
-    if (payload.review && !review.restore(payload.review)) {
+    if ((payload.review && !review.restore(payload.review)) || (payload.exercises && !exercises.restore(payload.exercises))) {
       restoreSnapshot(previous);
       return false;
     }
@@ -421,9 +429,9 @@
     const file = elements.importProgress.files?.[0];
     elements.importProgress.value = "";
     if (!file) return;
-    if (file.size > 250_000) {
-      showUndoToast("备份文件超过 250 KB，已拒绝导入。", null);
-      announce("备份文件超过 250 KB，已拒绝导入。 ");
+    if (file.size > 2_000_000) {
+      showUndoToast("备份文件超过 2 MB，已拒绝导入。", null);
+      announce("备份文件超过 2 MB，已拒绝导入。 ");
       return;
     }
     const previous = backupSnapshot();
@@ -492,6 +500,7 @@
   setTerminalExpanded(!compactMedia.matches);
   progress.subscribe(updateProgress);
   review?.subscribe(updateProgress);
+  exercises?.subscribe(() => { const stats = exercises.stats(); document.querySelector("#coding-summary").textContent = `${stats.passed} / ${stats.total} 道编码练习已通过 →`; });
   renderPatterns();
   const requestedPattern = new URL(window.location.href).searchParams.get("pattern");
   if (requestedPattern) openPattern(requestedPattern, { pushHistory: false });

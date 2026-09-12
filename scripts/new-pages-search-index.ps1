@@ -64,6 +64,13 @@ foreach ($file in @(Get-ChildItem -LiteralPath $patternDirectory -Filter '*.html
     })
 }
 
+$exercises = Get-Content -LiteralPath (Join-Path $site 'assets/exercises.json') -Raw -Encoding utf8 | ConvertFrom-Json
+foreach ($exercise in $exercises.exercises) {
+  $entries.Add([ordered]@{
+      kind = '编码练习'; title = $exercise.title; section = $exercise.kind
+      url = 'playground.html?exercise=' + $exercise.id; body = $exercise.task + ' ' + $exercise.explanation
+    })
+}
 $payload = [ordered]@{ version = 1; entries = @($entries) } | ConvertTo-Json -Depth 6
 $destination = Join-Path (Join-Path $site 'assets') 'search-index.json'
 [IO.File]::WriteAllText($destination, $payload, [Text.UTF8Encoding]::new($false))
