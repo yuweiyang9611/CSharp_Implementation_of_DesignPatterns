@@ -55,6 +55,8 @@ try {
   Assert-Rejected -Name 'self-related' -ExpectedMessage 'must not reference itself' -Mutation { param($catalog) $catalog.patterns[0].related[0] = $catalog.patterns[0].key }
   Assert-Rejected -Name 'unsafe-path' -ExpectedMessage 'safe forward-slash repository path' -Mutation { param($catalog) $catalog.patterns[0].source = '../outside.cs' }
   Assert-Rejected -Name 'invalid-quiz-answer' -ExpectedMessage 'correctKey must appear' -Mutation { param($catalog) $catalog.quizzes[0].correctKey = 'adapter' }
+  Assert-Rejected -Name 'duplicate-option' -ExpectedMessage 'unique ids' -Mutation { param($catalog) $catalog.quizzes[0].options[1].id = $catalog.quizzes[0].options[0].id }
+  Assert-Rejected -Name 'unknown-option-pattern' -ExpectedMessage 'unknown pattern' -Mutation { param($catalog) $catalog.quizzes[0].options[0].patternKey = 'missing-pattern' }
   Assert-Rejected -Name 'unexpected-property' -ExpectedMessage 'schema validation failed' -Mutation { param($catalog) $catalog | Add-Member -NotePropertyName unexpected -NotePropertyValue $true }
   Write-Host 'Learning catalog self-test passed: schema, references, paths, and quiz answers reject invalid data.'
 }

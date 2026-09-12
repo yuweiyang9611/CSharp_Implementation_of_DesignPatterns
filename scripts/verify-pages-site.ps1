@@ -23,10 +23,13 @@ $guideDirectory = Join-Path $site 'guides'
 $patternDirectory = Join-Path $site 'patterns'
 $catalogPath = Join-Path $assetDirectory 'catalog.json'
 $requiredRelativeFiles = @(
-  'index.html', 'quiz.html', 'sitemap.xml', 'robots.txt', 'version.json',
+  'index.html', 'quiz.html', 'playground.html', 'sitemap.xml', 'robots.txt', 'version.json',
   'assets/styles.css', 'assets/guide.css', 'assets/pattern.css', 'assets/quiz.css',
   'assets/app.js', 'assets/guide.js', 'assets/lesson.js', 'assets/progress.js',
   'assets/review.js', 'assets/search.js', 'assets/quiz.js', 'assets/catalog.js',
+  'assets/storage-status.js', 'assets/storage-status.css',
+  'assets/playground.js', 'assets/playground.css', 'assets/exercise-progress.js', 'assets/exercises.js', 'assets/exercises.json',
+  'assets/compiler-worker.js', 'assets/compiler/_framework/dotnet.js', 'assets/compiler/refs/manifest.json',
   'assets/catalog.json', 'assets/search-index.json', 'assets/favicon.svg', 'assets/og.jpg'
 )
 foreach ($relative in $requiredRelativeFiles) {
@@ -44,10 +47,7 @@ $patterns = @($catalog.patterns)
 $learningItems = @($catalog.learningItems)
 $quizzes = @($catalog.quizzes)
 
-if ($guides.Count -ne 12) { $issues.Add("Site manifest must contain 12 guides; found $($guides.Count).") }
 if ($patterns.Count -ne 23) { $issues.Add("Published catalog must contain 23 patterns; found $($patterns.Count).") }
-if ($learningItems.Count -ne 5) { $issues.Add("Published catalog must contain 5 project/lab learning items; found $($learningItems.Count).") }
-if ($quizzes.Count -lt 6) { $issues.Add("Published catalog must contain at least 6 scenario quizzes; found $($quizzes.Count).") }
 if (@($patterns.key | Sort-Object -Unique).Count -ne $patterns.Count) { $issues.Add('Published pattern keys must be unique.') }
 if (@($learningItems.id | Sort-Object -Unique).Count -ne $learningItems.Count) { $issues.Add('Published learning item ids must be unique.') }
 if (@($quizzes.id | Sort-Object -Unique).Count -ne $quizzes.Count) { $issues.Add('Published quiz ids must be unique.') }
@@ -65,6 +65,15 @@ foreach ($pattern in $patterns) {
   }
 }
 
+foreach ($quiz in $quizzes) {
+  $parts = ([string]$quiz.lessonHref).Split('#', 2)
+  $lesson = Join-Path $site $parts[0]
+  if (-not (Test-Path -LiteralPath $lesson -PathType Leaf)) { $issues.Add("Quiz lesson is missing: $($quiz.id)"); continue }
+  if ($parts.Count -gt 1 -and (Get-Content -LiteralPath $lesson -Raw -Encoding utf8) -notmatch ('id="' + [regex]::Escape($parts[1]) + '"')) {
+    $issues.Add("Quiz lesson anchor is missing: $($quiz.id)")
+  }
+}
+
 $homePath = Join-Path $site 'index.html'
 $homeContent = if (Test-Path -LiteralPath $homePath) { Get-Content -LiteralPath $homePath -Raw -Encoding utf8 } else { '' }
 $homeCanonical = [regex]::Match($homeContent, '<link\s+rel="canonical"\s+href="(?<url>[^"]+)"').Groups['url'].Value
@@ -72,14 +81,13 @@ $pagesBase = if (-not [string]::IsNullOrWhiteSpace($ExpectedPagesBase)) { $Expec
 if ([string]::IsNullOrWhiteSpace($pagesBase) -or $pagesBase -notmatch '^https://') { $issues.Add("Unable to derive an HTTPS Pages base URL from index.html: '$pagesBase'") }
 if (-not [string]::IsNullOrWhiteSpace($ExpectedPagesBase) -and $homeCanonical -ne $pagesBase) { $issues.Add("Homepage canonical differs from expected Pages base: $homeCanonical") }
 
-$expectedHtml = @('index.html', 'quiz.html') +
+$expectedHtml = @($manifest.RootPages) +
   @($guides | ForEach-Object { 'guides/' + $_.Output }) +
   @($patterns | ForEach-Object { 'patterns/' + $_.key + '.html' })
-$expectedUrls = @($pagesBase, ($pagesBase + 'quiz.html')) +
+$expectedUrls = @($manifest.RootPages | ForEach-Object { if ($_ -eq 'index.html') { $pagesBase } else { $pagesBase + $_ } }) +
   @($guides | ForEach-Object { $pagesBase + 'guides/' + $_.Output }) +
   @($patterns | ForEach-Object { $pagesBase + 'patterns/' + $_.key + '.html' })
 
-if ($expectedHtml.Count -ne 37) { $issues.Add("Expected 37 HTML outputs; derived $($expectedHtml.Count).") }
 foreach ($relative in $expectedHtml) {
   if (-not (Test-Path -LiteralPath (Join-Path $site ($relative -replace '/', [IO.Path]::DirectorySeparatorChar)))) { $issues.Add("Missing expected HTML page: $relative") }
 }
@@ -156,7 +164,7 @@ $canonicalUrls = [Collections.Generic.List[string]]::new()
 foreach ($htmlFile in $actualHtml) {
   $content = Get-Content -LiteralPath $htmlFile.FullName -Raw -Encoding utf8
   $relativeHtml = $htmlFile.FullName.Substring($site.Length).TrimStart([char[]]'\/')
-  if ($content -match '\{\{(?:PAGES_BASE|REPOSITORY_URL|PATTERN_FALLBACK)\}\}') { $issues.Add("Unresolved site placeholder: $relativeHtml") }
+  if ($content -match '\{\{(?:PAGES_BASE|REPOSITORY_URL|PATTERN_FALLBACK|[A-Z_]+_COUNT)\}\}') { $issues.Add("Unresolved site placeholder: $relativeHtml") }
   $canonicalMatches = [regex]::Matches($content, '<link\s+rel="canonical"\s+href="(?<url>[^"]+)"')
   $ogUrlMatches = [regex]::Matches($content, '<meta\s+property="og:url"\s+content="(?<url>[^"]+)"')
   if ($canonicalMatches.Count -ne 1) { $issues.Add("HTML page must contain exactly one canonical URL: $relativeHtml") }
@@ -227,4 +235,4 @@ $socialImage = Join-Path $assetDirectory 'og.jpg'
 if ((Test-Path -LiteralPath $socialImage) -and (Get-Item -LiteralPath $socialImage).Length -gt 600kb) { $issues.Add('Open Graph image must stay below 600 KB.') }
 
 if ($issues.Count -gt 0) { throw "GitHub Pages validation failed:`n- $($issues -join "`n- ")" }
-Write-Host "Pages artifact valid: 37 HTML pages, $checkedLinks local links, $($expectedUrls.Count) canonical URLs."
+Write-Host "Pages artifact valid: $($actualHtml.Count) HTML pages, $checkedLinks local links, $($expectedUrls.Count) canonical URLs."

@@ -10,7 +10,13 @@
   let catalog = [];
   let state = emptyState();
   let initialized = false;
+  let storageFailed = false;
   const listeners = new Set();
+
+  function reportStorage(failed) {
+    storageFailed = failed;
+    window.LearningStorageStatus?.report("progress", failed);
+  }
 
   function emptyState() {
     return { version: 3, updatedAt: null, items: {}, resume: null };
@@ -139,7 +145,8 @@
         return migrated;
       }
     } catch {
-      // Device-local progress is optional; the in-memory state remains usable.
+      reportStorage(true);
+      return state;
     }
     return emptyState();
   }
@@ -147,8 +154,9 @@
   function writeStorage(nextState) {
     try {
       localStorage.setItem(storageKey, JSON.stringify(nextState));
+      reportStorage(false);
     } catch {
-      // Device-local progress is optional; the in-memory state remains usable.
+      reportStorage(true);
     }
   }
 
@@ -299,8 +307,9 @@
       localStorage.removeItem(storageKey);
       localStorage.removeItem(legacyV2Key);
       localStorage.removeItem(legacyV1Key);
+      reportStorage(false);
     } catch {
-      // Keep the in-memory reset when storage is blocked.
+      reportStorage(true);
     }
     notify();
     return previous;
@@ -353,7 +362,8 @@
   }
 
   window.addEventListener("storage", (event) => {
-    if (!initialized || ![storageKey, legacyV2Key, legacyV1Key].includes(event.key)) return;
+    // Another tab must not overwrite this page's unsaved changes after a failed write.
+    if (!initialized || storageFailed || ![null, storageKey, legacyV2Key, legacyV1Key].includes(event.key)) return;
     state = readStorage();
     notify();
   });
@@ -375,6 +385,7 @@
     toMarkdown,
     subscribe,
     snapshot,
+    isPersistent: () => !storageFailed,
   });
 
   window.LearningProgress = api;

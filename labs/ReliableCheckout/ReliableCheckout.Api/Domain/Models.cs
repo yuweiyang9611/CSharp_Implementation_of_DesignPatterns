@@ -10,7 +10,9 @@ public sealed record OrderSnapshot(
     PaymentStatus PaymentStatus,
     string? ExternalPaymentId,
     DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt);
+    DateTimeOffset UpdatedAt,
+    string ReservationState = "Held",
+    DateTimeOffset? ReservationExpiresAt = null);
 
 public sealed record OutboxEnvelope(
     Guid Id,
@@ -26,7 +28,12 @@ public sealed record OutboxInspection(
     int Attempts,
     DateTimeOffset? NextAttemptAt,
     DateTimeOffset? ProcessedAt,
-    string? LastError);
+    string? LastError,
+    DateTimeOffset? DeadLetterAt = null,
+    int TotalAttempts = 0,
+    DateTimeOffset? LeaseUntil = null);
+
+public sealed record ClaimedMessage(OutboxEnvelope Message, string LeaseToken);
 
 public sealed record PaymentRequestedEvent(Guid OrderId, long TotalCents);
 

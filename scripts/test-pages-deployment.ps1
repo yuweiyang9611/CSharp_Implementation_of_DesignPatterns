@@ -83,8 +83,11 @@ $sitemapResponse = Get-SiteResource -RelativePath 'sitemap.xml'
 if ([string]$sitemapResponse.Headers.'Content-Type' -notmatch '(xml|text/plain)') { throw 'sitemap.xml has an unexpected content type.' }
 $sitemap = [xml]$sitemapResponse.Content
 $locations = @($sitemap.urlset.url | ForEach-Object { [string]$_.loc })
-if ($locations.Count -ne 37 -or @($locations | Sort-Object -Unique).Count -ne 37) {
-  throw "sitemap.xml must contain 37 unique URLs; found $($locations.Count)."
+$deployedCatalog = (Get-SiteResource -RelativePath 'assets/catalog.json').Content | ConvertFrom-Json
+$manifest = Import-PowerShellDataFile -LiteralPath (Join-Path $PSScriptRoot 'site-manifest.psd1')
+$expectedCount = @($manifest.RootPages).Count + @($manifest.Guides).Count + @($deployedCatalog.patterns).Count
+if ($locations.Count -ne $expectedCount -or @($locations | Sort-Object -Unique).Count -ne $expectedCount) {
+  throw "sitemap.xml must contain $expectedCount unique URLs; found $($locations.Count)."
 }
 
 $robots = Get-SiteResource -RelativePath 'robots.txt'

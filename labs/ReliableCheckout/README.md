@@ -187,16 +187,16 @@ sequenceDiagram
     participant DB as SQLite
 
     W->>D: DispatchBatchAsync
-    D->>DB: 读取到期且未完成事件
+    D->>DB: 短事务领取到期事件并生成租约
     D->>H: Handle(event)
     H->>P: StartAsync(event.Id 作为幂等键)
     alt 第一次失败
         P--xH: exception
-        D->>DB: attempts + 1, 写 next_attempt_at
+        D->>DB: 校验租约，写退避或死信
     else 支付平台接受
         P-->>H: externalPaymentId
         H->>DB: 支付状态 + consumer receipt 同事务
-        D->>DB: 标记 outbox processed
+        D->>DB: 校验租约，标记 outbox processed
     end
 ```
 
@@ -213,7 +213,7 @@ sequenceDiagram
 
 ## 场景三：支付 Adapter 与合法状态转换
 
-示例中的 `ILegacyPaymentSdk` 用成功/失败回调返回结果；应用层只依赖 `IPaymentGateway.StartAsync`。`CallbackPaymentGatewayAdapter` 用 `TaskCompletionSource` 把旧式回调协议转换为可等待的 Task，并传递取消信号。
+示例中的 `ILegacyPaymentSdk` 用成功/失败回调返回结果；应用层依赖 `IPaymentGateway` 的创建、查询和幂等取消接口。`CallbackPaymentGatewayAdapter` 用 `TaskCompletionSource` 把旧式回调协议转换为可等待的 Task，并传递取消信号。
 
 ```mermaid
 flowchart LR
@@ -234,6 +234,9 @@ stateDiagram-v2
     PR --> R: RequestAccepted
     R --> S: Succeeded callback
     R --> F: Failed callback
+    PR --> S: provider reconciliation
+    PR --> Cancelled: cancellation before creation
+    R --> Cancelled: provider confirmed cancellation
 ```
 
 ```mermaid
@@ -244,9 +247,13 @@ stateDiagram-v2
     [*] --> A
     A --> P: payment succeeded
     A --> F: payment failed
+    A --> CancellationPending: reservation expired
+    CancellationPending --> Cancelled: provider confirmed cancellation
+    CancellationPending --> P: provider confirmed success
+    CancellationPending --> F: provider confirmed failure
 ```
 
-没有画出的边就是非法转换。例如：
+完整边界由 `OrderState.cs` 定义；终态的相同结果允许幂等重放。例如：
 
 - 支付请求尚未发出就收到成功回调：`409 invalid_state_transition`。
 - 订单已经 `Paid`，随后收到一个新的失败事件：拒绝，不允许状态倒退。
@@ -306,7 +313,7 @@ dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
 测试宿主有两个重要设计：
 
 - 移除后台 `IHostedService`，由测试精确决定何时投递，避免竞态掩盖断言。
-- 用 `ManualClock` 取代系统时间，2 秒退避只需一次 `Advance`，测试在约一秒内完成。
+- 用 `ManualClock` 取代系统时间，2 秒退避只需一次 `Advance`，无需等待真实退避时间。
 
 `DeterministicFailureInjector` 使用命名故障点：
 
@@ -315,7 +322,7 @@ dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
 
 这些故障点只通过依赖注入暴露给测试，没有做成生产 HTTP 后门。
 
-第 5 个测试覆盖“消费者事务已提交、Outbox 尚未标记”的崩溃窗口。更窄的“支付平台已接受、消费者收据尚未提交”窗口依赖支付平台跨进程持久化幂等键；本项目的内存 SDK 只模拟该契约，不构成重启证据。生产验收必须用支付沙箱或可持久化 fake 做进程重启测试。
+真实进程测试还使用独立持久化支付数据库覆盖两处崩溃窗口，详见下方“真实进程恢复验收”。
 
 ## SQLite 数据模型
 
@@ -347,12 +354,10 @@ Applied payment webhook {WebhookEventId}; order {OrderId} moved to {OrderStatus}
 这是“最小生产式”教学项目，不是可直接收款的商业系统。真正上线前至少还需要：
 
 - 验证支付平台签名、时间戳和防重放窗口；API 身份认证与限流。
-- 用正式支付沙箱替换内存 SDK，保存并轮换密钥。
-- 使用 EF Core migrations、DbUp 或专用迁移流程替代启动时建表。
-- 多实例 Worker 需要事件 claim/lease；当前消费者是幂等的，但会产生额外重复调用。
+- 用正式支付沙箱替换持久化教学 SDK，保存并轮换密钥。
+- 生产部署前独立执行并审计迁移、备份和回滚演练。
 - SQLite 适合单节点教学；高写入量下应评估 PostgreSQL/SQL Server 的锁与隔离级别。
-- 支付失败/超时后的库存释放、订单取消和补偿流程。
-- Outbox 死信、最大重试次数、人工重放、指标和告警。
+- 为死信与长时间 CancellationPending 增加指标和告警。
 - Trace/Metric、敏感字段脱敏、备份恢复和容量压测。
 - 请求指纹可升级为规范化 JSON 哈希，并结合租户/用户范围。
 
@@ -361,8 +366,64 @@ Applied payment webhook {WebhookEventId}; order {OrderId} moved to {OrderStatus}
 1. 先只读 `CheckoutApiTests`，写下每条测试保护的不变量。
 2. 在 `CreateOrderAsync` 中把原子 UPDATE 暂时改成“先读再写”，观察并发测试为什么可能失败，然后恢复。
 3. 暂时删除回调收据检查，观察重复回调对系统意味着什么。
-4. 增加 `Cancelled` 和 `Refunded`，先写非法转换测试，再扩展 State Machine。
-5. 为 Outbox 增加最大重试和 dead-letter 表，保持失败原因可审计。
+4. 阅读已实现的 `Cancelled`，再为 `Refunded` 设计业务规则和非法转换测试。
+5. 将事件耗尽为死信，用本地重放命令验证事件 ID、轮次与审计。
 6. 把 `ILegacyPaymentSdk` 替换成一个本地假 HTTP 服务，保持应用层和测试用例基本不变，验证 Adapter 边界是否稳定。
 
 毕业标准不是“能指出用了 Adapter、State、Outbox”，而是能从一个具体故障出发，解释哪个不变量会破坏、哪个边界负责恢复，以及测试如何证明它。
+
+## 库存预留与超时取消
+
+订单创建时从 available 扣除数量，并写入 Held 预留和到期时间（默认 15 分钟）。支付成功将预留变为 Consumed；明确失败或取消则在订单状态、结果 Outbox 的同一事务中将预留变为 Released 并归还数量。条件更新保证重复回调仅释放一次。
+
+到期扫描只将 AwaitingPayment 改为 CancellationPending，并原子写出 CancelPayment。取消消费者先查询支付平台；成功则结算 Paid，明确失败或取消则释放库存。未知或调用失败仍保持 Held，按 Outbox 退避重试；耗尽后需要排查平台状态并重放，不能凭超时直接归还库存。
+
+模拟平台使用独立 SQLite 文件（默认结账数据库路径加 .provider.db），持久化请求幂等键、订单、金额和终态。取消早于创建会留下 Cancelled 记录，迟到创建返回该终态而不创建支付。相同幂等键携带不同订单或金额抛出冲突；成功和取消竞争由平台短事务中的首次终态决定。该数据库独立于业务事务，才能暴露真实的提交间隙。
+
+启动时通过 PRAGMA user_version 执行事务化版本迁移，保留订单、库存、收据及 Outbox。版本 0 的历史 PaymentFailed 订单补记 Released 并补回库存一次；重复启动不会再补。Paid 记录迁移为 Consumed，其余 Held 的期限为创建时间加 15 分钟。升级前停止所有旧版本进程并备份数据库，再启动新版进程；迁移测试会连续执行两次检查补偿幂等性。
+
+## 多进程租约与死信
+
+支持同一台机器上的多个 API／Worker 进程共享绝对路径 SQLite 数据库；每个 API 默认带一个 Worker。用不同端口启动下面命令即可竞争同一队列。不要把数据库放在网络文件系统。
+
+~~~powershell
+$env:ConnectionStrings__Checkout = "Data Source=D:/checkout/checkout.db;Foreign Keys=True;Default Timeout=10"
+$env:ConnectionStrings__PaymentProvider = "Data Source=D:/checkout/provider.db;Default Timeout=10"
+dotnet run --project labs/ReliableCheckout/ReliableCheckout.Api --urls http://localhost:5188
+# 另一个终端设置相同的两个环境变量，再使用端口 5189 启动。
+~~~
+
+Outbox 以短写事务领取单个事件、增加尝试次数并生成租约标识，提交后才调用平台。默认租约 30 秒，每 10 秒续期；续租、失败和完成均检查未过期的当前标识。旧 Worker 即使迟到也不能确认接管者的事件。消费者收据和平台幂等键仍然必要：验证的是只创建一笔支付，网络可以调用多次。
+
+每轮最多 5 次领取，保持 2^attempt 秒、最多 64 秒的退避。最后一次领取后崩溃，租约过期也会转为死信。死信不再自动投递。维护命令读取相同配置，不启动 HTTP 或 Worker：
+
+~~~powershell
+dotnet run --project labs/ReliableCheckout/ReliableCheckout.Api -- outbox list
+dotnet run --project labs/ReliableCheckout/ReliableCheckout.Api -- outbox replay <eventId>
+~~~
+
+重放只接受死信，保留事件 ID、载荷、总投递次数及最后错误，并在 outbox_replays 追加旧轮次尝试数、错误和重放时间；重置当前轮次数后允许再次领取。没有公开管理 HTTP 接口。
+
+配置位于 appsettings.json 的 ReliableCheckout 节：ReservationMinutes=15、LeaseSeconds=30、LeaseRenewalSeconds=10、MaximumAttempts=5、OutboxPollingMilliseconds=500。租约参数要求续期小于租期且均为正数。多进程请保持配置一致。
+
+| 故障／竞争 | 恢复与断言 |
+| --- | --- |
+| 重复失败回调 | 仅第一次 Held → Released 归还库存 |
+| 超时但平台状态未知 | CancellationPending、Held，重试或死信等待处理 |
+| 成功与取消并发 | 平台终态决定 Paid/Consumed 或 Cancelled/Released |
+| 租约过期被接管 | 新标识领取；旧标识续期、失败、完成均被拒绝 |
+| 最后一次领取后进程退出 | 到期转死信，避免永久滞留 |
+| 死信人工重放 | 同一事件新轮次，审计和总次数保留 |
+
+## 真实进程恢复验收
+
+~~~powershell
+dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
+dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release --filter FullyQualifiedName~ProcessRecoveryTests
+~~~
+
+ProcessRecoveryTests 启动独立 .NET API／Worker 子进程，测试专用 ProcessHost 在命名故障点写出标记后阻塞，父测试真正 Kill 进程，再启动新进程读取同一对数据库。故障控制只注册于测试宿主，没有 API 后门或生产崩溃开关。
+
+两个窗口分别为“平台已接受、本地收据未提交”和“消费事务提交、Outbox 尚未确认”。重启后核对 PaymentRequested 状态、Held 库存、单个消费收据、Outbox 完成和模拟平台创建数量 1。另有两个独立 Worker 同时运行的测试。租约续期、过期接管、旧标识拒绝、死信、重放和迁移由 ReliabilityTests 验证。
+
+新增表为 reservations 和 outbox_replays；Outbox 增加 lease_token、lease_until、total_attempts、dead_letter_at。支付库的 provider_payments 与 provider_requests 保存平台状态及幂等请求。业务数据库备份与支付平台对账是两个独立责任。

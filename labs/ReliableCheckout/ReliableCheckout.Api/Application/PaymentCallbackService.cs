@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using ReliableCheckout.Domain;
 using ReliableCheckout.Infrastructure;
+using ReliableCheckout.Payments;
 
 namespace ReliableCheckout.Application;
 
@@ -9,7 +10,8 @@ public sealed class PaymentCallbackService(
     CheckoutDatabase database,
     CheckoutStore store,
     IClock clock,
-    ILogger<PaymentCallbackService> logger)
+    ILogger<PaymentCallbackService> logger,
+    IPaymentGateway gateway)
 {
     public async Task<ApplyCallbackResult> ApplyAsync(
         PaymentWebhookRequest request,
@@ -17,6 +19,30 @@ public sealed class PaymentCallbackService(
     {
         var signal = ParseOutcome(request.Outcome);
         var fingerprint = $"{request.OrderId}:{request.ExternalPaymentId}:{signal}";
+
+        // Already committed callbacks remain replayable after upgrading an old database,
+        // even when the former in-memory provider no longer has the payment in its ledger.
+        await using (var preflight = await database.OpenConnectionAsync(cancellationToken))
+        {
+            var committed = await ConsumerReceipts.FindFingerprintAsync(preflight, null,
+                "payment-webhook", request.EventId, cancellationToken);
+            if (committed is not null)
+            {
+                if (!string.Equals(committed, fingerprint, StringComparison.Ordinal))
+                    throw new IdempotencyConflictException("The webhook EventId was already used for a different payment result.");
+                var replayed = await store.GetOrderAsync(request.OrderId, cancellationToken)
+                    ?? throw new OrderNotFoundException(request.OrderId);
+                return new(replayed, Replayed: true);
+            }
+        }
+
+        // Provider and checkout have separate transactions. The provider arbitrates cancel/success races.
+        var before = await store.GetOrderAsync(request.OrderId, cancellationToken) ?? throw new OrderNotFoundException(request.OrderId);
+        if (before.PaymentStatus == PaymentStatus.PendingRequest)
+            throw new InvalidStateTransitionException("payment", before.PaymentStatus.ToString(), signal.ToString());
+        if (before.ExternalPaymentId != request.ExternalPaymentId) throw new PaymentIdentityMismatchException();
+        await gateway.ObserveAsync(request.OrderId, request.ExternalPaymentId,
+            signal == PaymentSignal.Succeeded ? ProviderStatus.Succeeded : ProviderStatus.Failed, cancellationToken);
 
         await using var connection = await database.OpenConnectionAsync(cancellationToken);
         await using var transaction = connection.BeginTransaction(deferred: false);
@@ -87,6 +113,8 @@ public sealed class PaymentCallbackService(
             now,
             cancellationToken);
 
+        await ReservationService.SettleAsync(connection, transaction, request.OrderId, nextOrder == OrderStatus.Paid, cancellationToken);
+
         var eventType = signal == PaymentSignal.Succeeded ? "OrderPaid" : "OrderPaymentFailed";
         var payload = JsonSerializer.Serialize(new OrderPaymentResultEvent(request.OrderId, nextOrder.ToString()));
         await CheckoutStore.InsertOutboxAsync(
@@ -149,7 +177,7 @@ internal static class ConsumerReceipts
 {
     public static async Task<string?> FindFingerprintAsync(
         SqliteConnection connection,
-        SqliteTransaction transaction,
+        SqliteTransaction? transaction,
         string consumer,
         string eventId,
         CancellationToken cancellationToken)

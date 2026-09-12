@@ -9,6 +9,9 @@ namespace ReliableCheckout.Tests;
 
 internal sealed class ReliableCheckoutApplicationFactory : WebApplicationFactory<Program>
 {
+    public Action<IServiceCollection>? ConfigureServices { get; init; }
+    public Dictionary<string, string?> Settings { get; } = [];
+    public string DatabasePath => databasePath;
     private readonly string databasePath = Path.Combine(
         Path.GetTempPath(),
         $"reliable-checkout-{Guid.NewGuid():N}.db");
@@ -21,7 +24,7 @@ internal sealed class ReliableCheckoutApplicationFactory : WebApplicationFactory
 
     public DeterministicFailureInjector Failures => Services.GetRequiredService<DeterministicFailureInjector>();
 
-    public InMemoryLegacyPaymentSdk LegacyPaymentSdk => Services.GetRequiredService<InMemoryLegacyPaymentSdk>();
+    public PersistentPaymentSdk LegacyPaymentSdk => Services.GetRequiredService<PersistentPaymentSdk>();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -35,6 +38,7 @@ internal sealed class ReliableCheckoutApplicationFactory : WebApplicationFactory
                     $"Data Source={databasePath};Foreign Keys=True;Default Timeout=10;Pooling=False",
                 ["ReliableCheckout:SeedDemoInventory"] = "false"
             });
+            configuration.AddInMemoryCollection(Settings);
         });
         builder.ConfigureServices(services =>
         {
@@ -42,12 +46,14 @@ internal sealed class ReliableCheckoutApplicationFactory : WebApplicationFactory
             services.RemoveAll<IHostedService>();
             services.RemoveAll<IClock>();
             services.AddSingleton<IClock>(Clock);
+            ConfigureServices?.Invoke(services);
         });
     }
 
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
+        if (File.Exists(databasePath + ".provider.db")) File.Delete(databasePath + ".provider.db");
         if (File.Exists(databasePath))
         {
             File.Delete(databasePath);

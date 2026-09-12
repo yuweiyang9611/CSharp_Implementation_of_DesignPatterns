@@ -1,14 +1,19 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import axe from "axe-core";
+import { playgroundRegression } from "./playground-regression.mjs";
 import { chromium } from "playwright-core";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const siteRoot = resolve(process.argv[2] ?? join(repositoryRoot, "output", "pages-site"));
+const catalog = JSON.parse(readFileSync(join(siteRoot, "assets/catalog.json"), "utf8"));
+const taskCount = catalog.patterns.reduce((n, p) => n + p.evidenceCards.length, 0) + catalog.learningItems.reduce((n, p) => n + p.milestones.length, 0);
+const quizCount = catalog.quizzes.length;
+const itemCount = catalog.patterns.length + catalog.learningItems.length;
 const artifactRoot = join(repositoryRoot, "output", "site-regression");
 
 function browserExecutable() {
@@ -92,8 +97,8 @@ async function downloadJson(page, selector) {
 }
 
 const port = await reservePort();
-const baseUrl = `http://127.0.0.1:${port}/`;
-const server = spawn(process.execPath, [join(repositoryRoot, "tests", "site-server.mjs"), siteRoot, String(port)], {
+const baseUrl = `http://127.0.0.1:${port}/course/`;
+const server = spawn(process.execPath, [join(repositoryRoot, "tests", "site-server.mjs"), siteRoot, String(port), "/course/"], {
   cwd: repositoryRoot,
   stdio: ["ignore", "pipe", "pipe"],
 });
@@ -142,9 +147,9 @@ try {
   await page.reload();
   await page.locator(".pattern-card").first().waitFor();
   assert.equal(await page.locator(".pattern-card").count(), 23, "桌面首页应渲染 23 张模式卡片");
-  assert.equal(await page.locator("#progress-track").getAttribute("aria-valuemax"), "116");
-  assert.match(await page.locator("#progress-stage-summary").textContent(), /0 \/ 116.*0 \/ 28/u);
-  assert.equal(await page.locator("#review-due-count").textContent(), "6");
+  assert.equal(await page.locator("#progress-track").getAttribute("aria-valuemax"), String(taskCount));
+  assert.match(await page.locator("#progress-stage-summary").textContent(), new RegExp(`0 / ${taskCount}.*0 / ${itemCount}`, "u"));
+  assert.equal(await page.locator("#review-due-count").textContent(), String(quizCount));
 
   await page.goto(`${baseUrl}?category=constructor`);
   await page.locator(".pattern-card").first().waitFor();
@@ -199,22 +204,22 @@ try {
   await page.goto(baseUrl);
   await page.locator('.pattern-card[data-progress-id="pattern:adapter"]').waitFor();
   assert.ok(await page.locator('.pattern-card[data-progress-id="pattern:adapter"]').evaluate((card) => card.classList.contains("learned")));
-  assert.match(await page.locator("#progress-stage-summary").textContent(), /4 \/ 116.*1 \/ 28/u);
+  assert.match(await page.locator("#progress-stage-summary").textContent(), new RegExp(`4 / ${taskCount}.*1 / ${itemCount}`, "u"));
   const backup = await downloadJson(page, "#export-progress");
   assert.equal(backup.format, "csharp-design-patterns-learning-backup");
   assert.equal(backup.progress.version, 3);
   assert.equal(backup.review.version, 1);
   await page.locator("#reset-progress").click();
-  assert.match(await page.locator("#progress-stage-summary").textContent(), /0 \/ 116/u);
+  assert.match(await page.locator("#progress-stage-summary").textContent(), new RegExp(`0 / ${taskCount}`, "u"));
   await page.locator("#import-progress").setInputFiles({
     name: "learning-backup.json",
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(backup)),
   });
-  await page.waitForFunction(() => document.querySelector("#progress-stage-summary").textContent.startsWith("4 / 116"));
+  await page.waitForFunction((count) => document.querySelector("#progress-stage-summary").textContent.startsWith(`4 / ${count}`), taskCount);
   await page.locator("#reset-progress").click();
   await page.locator("#undo-reset").click();
-  assert.match(await page.locator("#progress-stage-summary").textContent(), /4 \/ 116/u, "清空后应可撤销");
+  assert.match(await page.locator("#progress-stage-summary").textContent(), new RegExp(`4 / ${taskCount}`, "u"), "清空后应可撤销");
 
   const syncPage = await context.newPage();
   watchPage(syncPage, errors);
@@ -235,7 +240,7 @@ try {
 
   await page.goto(`${baseUrl}quiz.html`);
   await page.locator("#question-options input").first().waitFor();
-  assert.equal(await page.locator("#quiz-due").textContent(), "6");
+  assert.equal(await page.locator("#quiz-due").textContent(), String(quizCount));
   assert.equal(await page.locator(".submit-answer").isDisabled(), true);
   const correctKey = await page.evaluate(() => {
     const title = document.querySelector("#question-title").textContent;
@@ -245,12 +250,12 @@ try {
   assert.equal(await page.locator(".submit-answer").isEnabled(), true);
   await page.locator(".submit-answer").click();
   assert.match(await page.locator("#feedback-title").textContent(), /判断正确/u);
-  assert.equal(await page.locator("#quiz-due").textContent(), "5");
+  assert.equal(await page.locator("#quiz-due").textContent(), String(quizCount - 1));
   await assertNoSeriousAxeViolations(page, "辨析训练");
 
   await page.goto(baseUrl);
   await page.locator("#review-due-count").waitFor();
-  assert.equal(await page.locator("#review-due-count").textContent(), "5", "首页应同步复习队列");
+  assert.equal(await page.locator("#review-due-count").textContent(), String(quizCount - 1), "首页应同步复习队列");
   assert.deepEqual(errors, [], `桌面页面发生脚本错误：\n${errors.join("\n")}`);
 
   const mobileErrors = [];
@@ -313,7 +318,83 @@ try {
   assert.ok(await noScriptPage.locator("noscript").isVisible());
   await noScriptContext.close();
 
-  console.log("Site regression passed: 116 tasks, backups, full-text search, milestones, quizzes, mobile/a11y, grouped guides, and no-JS navigation.");
+  for (const path of ["", "patterns/adapter.html", "guides/online-store.html", "quiz.html"]) {
+    const failureContext = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true });
+    await failureContext.addInitScript(() => {
+      const original = Storage.prototype.setItem;
+      window.blockRecordWrites = true;
+      Storage.prototype.setItem = function (key, value) {
+        if (window.blockRecordWrites) throw new DOMException("Storage is full", "QuotaExceededError");
+        return original.call(this, key, value);
+      };
+    });
+    const failurePage = await failureContext.newPage();
+    activePage = failurePage;
+    const failureErrors = [];
+    watchPage(failurePage, failureErrors);
+    await failurePage.goto(`${baseUrl}${path}`);
+    assert.equal(await failurePage.locator("#storage-warning").isHidden(), true);
+    if (path === "quiz.html") {
+      await failurePage.locator("#question-options input").first().check();
+      await failurePage.locator(".submit-answer").click();
+    } else if (path) {
+      await failurePage.locator("[data-progress-task]").first().check();
+    } else {
+      await failurePage.evaluate(() => window.LearningProgress.setLevel("pattern:adapter", 1));
+    }
+    await failurePage.locator("#storage-warning").waitFor({ state: "visible" });
+    assert.match(await failurePage.locator("#storage-warning").textContent(), /刷新或离开前请下载备份/u);
+    const unsavedBackup = await downloadJson(failurePage, "#storage-warning button");
+    if (path === "quiz.html") {
+      assert.equal(Object.keys(unsavedBackup.review.questions).length, 1);
+    } else {
+      const savedProgress = unsavedBackup.format === "csharp-design-patterns-learning-backup"
+        ? unsavedBackup.progress.progress : unsavedBackup.progress;
+      assert.equal(Object.keys(savedProgress.items).length, 1);
+    }
+    await assertNoDocumentOverflow(failurePage, `保存失败提示 ${path}`);
+    await assertNoSeriousAxeViolations(failurePage, `保存失败提示 ${path}`);
+    if (path === "quiz.html") {
+      await mkdir(artifactRoot, { recursive: true });
+      await failurePage.screenshot({ path: join(artifactRoot, "storage-warning.png"), fullPage: true });
+    }
+    await failurePage.evaluate(() => {
+      window.blockRecordWrites = false;
+      if (window.LearningProgress) window.LearningProgress.restore(window.LearningProgress.snapshot());
+      if (window.ReviewScheduler) window.ReviewScheduler.restore(window.ReviewScheduler.snapshot());
+    });
+    assert.equal(await failurePage.locator("#storage-warning").isHidden(), true, "保存恢复后应清除提示");
+
+    // Import every emergency backup format through the real homepage file input.
+    await failurePage.goto(baseUrl);
+    await failurePage.locator("#import-progress").setInputFiles({
+      name: "unsaved-backup.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(unsavedBackup)),
+    });
+    await failurePage.waitForFunction(() => document.querySelector("#progress-toast").textContent.includes("已从备份导入"));
+    if (path === "quiz.html") {
+      assert.equal(await failurePage.evaluate(() => window.ReviewScheduler.stats().answered), 1);
+    } else {
+      assert.equal(await failurePage.evaluate(() => window.LearningProgress.summary().earnedTasks), 1);
+    }
+    assert.deepEqual(failureErrors, [], `存储故障页面发生脚本错误：${failureErrors.join("\n")}`);
+    await failureContext.close();
+  }
+
+  const blockedContext = await browser.newContext();
+  await blockedContext.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", { get() { throw new DOMException("Blocked", "SecurityError"); } });
+  });
+  const blockedPage = await blockedContext.newPage();
+  activePage = blockedPage;
+  await blockedPage.goto(baseUrl);
+  await blockedPage.locator(".pattern-card").first().waitFor();
+  assert.equal(await blockedPage.locator("#storage-warning").isVisible(), true, "读取被禁止时应立即提示");
+  await blockedContext.close();
+
+  await playgroundRegression(browser, baseUrl);
+  console.log("Site regression passed: catalog-derived tasks, backups, search, quizzes, mobile/a11y, no-JS navigation, storage warnings and emergency backup recovery.");
 } catch (error) {
   await mkdir(artifactRoot, { recursive: true });
   if (activePage && !activePage.isClosed()) {
