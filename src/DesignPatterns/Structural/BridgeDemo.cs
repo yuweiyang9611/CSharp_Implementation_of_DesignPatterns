@@ -29,7 +29,7 @@ public sealed class BridgeDemo : IPatternDemo
     }
 
     // Implementor hierarchy: delivery details vary independently from alert semantics.
-    private interface IMessageChannel
+    internal interface IMessageChannel
     {
         string Deliver(string recipient, string subject, string body);
     }
@@ -47,20 +47,20 @@ public sealed class BridgeDemo : IPatternDemo
     }
 
     // Abstraction hierarchy keeps a bridge (Channel) instead of inheriting delivery behavior.
-    private abstract class Alert(IMessageChannel channel)
+    internal abstract class Alert(IMessageChannel channel)
     {
         protected IMessageChannel Channel { get; } = channel;
 
         public abstract string Send(string recipient, string message);
     }
 
-    private sealed class OperationalAlert(IMessageChannel channel) : Alert(channel)
+    internal sealed class OperationalAlert(IMessageChannel channel) : Alert(channel)
     {
         public override string Send(string recipient, string message) =>
             Channel.Deliver(recipient, "Operational warning", $"[WARNING] {message}");
     }
 
-    private sealed class SecurityAlert(IMessageChannel channel) : Alert(channel)
+    internal sealed class SecurityAlert(IMessageChannel channel) : Alert(channel)
     {
         public override string Send(string recipient, string message) =>
             Channel.Deliver(recipient, "Security incident", $"[CRITICAL] {message}; investigate now");

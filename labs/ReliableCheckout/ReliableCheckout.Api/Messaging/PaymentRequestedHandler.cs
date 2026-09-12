@@ -11,7 +11,9 @@ public sealed class PaymentRequestedHandler(
     CheckoutDatabase database,
     IPaymentGateway gateway,
     IClock clock,
-    ILogger<PaymentRequestedHandler> logger) : IOutboxHandler
+    ILogger<PaymentRequestedHandler> logger,
+    ReservationService reservations,
+    IFailureInjector failures) : IOutboxHandler
 {
     private const string ConsumerName = "payment-requested";
 
@@ -42,6 +44,12 @@ public sealed class PaymentRequestedHandler(
             message.Id,
             cancellationToken);
 
+        failures.ThrowIfScheduled("payment:after-provider");
+        if (started.Status != ProviderStatus.Pending)
+        {
+            await reservations.ApplyProviderResultAsync(paymentRequest.OrderId, new(started.ExternalPaymentId, started.Status), cancellationToken);
+        }
+
         await using var connection = await database.OpenConnectionAsync(cancellationToken);
         await using var transaction = connection.BeginTransaction(deferred: false);
         existingFingerprint = await ConsumerReceipts.FindFingerprintAsync(
@@ -62,7 +70,8 @@ public sealed class PaymentRequestedHandler(
             transaction,
             paymentRequest.OrderId,
             cancellationToken);
-        var next = PaymentStateMachine.Apply(current, PaymentSignal.RequestAccepted);
+        var next = current == PaymentStatus.PendingRequest
+            ? PaymentStateMachine.Apply(current, PaymentSignal.RequestAccepted) : current;
         var now = clock.UtcNow;
 
         await using (var update = connection.CreateCommand())

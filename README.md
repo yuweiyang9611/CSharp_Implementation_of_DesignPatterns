@@ -43,11 +43,23 @@ GitHub noreply 邮箱可在 GitHub 的 **Settings → Emails** 中查看。建�
 
 不想先配置本地环境时，直接使用上面的 Codespaces 入口；容器创建后会锁定还原依赖、构建解决方案并生成学习站。VS Code 中运行 `Site: preview` 任务即可在 4173 端口预览。真实浏览器回归需要系统 Chrome 或 Edge，由 GitHub Actions 或安装了浏览器的本机执行。
 
-先用一条命令完成环境体检、构建、正式测试、23 个 Demo 烟雾测试、3 个教学项目自检和高级实验验证：
+本地验证需要 PowerShell 7、.NET 10 SDK 和 Node.js 24。日常改动先运行快速档：构建、正式测试（含高级实验）、23 个 Demo 烟雾测试、3 个项目自检、目录与文档检查，以及复习和存储故障测试。
 
 ```powershell
-pwsh -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -Mode Quick
 ```
+
+提交前运行完整档，需要可联网还原依赖，并安装 Chrome 或 Edge（也可用 `CHROME_PATH` 指定浏览器）：
+
+```powershell
+pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
+```
+
+完整档增加锁定还原、格式检查、四份覆盖率报告的行 55%／分支 40% 门槛、验证脚本自测、站点构建、真实浏览器与可访问性回归，以及 HTML 导出。每次覆盖率结果写入独立的 `output/test-results/verify-<唯一标识>/`，避免旧报告干扰。它对应 CI 的代码与站点检查；提交邮箱隐私检查、跨系统矩阵和线上部署核验仍由 CI 执行。
+
+Quick 无需 WebAssembly 工作负载。Full 和站点构建需要在所选 .NET 10 SDK 中安装 `wasm-tools` 与 `wasm-experimental`（下方有命令）。
+
+默认模式为 `Full`，不指定 `-SkipPdf` 时还会导出 PDF。`-NoRestore` 仅供 `Quick` 使用，要求依赖已还原；完整档始终执行锁定还原。
 
 也可以分步运行：
 
@@ -85,7 +97,7 @@ powershell -ExecutionPolicy Bypass -File scripts/run-teaching-projects.ps1 -Self
 
 三个项目合计覆盖全部 GoF 23 种模式。详细阅读顺序、模式协作关系、反例和渐进练习见 [实战项目索引](examples/README.md)。
 
-正式 xUnit 测试验证库存、状态转换、权限、Undo、Memento、解析优先级和装饰器顺序等业务契约；原有 `--self-test` 继续作为零依赖、可随手运行的教学入口。
+正式 xUnit 测试验证库存、状态转换、权限、Undo、Memento、解析优先级和装饰器顺序等业务契约；独立模式还直接验证取消订阅后的通知、Undo/Redo 内容与分支、克隆集合隔离，以及既有告警接入新渠道。空命令历史沿用抛出 `InvalidOperationException` 的约定。原有 `--self-test` 继续作为零依赖、可随手运行的教学入口。
 
 ## 两个高级实验
 
@@ -107,7 +119,7 @@ GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁
 
 ## 在线学习站
 
-GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流](.github/workflows/ci.yml) 会生成并发布 1 个学习仪表盘、1 个辨析训练页、12 篇 Markdown 指南和 23 个独立模式课件。每个模式都有“阅读 → 运行 → 改造 → 验证”四项真实证据，三个项目与两个实验共有 24 个顺序里程碑，合计 116 个可持久化任务；首页还提供跨指南全文搜索、JSON/Markdown 进度备份及 6 道带间隔复习的场景题。
+GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流](.github/workflows/ci.yml) 会生成并发布 学习仪表盘、辨析训练页、C# 编码页、Markdown 指南和独立模式课件。每个模式都有“阅读 → 运行 → 改造 → 验证”四项真实证据，三个项目与两个实验提供顺序里程碑，任务数由目录生成；首页提供全文搜索、JSON/Markdown 进度备份、24 道间隔复习辨析题及 8 道浏览器 C# 编码练习。编码验收完成度单独统计。
 
 模式名称、顺序、分类、意图与真实预期输出来自 `PatternCatalog` 和 Runner；网站增量字段集中在 `site/data/learning-catalog.json`，并由 `learning-catalog.schema.json` 与语义验证器约束。指南清单、搜索索引生成和 Pages 产物验证已经拆成独立脚本，Markdown 模式索引仍由同一目录同步生成。可在本地复现同一份静态产物：
 
@@ -115,7 +127,9 @@ GitHub Pages 首页位于 `site/`；主分支更新时，[CI 与 Pages 工作流
 pwsh -File ./scripts/build-pages.ps1
 ```
 
-生成结果位于 `output/pages-site/`。构建会校验 37 个 canonical URL、JSON-LD、sitemap、23 个模式条目、24 个里程碑、6 道题、搜索索引、源码与实战路径、教程锚点及全部站内链接。也可以独立复核已生成产物：
+学习进度与复习记录保存在当前浏览器。如果浏览器禁止存储或空间不足，首页、模式课件、项目指南和测验页会显示保存失败提示；当前页面仍可操作，并可直接下载未保存记录。请在刷新或离开前备份，之后可在首页导入。成功保存后提示自动消失。
+
+生成结果位于 `output/pages-site/`。构建会根据目录生成并校验页面总数、canonical URL、JSON-LD、sitemap、模式条目、里程碑、辨析题、编码题和搜索索引、源码与实战路径、教程锚点及全部站内链接。也可以独立复核已生成产物：
 
 ```powershell
 pwsh -File ./scripts/verify-pages-site.ps1 -SiteDirectory output/pages-site
@@ -156,16 +170,16 @@ output/pdf/Checkout-Refactoring-Workshop.pdf
 output/pdf/Reliable-Checkout-Graduation-Project.pdf
 ```
 
-全量验证（编译、运行 23 个示例、列出目录、生成 PDF）：
+完整验证并生成 PDF：
 
 ```powershell
 pwsh -File scripts/verify.ps1
 ```
 
-只验证代码：
+日常快速验证（不构建站点、不启动浏览器、不导出 PDF）：
 
 ```powershell
-pwsh -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -Mode Quick
 ```
 
 ## 项目结构
@@ -183,3 +197,33 @@ scripts/                           验证与导出脚本
 ```
 
 教程和示例采用原书的初学者顺序（Iterator 到 Interpreter），同时在目录中标注经典 GoF 创建型、结构型、行为型分类。
+
+## 浏览器 C# 练习与构建
+
+打开学习站的“编码练习”，选择题目，修改源码并运行逐项验收。初始实现故意包含缺陷，参考答案折叠显示。四道改错题覆盖 Observer 取消订阅、Command 撤销／重做、Prototype 克隆隔离和 State 非法转换；四道扩展题覆盖 Strategy 折扣边界、Bridge 新渠道、责任链短路和简单函数重构。
+
+题目、初始代码、参考答案和验收代码唯一来源是 [coding-exercises.json](site/data/coding-exercises.json)。[ExerciseCompiler](tools/ExerciseEngine/ExerciseCompiler.cs) 是浏览器和本地测试共用的 Roslyn 编译／执行核心。[playground.html](site/playground.html) 保留普通 JavaScript 页面，运行时采用 [.NET 独立 Web Worker](https://learn.microsoft.com/en-us/aspnet/core/client-side/dotnet-on-webworkers?view=aspnetcore-10.0)，每次运行创建新 Worker，结束、停止或超时后销毁。编译使用 C# 14，关闭并行编译，避免浏览器单线程等待问题。
+
+首次运行才下载 .NET 和 Roslyn，首次下载可能较慢。仅提供纯 C#、集合、LINQ 等练习所需引用，没有任意 NuGet 安装、数据库或 ASP.NET 宿主。源码上限 100 KB，输出上限 64 KB；页面分别限制加载 60 秒、编译 30 秒和执行 5 秒。停止由页面终止 Worker，所以无限循环不会阻塞编辑界面。诊断、代码与输出均按文本显示。
+
+草稿和通过记录按题目 ID／版本保存，编辑后撤销当前通过状态。完整 JSON 备份增加可选 exercises 字段，旧备份仍可导入；编码页也可单独备份。保存失败时使用全站统一提示，下载内存中的最新草稿后可恢复。
+
+浏览器项目的 WebAssembly SDK 包锁定于 .NET SDK 10.0.401 对应版本，站点 CI 固定使用该 SDK。完整构建需要 PowerShell 7、.NET SDK 10.0.401、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
+
+~~~powershell
+dotnet workload install wasm-tools wasm-experimental
+pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
+# 仅重建站点（含浏览器编译器）
+pwsh -File scripts/build-pages.ps1
+node tests/site-server.mjs
+# 打开 http://localhost:4173/playground.html
+~~~
+
+安装工作负载需要网络，系统级 SDK 可能需要管理员权限。若 Windows MSI 安装失败，可用微软 dotnet-install.ps1 在仓库外或忽略目录安装独立 SDK，再对该 dotnet.exe 安装工作负载，并设置 CSHARP_DESIGN_PATTERNS_WASM_DOTNET 为它的绝对路径。构建脚本使用此变量选择浏览器 SDK；普通解决方案仍使用 PATH 中的 dotnet。CI 的 site 作业自动安装工作负载并执行真实浏览器回归，Quick 保持无需工作负载。
+
+~~~powershell
+dotnet test tests/GuideExporter.Tests -c Release --filter FullyQualifiedName~ExerciseTests
+npm run test:site
+~~~
+
+本地测试逐题证明初始代码失败、答案通过；浏览器回归运行同一份验收，并检查 C# 14 扩展块、编译诊断、运行异常、输出截断、无限循环超时、停止重跑、草稿备份、旧复习记录、390px 页面和可访问性。

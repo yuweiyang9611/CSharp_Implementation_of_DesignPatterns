@@ -4,6 +4,7 @@ import { extname, join, normalize, resolve, sep } from "node:path";
 
 const root = resolve(process.argv[2] ?? "output/pages-site");
 const port = Number(process.argv[3] ?? process.env.PORT ?? 4173);
+const prefix = process.argv[4] ?? "/";
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -14,11 +15,14 @@ const mimeTypes = {
   ".svg": "image/svg+xml; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
   ".xml": "application/xml; charset=utf-8",
+  ".wasm": "application/wasm",
 };
 
 createServer(async (request, response) => {
   try {
-    const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+    const originalPath = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+    if (!originalPath.startsWith(prefix)) throw new Error("Outside site prefix");
+    const pathname = originalPath.slice(prefix.length);
     const relative = normalize(pathname).replace(/^([/\\])+/, "");
     let candidate = resolve(join(root, relative || "index.html"));
     if (candidate !== root && !candidate.startsWith(root + sep)) throw new Error("Path escapes site root");

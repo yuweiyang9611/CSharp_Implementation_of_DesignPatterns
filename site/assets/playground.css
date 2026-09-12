@@ -1,0 +1,24 @@
+@import url("quiz.css");
+.playground-main { max-width: 1200px; padding: 2rem 1.25rem; margin: auto; }
+.playground-main h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin: .5rem 0; }
+.playground-main p { line-height: 1.8; }
+.playground-main label { display: block; font-weight: 700; margin: .75rem 0; }
+.playground-main select { width: 100%; padding: .8rem; border: 1px solid #647c7a; background: #fff; color: #10252a; border-radius: .4rem; font: inherit; }
+.editor-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1.5rem; margin: 1rem 0; }
+.editor-grid > section { min-width: 0; }
+#code-editor { box-sizing: border-box; width: 100%; min-height: 460px; resize: vertical; tab-size: 4; white-space: pre; background: #10252a; color: #f0f7ed; border: 1px solid #647c7a; padding: 1rem; border-radius: .5rem; font: 14px/1.7 Consolas, monospace; }
+.playground-main pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 28rem; overflow: auto; font: 14px/1.7 Consolas, monospace; }
+.playground-main button { padding: .7rem 1rem; background: #fff; color: #10252a; border: 1px solid #647c7a; border-radius: .4rem; cursor: pointer; font: inherit; }
+.playground-main button:disabled { opacity: .5; cursor: default; }
+.playground-main .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin: .75rem 0; }
+#run-code { background: #155d51; color: #fff; }
+.results { background: #fff; border: 1px solid #b4c4bc; padding: 1.25rem; border-radius: .5rem; }
+.results h2 { font-size: 1.1rem; }
+.passed { color: #155d51; } .failed { color: #9c2424; }
+#check-results { padding-left: 1.5rem; line-height: 2; }
+#run-status { min-height: 2em; font-weight: 700; }
+.playground-main details { border-top: 1px solid #647c7a; padding: 1rem 0; }
+.playground-main summary { cursor: pointer; font-weight: 700; }
+#import-exercises { max-width: 100%; }
+:focus-visible { outline: 3px solid #9b5000; outline-offset: 3px; }
+@media(max-width: 700px) { .editor-grid { grid-template-columns: minmax(0,1fr); } #code-editor { min-height: 370px; } .quiz-header nav { flex-wrap: wrap; } }

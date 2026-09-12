@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -35,6 +36,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReliableCheckout.Tests", "labs\ReliableCheckout\ReliableCheckout.Tests\ReliableCheckout.Tests.csproj", "{F7AF8A73-B814-4F8E-8C71-30E8270ABE71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignPatterns.GuideExporter.Tests", "tests\GuideExporter.Tests\DesignPatterns.GuideExporter.Tests.csproj", "{2FE4FF78-5BDB-4F0B-BBCA-BA57049D23CA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "labs", "labs", "{908A2AE8-7277-8D33-5900-B70622523C2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReliableCheckout", "ReliableCheckout", "{6EBB37BE-8CAD-D372-090E-848A882D4777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReliableCheckout.ProcessHost", "labs\ReliableCheckout\ReliableCheckout.ProcessHost\ReliableCheckout.ProcessHost.csproj", "{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{07C2787E-EAC7-C090-1BA3-A61EC2A24D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExerciseEngine", "tools\ExerciseEngine\ExerciseEngine.csproj", "{7C0F845A-97CB-4529-8D97-9B889F8F010F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -226,6 +237,30 @@ Global
 		{2FE4FF78-5BDB-4F0B-BBCA-BA57049D23CA}.Release|x64.Build.0 = Release|Any CPU
 		{2FE4FF78-5BDB-4F0B-BBCA-BA57049D23CA}.Release|x86.ActiveCfg = Release|Any CPU
 		{2FE4FF78-5BDB-4F0B-BBCA-BA57049D23CA}.Release|x86.Build.0 = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|x64.Build.0 = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Debug|x86.Build.0 = Debug|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|x64.ActiveCfg = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|x64.Build.0 = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|x86.ActiveCfg = Release|Any CPU
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7}.Release|x86.Build.0 = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|x64.Build.0 = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -240,5 +275,8 @@ Global
 		{5BB60925-F066-4796-BEAF-996A206F9D15} = {2AAC011F-E80C-40C1-4170-6A8307ED7E1A}
 		{552F4ACC-EC16-473C-B7A0-74331C3B80EB} = {2AAC011F-E80C-40C1-4170-6A8307ED7E1A}
 		{F7AF8A73-B814-4F8E-8C71-30E8270ABE71} = {2AAC011F-E80C-40C1-4170-6A8307ED7E1A}
+		{6EBB37BE-8CAD-D372-090E-848A882D4777} = {908A2AE8-7277-8D33-5900-B70622523C2F}
+		{1054AB38-4C12-4CB0-9E09-BC5BA3A751B7} = {6EBB37BE-8CAD-D372-090E-848A882D4777}
+		{7C0F845A-97CB-4529-8D97-9B889F8F010F} = {07C2787E-EAC7-C090-1BA3-A61EC2A24D84}
 	EndGlobalSection
 EndGlobal
