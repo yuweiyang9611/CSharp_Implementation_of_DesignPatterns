@@ -193,16 +193,21 @@ public sealed class ReliabilityTests
         {
             ConfigureServices = services =>
             {
-                services.RemoveAll<IClock>(); services.AddSingleton<IClock, SystemClock>();
                 services.RemoveAll<IOutboxHandler>(); services.AddSingleton<IOutboxHandler>(slow);
             }
         };
-        factory.Settings["ReliableCheckout:LeaseSeconds"] = "0.6";
+        factory.Settings["ReliableCheckout:LeaseSeconds"] = "30";
         factory.Settings["ReliableCheckout:LeaseRenewalSeconds"] = "0.1";
         await CreateAsync(factory);
         var dispatch = factory.Dispatcher.DispatchBatchAsync();
         await slow.Entered.Task.WaitAsync(TimeSpan.FromSeconds(5));
-        await Task.Delay(1100);
+        var initialExpiry = await ScalarAsync(factory, "SELECT lease_until FROM outbox;");
+        factory.Clock.Advance(TimeSpan.FromSeconds(20));
+        using var renewalTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        // Observe an actual background renewal without relying on sub-second runner scheduling.
+        while (Equals(initialExpiry, await ScalarAsync(factory, "SELECT lease_until FROM outbox;")))
+            await Task.Delay(20, renewalTimeout.Token);
+        factory.Clock.Advance(TimeSpan.FromSeconds(20));
         Assert.Null(await factory.Services.GetRequiredService<OutboxLeases>().ClaimAsync());
         slow.Release.SetResult();
         Assert.Equal(1, (await dispatch).Processed);
