@@ -6,7 +6,6 @@
   if (!catalog || !review) return;
   document.documentElement.classList.add("js");
   review.configure(catalog.quizzes);
-  const patterns = new Map(catalog.patterns.map((pattern) => [pattern.key, pattern]));
   const elements = {
     card: document.querySelector("#question-card"),
     empty: document.querySelector("#quiz-empty"),
@@ -57,7 +56,7 @@
     elements.card.hidden = !current;
     elements.empty.hidden = Boolean(current);
     if (!current) {
-      elements.emptyTitle.textContent = mode === "due" ? "到期题已完成" : "本轮 6 题已完成";
+      elements.emptyTitle.textContent = mode === "due" ? "到期题已完成" : `本轮 ${queue.length} 题已完成`;
       elements.emptyCopy.textContent = mode === "due"
         ? "今天的复习已完成；可以刷新到期题、练全部题，或回到模式课件继续积累证据。"
         : "自由练习不会推进复习间隔；可以再练一轮，或返回模式课件继续积累证据。";
@@ -69,16 +68,15 @@
     elements.scenario.textContent = current.scenario;
     elements.prompt.textContent = current.prompt;
     elements.options.replaceChildren();
-    for (const key of current.patternKeys) {
-      const pattern = patterns.get(key);
+    for (const option of current.options) {
       const label = document.createElement("label");
       const input = document.createElement("input");
       const copy = document.createElement("span");
       input.type = "radio";
       input.name = "answer";
-      input.value = key;
+      input.value = option.id;
       input.required = true;
-      copy.textContent = pattern ? `${pattern.english} / ${pattern.chinese}` : key;
+      copy.textContent = option.label;
       label.append(input, copy);
       elements.options.append(label);
     }
@@ -109,7 +107,7 @@
     answered = true;
     const correct = selected === current.correctKey;
     if (mode === "due") review.record(current.id, correct);
-    const correctPattern = patterns.get(current.correctKey);
+    const correctOption = current.options.find((option) => option.id === current.correctKey);
     for (const input of elements.options.querySelectorAll("input")) {
       input.disabled = true;
       input.closest("label").classList.toggle("correct", input.value === current.correctKey);
@@ -118,9 +116,9 @@
     elements.form.querySelector("button").disabled = true;
     elements.feedback.hidden = false;
     elements.feedback.classList.toggle("success", correct);
-    elements.feedbackTitle.textContent = correct ? "判断正确" : `更合适的是 ${correctPattern?.english ?? current.correctKey}`;
-    elements.feedbackRule.textContent = current.decisionRule;
-    elements.feedbackLesson.href = `patterns/${current.correctKey}.html#evidence-read`;
+    elements.feedbackTitle.textContent = correct ? "判断正确" : `更合适的是 ${correctOption.label}`;
+    elements.feedbackRule.textContent = [current.decisionRule, ...current.options.map((option) => `${option.label}：${option.explanation}`)].join("\n\n");
+    elements.feedbackLesson.href = current.lessonHref;
     elements.next.hidden = false;
     elements.next.textContent = cursor + 1 < queue.length ? "下一题 →" : "完成本轮 →";
     elements.feedback.focus?.();

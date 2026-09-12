@@ -19,5 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../tools/GuideExporter/GuideExporter.csproj" />
+    <ProjectReference Include="../../tools/ExerciseEngine/ExerciseEngine.csproj" />
+    <None Include="../../site/data/coding-exercises.json" Link="coding-exercises.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

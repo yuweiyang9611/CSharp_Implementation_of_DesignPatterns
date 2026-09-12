@@ -20,10 +20,18 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
+      "label": "Project: verify quick",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "scripts/verify.ps1", "-Mode", "Quick"],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
       "label": "Project: verify all",
       "type": "shell",
       "command": "pwsh",
-      "args": ["-NoProfile", "-File", "scripts/verify.ps1", "-SkipPdf"],
+      "args": ["-NoProfile", "-File", "scripts/verify.ps1", "-Mode", "Full", "-SkipPdf"],
       "problemMatcher": [],
       "group": "test"
     }

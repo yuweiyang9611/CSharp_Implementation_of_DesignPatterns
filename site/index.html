@@ -23,9 +23,13 @@
   <link rel="canonical" href="{{PAGES_BASE}}">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/storage-status.css">
+  <script src="assets/storage-status.js" defer></script>
   <script src="assets/progress.js" defer></script>
   <script src="assets/review.js" defer></script>
   <script src="assets/catalog.js" defer></script>
+  <script src="assets/exercises.js" defer></script>
+  <script src="assets/exercise-progress.js" defer></script>
   <script src="assets/app.js" defer></script>
   <script src="assets/search.js" defer></script>
 </head>
@@ -41,7 +45,7 @@
       <a href="#routes">学习路线</a>
       <a href="#patterns">23 种模式</a>
       <a href="#site-search">全文搜索</a>
-      <a href="quiz.html">辨析训练</a>
+      <a href="playground.html">编码练习</a><a href="quiz.html">辨析训练</a>
       <a href="#projects">实战项目</a>
       <a href="#labs">高级实验</a>
       <a class="nav-github" href="{{REPOSITORY_URL}}">GitHub ↗</a>
@@ -126,8 +130,9 @@
         <div><p class="section-kicker">PATTERN ATLAS</p><h2 id="patterns-title">23 种模式，<br>按问题查找</h2></div>
         <div class="progress-panel">
           <div class="progress-copy"><span>我的学习进度</span><strong id="progress-count">0%</strong></div>
-          <div class="progress-track" id="progress-track" role="progressbar" aria-label="课程学习任务进度" aria-valuemin="0" aria-valuemax="116" aria-valuenow="0"><span id="progress-bar"></span></div>
-          <p id="progress-stage-summary">0 / 116 个任务 · 0 / 28 已验证</p>
+          <div class="progress-track" id="progress-track" role="progressbar" aria-label="课程学习任务进度" aria-valuemin="0" aria-valuemax="{{TASK_COUNT}}" aria-valuenow="0"><span id="progress-bar"></span></div>
+          <p><a href="playground.html" id="coding-summary">0 / {{EXERCISE_COUNT}} 道编码练习已通过 →</a></p>
+          <p id="progress-stage-summary">0 / {{TASK_COUNT}} 个任务 · 0 / {{ITEM_COUNT}} 已验证</p>
           <a class="continue-learning" id="continue-learning" href="patterns/iterator.html#evidence-read">从 Iterator 开始：说清变化轴 →</a>
           <p>证据与里程碑只保存在当前浏览器，可随时备份或迁移。</p>
           <div class="progress-actions"><button type="button" id="export-progress">备份 JSON</button><button type="button" id="export-markdown">导出学习记录</button><label for="import-progress">导入备份<input id="import-progress" type="file" accept="application/json,.json"></label><button type="button" id="reset-progress">清空记录</button></div>
@@ -197,8 +202,8 @@
     </section>
 
     <section class="quiz-section" id="quiz" aria-labelledby="quiz-title">
-      <div><p class="section-kicker">DECISION PRACTICE</p><h2 id="quiz-title">会辨析，才算会选择</h2><p>用 6 个业务场景区分最容易混淆的模式；答错题会进入本地间隔复习队列。</p></div>
-      <aside><strong id="review-due-count">6</strong><span>道待练习题</span><a class="button button-primary" href="quiz.html">开始辨析训练 →</a></aside>
+      <div><p class="section-kicker">DECISION PRACTICE</p><h2 id="quiz-title">会辨析，才算会选择</h2><p>用 {{QUIZ_COUNT}} 个业务场景辨析设计模式与简单重构方案；答错题会进入本地间隔复习队列。</p></div>
+      <aside><strong id="review-due-count">{{QUIZ_COUNT}}</strong><span>道待练习题</span><a class="button button-primary" href="quiz.html">开始辨析训练 →</a></aside>
     </section>
 
     <section class="guides-section" id="guides" aria-labelledby="guides-title">

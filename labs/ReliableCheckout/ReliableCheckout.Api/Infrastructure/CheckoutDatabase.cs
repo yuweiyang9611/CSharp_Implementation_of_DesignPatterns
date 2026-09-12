@@ -95,6 +95,47 @@ public sealed class CheckoutDatabase
             """;
         await command.ExecuteNonQueryAsync(cancellationToken);
 
+        // Serialize schema upgrades with other starting processes. DDL and compensation commit together.
+        await using (var transaction = connection.BeginTransaction(deferred: false))
+        {
+            await using var versionCommand = Sql.Command(connection, transaction, "PRAGMA user_version;");
+            var version = Convert.ToInt32(await versionCommand.ExecuteScalarAsync(cancellationToken));
+            if (version > 1) throw new InvalidOperationException("Checkout database was created by a newer application.");
+            if (version == 0)
+            {
+                await Sql.ExecuteAsync(connection, transaction, """
+                    CREATE TABLE reservations (
+                        order_id TEXT PRIMARY KEY REFERENCES orders(id),
+                        state TEXT NOT NULL CHECK(state IN ('Held', 'Consumed', 'Released')),
+                        expires_at TEXT NOT NULL
+                    );
+                    INSERT INTO reservations(order_id, state, expires_at)
+                    SELECT id, CASE WHEN status = 'Paid' THEN 'Consumed' ELSE 'Held' END,
+                        strftime('%Y-%m-%dT%H:%M:%f0000+00:00', created_at, '+15 minutes') FROM orders;
+                    UPDATE inventory SET available = available + COALESCE((
+                        SELECT SUM(o.quantity) FROM orders o JOIN reservations r ON r.order_id = o.id
+                        WHERE o.sku = inventory.sku AND o.status = 'PaymentFailed' AND r.state = 'Held'), 0);
+                    UPDATE reservations SET state = 'Released'
+                        WHERE order_id IN (SELECT id FROM orders WHERE status = 'PaymentFailed');
+                    ALTER TABLE outbox ADD COLUMN lease_token TEXT;
+                    ALTER TABLE outbox ADD COLUMN lease_until TEXT;
+                    ALTER TABLE outbox ADD COLUMN total_attempts INTEGER NOT NULL DEFAULT 0;
+                    ALTER TABLE outbox ADD COLUMN dead_letter_at TEXT;
+                    UPDATE outbox SET total_attempts = attempts;
+                    CREATE TABLE outbox_replays (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_id TEXT NOT NULL REFERENCES outbox(id),
+                        replayed_at TEXT NOT NULL,
+                        attempts INTEGER NOT NULL,
+                        last_error TEXT
+                    );
+                    CREATE INDEX ix_reservations_expiry ON reservations(state, expires_at);
+                    PRAGMA user_version = 1;
+                    """, cancellationToken);
+            }
+            await transaction.CommitAsync(cancellationToken);
+        }
+
         if (seedDemoInventory)
         {
             await using var seed = connection.CreateCommand();

@@ -128,8 +128,16 @@ foreach ($quiz in $catalog.quizzes) {
   foreach ($key in @($quiz.patternKeys)) {
     if (-not $patternSet.Contains($key)) { $issues.Add("quizzes.$($quiz.id).patternKeys references unknown pattern '$key'.") }
   }
-  if (@($quiz.patternKeys) -notcontains $quiz.correctKey) {
-    $issues.Add("quizzes.$($quiz.id).correctKey must appear in patternKeys.")
+  if (@($quiz.options.id | Sort-Object -Unique).Count -ne @($quiz.options).Count) {
+    $issues.Add("quizzes.$($quiz.id).options must have unique ids.")
+  }
+  foreach ($option in $quiz.options) {
+    if ($option.PSObject.Properties.Name -contains 'patternKey' -and -not $patternSet.Contains($option.patternKey)) {
+      $issues.Add("quizzes.$($quiz.id).options references unknown pattern '$($option.patternKey)'.")
+    }
+  }
+  if (@($quiz.options.id) -notcontains $quiz.correctKey) {
+    $issues.Add("quizzes.$($quiz.id).correctKey must appear in options.")
   }
 }
 

@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "exercises": [
+    {
+      "id": "observer-detach",
+      "title": "Observer：取消订阅后停止通知",
+      "kind": "debug",
+      "patternKeys": [
+        "observer"
+      ],
+      "task": "修复 Unsubscribe。取消某个观察者后，它不再收到通知，其余观察者继续收到后续值。",
+      "starter": "using System;\npublic sealed class Subject\n{\n    private event Action<int>? Changed;\n    public void Subscribe(Action<int> observer) => Changed += observer;\n    public void Unsubscribe(Action<int> observer) { }\n    public void Publish(int value) => Changed?.Invoke(value);\n}",
+      "solution": "using System;\npublic sealed class Subject\n{\n    private event Action<int>? Changed;\n    public void Subscribe(Action<int> observer) => Changed += observer;\n    public void Unsubscribe(Action<int> observer) => Changed -= observer;\n    public void Publish(int value) => Changed?.Invoke(value);\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"正常通知\", () => { var s = new Subject(); int value = 0; s.Subscribe(v => value = v); s.Publish(7); return value == 7; }),\n        Check(\"取消后不再通知\", () => { var s = new Subject(); int n = 0; Action<int> a = _ => n++; s.Subscribe(a); s.Publish(1); s.Unsubscribe(a); s.Publish(2); return n == 1; }),\n        Check(\"其他观察者继续工作\", () => { var s = new Subject(); int a = 0, b = 0; Action<int> one = _ => a++; s.Subscribe(one); s.Subscribe(_ => b++); s.Unsubscribe(one); s.Publish(1); return a == 0 && b == 1; })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "用 -= 移除指定委托，不能清空整个事件。验收同时检查取消者停止接收、其他观察者继续接收，防止用“停止所有通知”掩盖缺陷。"
+    },
+    {
+      "id": "command-history",
+      "title": "Command：修复撤销与重做",
+      "kind": "debug",
+      "patternKeys": [
+        "command"
+      ],
+      "task": "补全 Undo/Redo，保持历史栈正确。撤销后新增编辑必须清空旧的重做分支，空历史应抛出 InvalidOperationException。",
+      "starter": "using System.Collections.Generic;\npublic sealed class History\n{\n    private readonly Stack<string> undo = new();\n    private readonly Stack<string> redo = new();\n    public string Text { get; private set; } = \"\";\n    public void Append(string text) { undo.Push(Text); Text += text; }\n    public void Undo() { Text = undo.Pop(); }\n    public void Redo() { Text = redo.Pop(); }\n}",
+      "solution": "using System.Collections.Generic;\npublic sealed class History\n{\n    private readonly Stack<string> undo = new();\n    private readonly Stack<string> redo = new();\n    public string Text { get; private set; } = \"\";\n    public void Append(string text) { undo.Push(Text); Text += text; redo.Clear(); }\n    public void Undo() { var prior = undo.Pop(); redo.Push(Text); Text = prior; }\n    public void Redo() { var next = redo.Pop(); undo.Push(Text); Text = next; }\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"撤销恢复内容\", () => { var h = new History(); h.Append(\"A\"); h.Append(\"B\"); h.Undo(); return h.Text == \"A\"; }),\n        Check(\"重做恢复内容\", () => { var h = new History(); h.Append(\"A\"); h.Undo(); h.Redo(); return h.Text == \"A\"; }),\n        Check(\"新增编辑清除旧分支\", () => { var h = new History(); h.Append(\"A\"); h.Append(\"B\"); h.Undo(); h.Append(\"C\"); try { h.Redo(); return false; } catch (InvalidOperationException) { return h.Text == \"AC\"; } }),\n        Check(\"空历史不改变内容\", () => { var h = new History(); try { h.Undo(); return false; } catch (InvalidOperationException) { return h.Text == \"\"; } })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "撤销前把当前内容放入重做栈，重做前放入撤销栈；新的编辑必须清空重做分支。空历史应抛出明确异常，不能悄悄修改文档。"
+    },
+    {
+      "id": "prototype-isolation",
+      "title": "Prototype：隔离克隆集合",
+      "kind": "debug",
+      "patternKeys": [
+        "prototype"
+      ],
+      "task": "保留标题及所有渠道，克隆后双方对 Channels 的修改不得影响对方。",
+      "starter": "using System.Collections.Generic;\npublic sealed class Campaign\n{\n    public string Title { get; set; } = \"Launch\";\n    public List<string> Channels { get; set; } = new() { \"Email\" };\n    public Campaign Clone() => (Campaign)MemberwiseClone();\n}",
+      "solution": "using System.Collections.Generic;\npublic sealed class Campaign\n{\n    public string Title { get; set; } = \"Launch\";\n    public List<string> Channels { get; set; } = new() { \"Email\" };\n    public Campaign Clone() => new() { Title = Title, Channels = new List<string>(Channels) };\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"初始值相同\", () => { var a = new Campaign { Title = \"Custom\" }; a.Channels.Add(\"Web\"); var b = a.Clone(); return b.Title == \"Custom\" && b.Channels.SequenceEqual(a.Channels); }),\n        Check(\"副本修改不影响原型\", () => { var a = new Campaign(); var b = a.Clone(); b.Channels.Add(\"Mobile\"); return a.Channels.Count == 1; }),\n        Check(\"原型修改不影响副本\", () => { var a = new Campaign(); var b = a.Clone(); a.Channels.Clear(); return b.Channels.Contains(\"Email\"); })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "克隆时复制可变 List，让副本与原对象可以独立编辑。元素是不可变字符串，无需逐个深拷贝；只复制最外层对象会共享内部列表。"
+    },
+    {
+      "id": "state-transitions",
+      "title": "State：拒绝非法转换",
+      "kind": "debug",
+      "patternKeys": [
+        "state"
+      ],
+      "task": "订单只允许 New → Paid 或 New → Cancelled。重复操作以及终态之间的转换必须抛出 InvalidOperationException 并保留状态。",
+      "starter": "public enum Status { New, Paid, Cancelled }\npublic sealed class Order\n{\n    public Status State { get; private set; } = Status.New;\n    public void Pay() => State = Status.Paid;\n    public void Cancel() => State = Status.Cancelled;\n}",
+      "solution": "using System;\npublic enum Status { New, Paid, Cancelled }\npublic sealed class Order\n{\n    public Status State { get; private set; } = Status.New;\n    public void Pay() { EnsureNew(); State = Status.Paid; }\n    public void Cancel() { EnsureNew(); State = Status.Cancelled; }\n    private void EnsureNew() { if (State != Status.New) throw new InvalidOperationException(); }\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"正常支付\", () => { var o = new Order(); o.Pay(); return o.State == Status.Paid; }),\n        Check(\"已取消不能支付\", () => { var o = new Order(); o.Cancel(); try { o.Pay(); return false; } catch(InvalidOperationException) { return o.State == Status.Cancelled; } }),\n        Check(\"已支付不能取消\", () => { var o = new Order(); o.Pay(); try { o.Cancel(); return false; } catch(InvalidOperationException) { return o.State == Status.Paid; } }),\n        Check(\"不能重复支付\", () => { var o = new Order(); o.Pay(); try { o.Pay(); return false; } catch(InvalidOperationException) { return true; } })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "Pay 和 Cancel 只允许从 New 进入终态。把守卫放在状态变化入口，保证终态不能被覆盖，非法操作也不会先修改状态再抛错。"
+    },
+    {
+      "id": "strategy-discount",
+      "title": "Strategy：满 300 减 40",
+      "kind": "extend",
+      "patternKeys": [
+        "strategy"
+      ],
+      "task": "实现一次性满减：金额不足 300 不优惠，达到 300 减 40；不是每满 300 减一次。拒绝负金额。",
+      "starter": "public static class Price\n{\n    public static decimal Total(decimal subtotal) => subtotal;\n}",
+      "solution": "using System;\npublic static class Price\n{\n    public static decimal Total(decimal subtotal)\n    {\n        if (subtotal < 0) throw new ArgumentOutOfRangeException(nameof(subtotal));\n        return subtotal >= 300 ? subtotal - 40 : subtotal;\n    }\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"299 不优惠\", () => Price.Total(299m) == 299m),\n        Check(\"300 边界优惠\", () => Price.Total(300m) == 260m),\n        Check(\"500 只减一次\", () => Price.Total(500m) == 460m),\n        Check(\"600 仍只减一次\", () => Price.Total(600m) == 560m),\n        Check(\"负金额被拒绝\", () => { try { Price.Total(-1m); return false; } catch(ArgumentOutOfRangeException) { return true; } })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "金额达到 300（包括边界）时仅减 40 一次，不能按金额倍数重复减免。先拒绝负金额，再应用明确的阈值规则。"
+    },
+    {
+      "id": "bridge-channel",
+      "title": "Bridge：接入 Matter 渠道",
+      "kind": "extend",
+      "patternKeys": [
+        "bridge"
+      ],
+      "task": "让 Light 委托注入的渠道发送 ON，实现 MatterChannel 返回 Matter:ON。既有 Light 必须能接受任意 IChannel。",
+      "starter": "public interface IChannel { string Send(string command); }\npublic sealed class Light(IChannel channel)\n{\n    public string TurnOn() => \"Zigbee:ON\";\n}\npublic sealed class MatterChannel : IChannel\n{\n    public string Send(string command) => \"\";\n}",
+      "solution": "public interface IChannel { string Send(string command); }\npublic sealed class Light(IChannel channel)\n{\n    public string TurnOn() => channel.Send(\"ON\");\n}\npublic sealed class MatterChannel : IChannel\n{\n    public string Send(string command) => \"Matter:\" + command;\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"Matter 渠道发送\", () => new Light(new MatterChannel()).TurnOn() == \"Matter:ON\"),\n        Check(\"委托任意注入渠道\", () => { var c = new FakeChannel(); var result = new Light(c).TurnOn(); return result == \"accepted\" && c.Last == \"ON\"; })\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\npublic sealed class FakeChannel : IChannel { public string? Last; public string Send(string command) { Last = command; return \"accepted\"; } }",
+      "explanation": "设备只调用 IChannel.Send，新 Matter 渠道实现同一接口即可。验收还注入独立假渠道，确保设备不依赖具体渠道类型或写死消息。"
+    },
+    {
+      "id": "chain-short-circuit",
+      "title": "责任链：第一个失败即停止",
+      "kind": "extend",
+      "patternKeys": [
+        "chain-of-responsibility"
+      ],
+      "task": "按输入顺序执行规则，返回第一个非空错误，其后的规则不得执行。全部成功或空规则返回 null。",
+      "starter": "using System;\nusing System.Collections.Generic;\npublic static class Validation\n{\n    public static string? Run(IEnumerable<Func<string?>> rules)\n    {\n        string? error = null;\n        foreach (var rule in rules) error = rule();\n        return error;\n    }\n}",
+      "solution": "using System;\nusing System.Collections.Generic;\npublic static class Validation\n{\n    public static string? Run(IEnumerable<Func<string?>> rules)\n    {\n        foreach (var rule in rules) { var error = rule(); if (error != null) return error; }\n        return null;\n    }\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"返回第一个失败\", () => Validation.Run(new Func<string?>[] { () => \"first\", () => \"second\" }) == \"first\"),\n        Check(\"失败后不执行\", () => { int count = 0; Validation.Run(new Func<string?>[] { () => \"stop\", () => { count++; return null; } }); return count == 0; }),\n        Check(\"成功规则顺序正确\", () => { string log = \"\"; var result = Validation.Run(new Func<string?>[] { () => { log += \"A\"; return null; }, () => { log += \"B\"; return null; } }); return result == null && log == \"AB\"; }),\n        Check(\"空规则成功\", () => Validation.Run(Array.Empty<Func<string?>>()) == null)\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "按顺序执行校验；出现第一个错误就立即返回，后续有副作用或昂贵的校验不应再调用。全通过时返回 null。"
+    },
+    {
+      "id": "simple-function",
+      "title": "简单函数：不需要新模式",
+      "kind": "extend",
+      "patternKeys": [],
+      "task": "把百分比限制在 0～100。规则固定、没有替换算法的需求，请移除多余的规则接口及实现类，保留 Submission.Clamp(int) 简单函数。",
+      "starter": "public interface IRule { int Apply(int value); }\npublic sealed class PercentageRule : IRule { public int Apply(int value) => value; }\npublic static class Submission\n{\n    public static int Clamp(int value) => new PercentageRule().Apply(value);\n}",
+      "solution": "using System;\npublic static class Submission\n{\n    public static int Clamp(int value) => Math.Clamp(value, 0, 100);\n}",
+      "version": 1,
+      "checks": "using System;\nusing System.Linq;\nusing System.Collections.Generic;\npublic static class ExerciseChecks\n{\n    public static string[] Run() => [\n        Check(\"负值归零\", () => Submission.Clamp(-5) == 0),\n        Check(\"超过 100 截断\", () => Submission.Clamp(120) == 100),\n        Check(\"合法值不变\", () => Submission.Clamp(45) == 45 && Submission.Clamp(0) == 0 && Submission.Clamp(100) == 100),\n        Check(\"移除多余规则接口\", () => !typeof(Submission).Assembly.GetTypes().Any(t => t.IsInterface))\n    ];\n\n    private static string Check(string name, Func<bool> test)\n    {\n        try { return (test() ? \"+\" : \"-\") + name; }\n        catch { return \"-\" + name; }\n    }\n}\n",
+      "explanation": "固定的数值钳制规则用一个纯函数表达即可。边界、区间内数值和上下越界都有验收；删除没有替换需求的 IRule 类层次可减少阅读成本。"
+    }
+  ]
+}

@@ -22,4 +22,5 @@
   <ItemGroup>
     <ProjectReference Include="../ReliableCheckout.Api/ReliableCheckout.Api.csproj" />
   </ItemGroup>
+  <ItemGroup><ProjectReference Include="../ReliableCheckout.ProcessHost/ReliableCheckout.ProcessHost.csproj" ReferenceOutputAssembly="false" /></ItemGroup>
 </Project>

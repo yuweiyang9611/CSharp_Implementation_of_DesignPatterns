@@ -9,6 +9,12 @@
   let quizzes = [];
   let state = { version: 1, questions: {}, updatedAt: null };
   let initialized = false;
+  let storageFailed = false;
+
+  function reportStorage(failed) {
+    storageFailed = failed;
+    window.LearningStorageStatus?.report("review", failed);
+  }
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -40,8 +46,15 @@
   }
 
   function read() {
+    let raw;
     try {
-      return normalize(JSON.parse(localStorage.getItem(storageKey)));
+      raw = localStorage.getItem(storageKey);
+    } catch {
+      reportStorage(true);
+      return state;
+    }
+    try {
+      return normalize(JSON.parse(raw));
     } catch {
       return normalize(null);
     }
@@ -50,8 +63,9 @@
   function write() {
     try {
       localStorage.setItem(storageKey, JSON.stringify(state));
+      reportStorage(false);
     } catch {
-      // Review remains usable for this page when storage is unavailable.
+      reportStorage(true);
     }
   }
 
@@ -129,7 +143,12 @@
   function reset() {
     const previous = snapshot();
     state = { version: 1, questions: {}, updatedAt: Date.now() };
-    try { localStorage.removeItem(storageKey); } catch { /* Optional storage. */ }
+    try {
+      localStorage.removeItem(storageKey);
+      reportStorage(false);
+    } catch {
+      reportStorage(true);
+    }
     notify();
     return previous;
   }
@@ -141,11 +160,11 @@
   }
 
   window.addEventListener("storage", (event) => {
-    if (!initialized || event.key !== storageKey) return;
+    if (!initialized || storageFailed || (event.key !== null && event.key !== storageKey)) return;
     state = read();
     notify();
   });
 
-  const api = Object.freeze({ configure, dueQuestions, record, questionState, stats, snapshot, restore, exportData, reset, subscribe });
+  const api = Object.freeze({ configure, dueQuestions, record, questionState, stats, snapshot, restore, exportData, reset, subscribe, isPersistent: () => !storageFailed });
   window.ReviewScheduler = api;
 })();

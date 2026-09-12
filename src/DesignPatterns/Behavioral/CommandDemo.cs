@@ -29,7 +29,7 @@ public sealed class CommandDemo : IPatternDemo
     }
 
     // Command objects know how to reverse their own changes to the receiver.
-    private interface IEditorCommand
+    internal interface IEditorCommand
     {
         string Description { get; }
 
@@ -41,12 +41,12 @@ public sealed class CommandDemo : IPatternDemo
     }
 
     // Receiver: it contains the actual text-editing behavior.
-    private sealed class TextDocument
+    internal sealed class TextDocument
     {
         internal string Text { get; set; } = string.Empty;
     }
 
-    private sealed class AppendTextCommand : IEditorCommand
+    internal sealed class AppendTextCommand : IEditorCommand
     {
         private readonly TextDocument _document;
         private readonly string _text;
@@ -71,7 +71,7 @@ public sealed class CommandDemo : IPatternDemo
         public void Undo() => _document.Text = _before;
     }
 
-    private sealed class ReplaceTextCommand : IEditorCommand
+    internal sealed class ReplaceTextCommand : IEditorCommand
     {
         private readonly TextDocument _document;
         private readonly string _oldValue;
@@ -102,7 +102,7 @@ public sealed class CommandDemo : IPatternDemo
     }
 
     // Invoker: history is reusable because it depends only on the command interface.
-    private sealed class CommandHistory
+    internal sealed class CommandHistory
     {
         private readonly Stack<IEditorCommand> _undo = new();
         private readonly Stack<IEditorCommand> _redo = new();

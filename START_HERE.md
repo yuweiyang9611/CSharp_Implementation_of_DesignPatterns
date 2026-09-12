@@ -194,7 +194,7 @@ powershell -ExecutionPolicy Bypass -File scripts/run-teaching-projects.ps1 -Self
 ### 最终验证与结束标准
 
 ```powershell
-pwsh -File scripts/verify.ps1 -SkipPdf
+pwsh -File scripts/verify.ps1 -Mode Quick
 powershell -ExecutionPolicy Bypass -File scripts/export-all-guides.ps1
 ```
 
@@ -336,6 +336,8 @@ powershell -ExecutionPolicy Bypass -File scripts/export-all-guides.ps1
 - 需要本机安装 Microsoft Edge、Google Chrome 或 Chromium；找不到浏览器时 HTML 仍会生成，终端会显示其路径。
 - 如果 PDF 正被阅读器占用，先关闭文件再重试。
 - 生成结果在 `output/pdf/`；它是可再生输出，不要求提交到 Git。
-- 只想验证代码时使用 `scripts/verify.ps1 -SkipPdf`，不要让浏览器问题阻断代码练习。
+- 日常代码练习使用 `scripts/verify.ps1 -Mode Quick`；提交前使用 `scripts/verify.ps1 -Mode Full -SkipPdf` 检查格式、覆盖率和浏览器行为。两个档位都需要 PowerShell 7、.NET 10 和 Node.js 24；完整档还需要 Chrome 或 Edge，以及 `dotnet workload install wasm-tools wasm-experimental` 安装的 WebAssembly 工作负载。
 
 下一步：[打开 23 种模式索引](docs/模式索引.md)，选择第一个 Runner key。
+
+浏览器编码入口：学习站“编码练习”。不用本地安装 SDK 即可修改并验收 C#；[构建与练习说明](README.md#浏览器-c-练习与构建) 包含本地运行、草稿备份及完整验证命令。

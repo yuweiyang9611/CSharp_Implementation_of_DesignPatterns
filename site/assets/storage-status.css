@@ -1,0 +1,27 @@
+.storage-warning {
+  position: sticky;
+  top: 80px;
+  z-index: 40;
+  grid-column: 1 / -1;
+  margin: 16px 0;
+  padding: 12px 16px;
+  border: 2px solid #956000;
+  border-radius: 8px;
+  background: #fff4d6;
+  color: #382700;
+  font: 16px/1.6 "Microsoft YaHei", sans-serif;
+  overflow-wrap: anywhere;
+}
+.storage-warning[hidden] { display: none; }
+.storage-warning p { margin: 0 0 8px; color: inherit; }
+.storage-warning button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #382700;
+  border-radius: 4px;
+  background: #382700;
+  color: #fff4d6;
+  font: inherit;
+  cursor: pointer;
+}
+.storage-warning button:focus-visible { outline: 3px solid #005fcc; outline-offset: 3px; }

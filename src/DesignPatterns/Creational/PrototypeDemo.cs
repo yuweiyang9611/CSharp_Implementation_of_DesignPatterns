@@ -35,12 +35,12 @@ public sealed class PrototypeDemo : IPatternDemo
         ];
     }
 
-    private interface IPrototype<out T>
+    internal interface IPrototype<out T>
     {
         T Clone();
     }
 
-    private sealed class CampaignDocument : IPrototype<CampaignDocument>
+    internal sealed class CampaignDocument : IPrototype<CampaignDocument>
     {
         public CampaignDocument(string title, string body, IEnumerable<string> channels)
         {

@@ -6,7 +6,7 @@ using ReliableCheckout.Infrastructure;
 
 namespace ReliableCheckout.Application;
 
-public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogger<CheckoutStore> logger)
+public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogger<CheckoutStore> logger, IConfiguration configuration)
 {
     public async Task<CreateOrderResult> CreateOrderAsync(
         string idempotencyKey,
@@ -75,6 +75,11 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
             now,
             cancellationToken);
 
+        var expiresAt = now.AddMinutes(configuration.GetValue("ReliableCheckout:ReservationMinutes", 15));
+        await Sql.ExecuteAsync(connection, transaction,
+            "INSERT INTO reservations(order_id, state, expires_at) VALUES ($id, 'Held', $expiry);", cancellationToken,
+            ("$id", orderId.ToString()), ("$expiry", FormatTimestamp(expiresAt)));
+
         var outboxId = Guid.NewGuid();
         var payload = JsonSerializer.Serialize(new PaymentRequestedEvent(orderId, total));
         await InsertOutboxAsync(
@@ -99,7 +104,9 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
             PaymentStatus.PendingRequest,
             null,
             now,
-            now);
+            now,
+            "Held",
+            expiresAt);
 
         logger.LogInformation(
             "Created order {OrderId}; reserved {Quantity} of {Sku}; outbox event {OutboxId}",
@@ -156,7 +163,7 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
         await using var connection = await database.OpenConnectionAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, type, attempts, next_attempt_at, processed_at, last_error
+            SELECT id, type, attempts, next_attempt_at, processed_at, last_error, dead_letter_at, total_attempts, lease_until
             FROM outbox ORDER BY occurred_at;
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -168,7 +175,8 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
                 reader.GetInt32(2),
                 ReadNullableTimestamp(reader, 3),
                 ReadNullableTimestamp(reader, 4),
-                reader.IsDBNull(5) ? null : reader.GetString(5)));
+                reader.IsDBNull(5) ? null : reader.GetString(5),
+                ReadNullableTimestamp(reader, 6), reader.GetInt32(7), ReadNullableTimestamp(reader, 8)));
         }
 
         return results;
@@ -306,9 +314,10 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
             SELECT
                 o.id, o.sku, o.quantity, o.unit_price_cents, o.total_cents,
                 o.status, p.status, p.external_payment_id, o.created_at, o.updated_at,
-                o.idempotency_key, o.request_fingerprint
+                o.idempotency_key, o.request_fingerprint, r.state, r.expires_at
             FROM orders o
             JOIN payments p ON p.order_id = o.id
+            JOIN reservations r ON r.order_id = o.id
             WHERE {predicate};
             """;
         command.Parameters.AddWithValue("$value", value);
@@ -325,5 +334,5 @@ public sealed class CheckoutStore(CheckoutDatabase database, IClock clock, ILogg
         Enum.Parse<PaymentStatus>(reader.GetString(6)),
         reader.IsDBNull(7) ? null : reader.GetString(7),
         ParseTimestamp(reader.GetString(8)),
-        ParseTimestamp(reader.GetString(9)));
+        ParseTimestamp(reader.GetString(9)), reader.GetString(12), ParseTimestamp(reader.GetString(13)));
 }
