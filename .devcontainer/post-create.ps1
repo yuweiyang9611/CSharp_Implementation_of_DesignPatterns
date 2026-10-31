@@ -10,8 +10,14 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'Solution build failed.' }
   npm ci --ignore-scripts
   if ($LASTEXITCODE -ne 0) { throw 'Node dependency restore failed.' }
-  dotnet workload install wasm-tools wasm-experimental
-  if ($LASTEXITCODE -ne 0) { throw 'WebAssembly workload installation failed.' }
+  Push-Location tools/BrowserExercises
+  try {
+    dotnet workload install wasm-tools wasm-experimental
+    if ($LASTEXITCODE -ne 0) { throw 'WebAssembly workload installation failed.' }
+  }
+  finally {
+    Pop-Location
+  }
   & (Join-Path $root 'scripts/build-pages.ps1') -NoBuild
   Write-Host 'Ready. Run the VS Code task “Site: preview” to open the learning site on port 4173.'
 }
