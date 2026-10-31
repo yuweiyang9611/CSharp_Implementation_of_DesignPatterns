@@ -244,7 +244,6 @@
     if (!pattern) return;
     const category = categoryMeta[pattern.category];
     document.querySelector("#dialog-category").textContent = `${category.short} · ${category.label}`;
-    document.querySelector("#dialog-number").textContent = String(pattern.number).padStart(2, "0");
     document.querySelector("#dialog-title").textContent = `${pattern.english} / ${pattern.chinese}`;
     document.querySelector("#dialog-intent").textContent = pattern.intent;
     document.querySelector("#dialog-scenario").textContent = pattern.scenario;
@@ -255,6 +254,7 @@
     const current = progress.itemProgress(`pattern:${pattern.key}`);
     document.querySelector("#dialog-progress-summary").textContent = `${current.completed} / ${current.total}`;
     elements.dialog.dataset.pattern = pattern.key;
+    elements.dialog.dataset.number = String(pattern.number).padStart(2, "0");
 
     const url = new URL(window.location.href);
     url.searchParams.set("pattern", pattern.key);

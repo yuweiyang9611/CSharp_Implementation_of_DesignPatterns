@@ -168,6 +168,7 @@ try {
   await page.locator("#pattern-dialog").waitFor({ state: "visible" });
   assert.match(page.url(), /[?&]pattern=adapter/u);
   assert.equal(await page.locator("#dialog-progress-summary").textContent(), "0 / 4");
+  await assertNoSeriousAxeViolations(page, "模式详情对话框");
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => !document.querySelector("#pattern-dialog").open);
 
@@ -237,6 +238,12 @@ try {
   assert.equal(await milestones.nth(1).isEnabled(), true);
   assert.match(await page.locator("#guide-milestone-summary").textContent(), /1 \/ 4/u);
   assert.ok(await page.locator(".toc-chapters > li .toc-sections").count() > 0, "指南目录应按 H2/H3 分组");
+
+  for (const [path, label] of [["guides/learning-path.html", "学习路线指南"], ["guides/repository-overview.html", "仓库总览指南"]]) {
+    await page.goto(`${baseUrl}${path}`);
+    await page.locator(".learning-layout").waitFor();
+    await assertNoSeriousAxeViolations(page, label);
+  }
 
   await page.goto(`${baseUrl}quiz.html`);
   await page.locator("#question-options input").first().waitFor();
