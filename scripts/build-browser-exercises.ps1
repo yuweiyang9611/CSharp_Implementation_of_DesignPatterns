@@ -3,14 +3,16 @@
 param([Parameter(Mandatory)][string]$Destination)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+$project = Join-Path $root 'tools/BrowserExercises'
 $dotnet = if ($env:CSHARP_DESIGN_PATTERNS_WASM_DOTNET) { $env:CSHARP_DESIGN_PATTERNS_WASM_DOTNET } else { 'dotnet' }
-Push-Location $root
+# dotnet looks for global.json from the working directory, so run here to get the project's pinned SDK.
+Push-Location $project
 try {
-  & $dotnet restore tools/BrowserExercises/BrowserExercises.csproj --locked-mode
-  if ($LASTEXITCODE -ne 0) { throw 'Browser restore failed. Install wasm-tools and wasm-experimental for the selected .NET 10 SDK.' }
-  & $dotnet publish tools/BrowserExercises/BrowserExercises.csproj -c Release --no-restore
+  & $dotnet restore BrowserExercises.csproj --locked-mode
+  if ($LASTEXITCODE -ne 0) { throw 'Browser restore failed. Install the SDK pinned in tools/BrowserExercises/global.json, plus wasm-tools and wasm-experimental.' }
+  & $dotnet publish BrowserExercises.csproj -c Release --no-restore
   if ($LASTEXITCODE -ne 0) { throw 'Browser compiler publish failed.' }
-  $output = Join-Path $root 'tools/BrowserExercises/bin/Release/net10.0'
+  $output = Join-Path $project 'bin/Release/net10.0'
   $framework = Join-Path $output 'publish/wwwroot/_framework'
   if (-not (Test-Path $framework)) { throw "Published browser framework is missing: $framework" }
   New-Item -ItemType Directory -Force -Path $Destination | Out-Null

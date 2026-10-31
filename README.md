@@ -208,10 +208,10 @@ scripts/                           验证与导出脚本
 
 草稿和通过记录按题目 ID／版本保存，编辑后撤销当前通过状态。完整 JSON 备份增加可选 exercises 字段，旧备份仍可导入；编码页也可单独备份。保存失败时使用全站统一提示，下载内存中的最新草稿后可恢复。
 
-浏览器项目的 WebAssembly SDK 包锁定于 .NET SDK 10.0.401 对应版本，站点 CI 固定使用该 SDK。完整构建需要 PowerShell 7、.NET SDK 10.0.401、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
+浏览器项目的 WebAssembly SDK 包版本由 SDK 决定，所以 [tools/BrowserExercises/global.json](tools/BrowserExercises/global.json) 把该项目固定在 .NET SDK 10.0.403，站点 CI 也按此文件安装 SDK；解决方案其余部分仍遵循根目录的 `global.json`。升级时改这个文件，再在该目录运行 `dotnet restore --force-evaluate`，一起提交更新后的 `packages.lock.json`。完整构建需要 PowerShell 7、.NET SDK 10.0.403、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
 
 ~~~powershell
-dotnet workload install wasm-tools wasm-experimental
+Push-Location tools/BrowserExercises; dotnet workload install wasm-tools wasm-experimental; Pop-Location
 pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
 # 仅重建站点（含浏览器编译器）
 pwsh -File scripts/build-pages.ps1
