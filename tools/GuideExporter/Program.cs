@@ -214,6 +214,7 @@ internal static partial class MarkdownRenderer
     private static readonly Regex CodeSpanRegex = CreateCodeSpanRegex();
     private static readonly Regex LinkRegex = CreateLinkRegex();
     private static readonly Regex BoldRegex = CreateBoldRegex();
+    private static readonly Regex HtmlCommentRegex = CreateHtmlCommentRegex();
 
     public static string? FindTitle(string markdown)
     {
@@ -222,7 +223,7 @@ internal static partial class MarkdownRenderer
             .Split('\n')
             .Select(line => HeadingRegex.Match(line))
             .Where(match => match.Success && match.Groups[1].Value.Length == 1)
-            .Select(match => match.Groups[2].Value.Trim())
+            .Select(match => RemoveHtmlComments(match.Groups[2].Value).Trim())
             .FirstOrDefault();
     }
 
@@ -326,13 +327,33 @@ internal static partial class MarkdownRenderer
                 continue;
             }
 
+            if (OpensHtmlComment(line))
+            {
+                FlushParagraph();
+                CloseList();
+                while (index + 1 < lines.Length && !lines[index].Contains("-->", StringComparison.Ordinal))
+                {
+                    index++;
+                }
+
+                // Text after the closing marker is still content, so it is read again as its own line.
+                var commentEnd = lines[index].IndexOf("-->", StringComparison.Ordinal);
+                if (commentEnd >= 0)
+                {
+                    lines[index] = lines[index][(commentEnd + 3)..];
+                    index--;
+                }
+
+                continue;
+            }
+
             var headingMatch = HeadingRegex.Match(line);
             if (headingMatch.Success)
             {
                 FlushParagraph();
                 CloseList();
                 var level = headingMatch.Groups[1].Value.Length;
-                var heading = headingMatch.Groups[2].Value.Trim();
+                var heading = RemoveHtmlComments(headingMatch.Groups[2].Value).Trim();
                 var baseId = Slugify(heading);
                 headingIds.TryGetValue(baseId, out var duplicateCount);
                 headingIds[baseId] = duplicateCount + 1;
@@ -355,7 +376,10 @@ internal static partial class MarkdownRenderer
                 }
 
                 body.AppendLine("</tr></thead><tbody>");
-                while (index < lines.Length && lines[index].Contains('|') && !string.IsNullOrWhiteSpace(lines[index]))
+                while (index < lines.Length &&
+                    lines[index].Contains('|') &&
+                    !string.IsNullOrWhiteSpace(lines[index]) &&
+                    !OpensHtmlComment(lines[index]))
                 {
                     body.AppendLine("<tr>");
                     foreach (var cell in SplitTableRow(lines[index]))
@@ -444,6 +468,16 @@ internal static partial class MarkdownRenderer
         return row.Trim().Trim('|').Split('|').Select(cell => cell.Trim()).ToArray();
     }
 
+    private static bool OpensHtmlComment(string line)
+    {
+        return line.TrimStart().StartsWith("<!--", StringComparison.Ordinal);
+    }
+
+    private static string RemoveHtmlComments(string value)
+    {
+        return HtmlCommentRegex.Replace(value, "$1");
+    }
+
     private static string Inline(
         string value,
         string markdownDirectory,
@@ -451,6 +485,7 @@ internal static partial class MarkdownRenderer
         string? repositoryRoot,
         string? repositoryBlobBase)
     {
+        value = RemoveHtmlComments(value);
         var codeTokens = new List<string>();
         value = CodeSpanRegex.Replace(value, match =>
         {
@@ -658,4 +693,8 @@ internal static partial class MarkdownRenderer
 
     [GeneratedRegex(@"\*\*(.+?)\*\*")]
     private static partial Regex CreateBoldRegex();
+
+    // The code span alternative keeps a comment shown as `<!-- example -->` visible.
+    [GeneratedRegex(@"(`[^`]+`)|<!--.*?-->")]
+    private static partial Regex CreateHtmlCommentRegex();
 }

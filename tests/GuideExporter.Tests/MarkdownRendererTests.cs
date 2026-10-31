@@ -111,6 +111,74 @@ public sealed class MarkdownRendererTests
         Assert.DoesNotContain("@@LINK", html, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Render_DropsHtmlCommentsAroundBlocksAndInsideText()
+    {
+        const string markdown = """
+            # Guide
+
+            <!-- BEGIN MARKER -->
+            | A | B |
+            | --- | --- |
+            | 1 | 2 |
+            <!-- END | MARKER -->
+
+            Before <!-- inline note --> after.
+
+            <!-- spans
+            several lines -->
+            Kept paragraph.
+
+            <!-- closes early --> Kept tail.
+            """;
+
+        string html = Render(markdown);
+
+        Assert.DoesNotContain("MARKER", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("inline note", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("several lines", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("closes early", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("&lt;!--", html, StringComparison.Ordinal);
+        Assert.Equal(2, html.Split("<tr>").Length - 1);
+        Assert.Contains("<td>2</td>", html, StringComparison.Ordinal);
+        Assert.Contains("Before  after.", html, StringComparison.Ordinal);
+        Assert.Contains("<p>Kept paragraph.</p>", html, StringComparison.Ordinal);
+        Assert.Contains("<p>Kept tail.</p>", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Render_KeepsCommentSyntaxShownAsCodeAndPageBreaks()
+    {
+        const string markdown = """
+            # Guide
+
+            Write `<!-- pagebreak -->` on its own line.
+
+            <!-- pagebreak -->
+
+            ```html
+            <!-- kept in the sample -->
+            ```
+            """;
+
+        string html = Render(markdown);
+
+        Assert.Contains("<code>&lt;!-- pagebreak --&gt;</code>", html, StringComparison.Ordinal);
+        Assert.Contains("<div class=\"page-break\"></div>", html, StringComparison.Ordinal);
+        Assert.Contains("&lt;!-- kept in the sample --&gt;", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Render_LeavesCommentsOutOfHeadingAnchorsAndTitles()
+    {
+        const string markdown = "# Course <!-- draft -->\n## Setup <!-- omit in toc -->";
+
+        string html = Render(markdown);
+
+        Assert.Equal("Course", MarkdownRenderer.FindTitle(markdown));
+        Assert.Contains("<h2 id=\"setup\">Setup</h2>", html, StringComparison.Ordinal);
+    }
+
     private static string Render(string markdown)
     {
         string root = Path.Combine(Path.GetTempPath(), "guide-renderer-tests");
