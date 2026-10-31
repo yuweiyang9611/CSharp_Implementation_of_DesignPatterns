@@ -208,7 +208,7 @@ scripts/                           验证与导出脚本
 
 草稿和通过记录按题目 ID／版本保存，编辑后撤销当前通过状态。完整 JSON 备份增加可选 exercises 字段，旧备份仍可导入；编码页也可单独备份。保存失败时使用全站统一提示，下载内存中的最新草稿后可恢复。
 
-浏览器项目的 WebAssembly SDK 包版本由 SDK 决定，所以 [tools/BrowserExercises/global.json](tools/BrowserExercises/global.json) 把该项目固定在 .NET SDK 10.0.403，站点 CI 也按此文件安装 SDK；解决方案其余部分仍遵循根目录的 `global.json`。升级时改这个文件，再在该目录运行 `dotnet restore --force-evaluate`，一起提交更新后的 `packages.lock.json`。完整构建需要 PowerShell 7、.NET SDK 10.0.403、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
+浏览器项目的 WebAssembly SDK 包版本由 SDK 和工作负载集决定，所以 [tools/BrowserExercises/global.json](tools/BrowserExercises/global.json) 把该项目固定在 .NET SDK 10.0.403 和同版本的工作负载集，站点 CI 也按此文件安装 SDK；解决方案其余部分仍遵循根目录的 `global.json`。升级时改这个文件里的两个版本，在该目录重新安装工作负载并运行 `dotnet restore --force-evaluate`，一起提交更新后的 `packages.lock.json`。完整构建需要 PowerShell 7、.NET SDK 10.0.403、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
 
 ~~~powershell
 Push-Location tools/BrowserExercises; dotnet workload install wasm-tools wasm-experimental; Pop-Location
@@ -219,7 +219,7 @@ node tests/site-server.mjs
 # 打开 http://localhost:4173/playground.html
 ~~~
 
-安装工作负载需要网络，系统级 SDK 可能需要管理员权限。若 Windows MSI 安装失败，可用微软 dotnet-install.ps1 在仓库外或忽略目录安装独立 SDK，再对该 dotnet.exe 安装工作负载，并设置 CSHARP_DESIGN_PATTERNS_WASM_DOTNET 为它的绝对路径。构建脚本使用此变量选择浏览器 SDK；普通解决方案仍使用 PATH 中的 dotnet。CI 的 site 作业自动安装工作负载并执行真实浏览器回归，Quick 保持无需工作负载。
+安装工作负载需要网络，系统级 SDK 可能需要管理员权限。若 Windows MSI 安装失败，可用微软 dotnet-install.ps1 在仓库外或忽略目录安装独立 SDK，再在 tools/BrowserExercises 目录用该 dotnet.exe 安装工作负载，并设置 CSHARP_DESIGN_PATTERNS_WASM_DOTNET 为它的绝对路径。构建脚本使用此变量选择浏览器 SDK；普通解决方案仍使用 PATH 中的 dotnet。CI 的 site 作业自动安装工作负载并执行真实浏览器回归，Quick 保持无需工作负载。
 
 ~~~powershell
 dotnet test tests/GuideExporter.Tests -c Release --filter FullyQualifiedName~ExerciseTests
