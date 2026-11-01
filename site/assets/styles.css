@@ -312,7 +312,7 @@ h2 { margin: 0; font: 900 clamp(2.35rem, 5vw, 4.4rem)/.98 var(--display); letter
 .dialog-close { position: absolute; right: 1rem; top: .8rem; width: 40px; height: 40px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 300 1.8rem/1 var(--sans); cursor: pointer; }
 .dialog-close:hover { background: var(--ink); color: var(--white); }
 .dialog-category { margin: 0; color: var(--coral-ink); font: 800 .7rem var(--mono); letter-spacing: .12em; }
-.dialog-number { position: absolute; right: 4.8rem; top: 2.3rem; margin: 0; color: #d9d1c3; font: 900 3.8rem/1 var(--display); }
+.pattern-dialog::after { content: attr(data-number) / ""; position: absolute; right: 4.8rem; top: 2.3rem; color: #d9d1c3; font: 900 3.8rem/1 var(--display); }
 .pattern-dialog h2 { max-width: 540px; margin: 1rem 0; font-size: clamp(2.4rem, 7vw, 4.7rem); }
 .dialog-intent { max-width: 590px; margin: 0 0 1.5rem; font-size: 1.05rem; color: #435659; }
 .dialog-scenario { padding: 1.1rem; border-left: 4px solid var(--coral); background: var(--white); }
@@ -326,7 +326,7 @@ h2 { margin: 0; font: 900 clamp(2.35rem, 5vw, 4.4rem)/.98 var(--display); letter
 .dialog-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: 1.4rem; }
 .dialog-progress { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; color: #59696b; font-size: .76rem; font-weight: 800; }
 .button-dark { background: var(--ink); color: var(--white); }
-.dialog-practice { color: #6b7778; font-size: .76rem; font-weight: 800; text-decoration: none; }
+.dialog-practice { color: var(--muted); font-size: .76rem; font-weight: 800; text-decoration: none; }
 .progress-toast { position: fixed; right: 1rem; bottom: 1rem; z-index: 80; padding: .9rem 1rem; background: var(--ink); color: var(--white); box-shadow: var(--shadow); font-size: .82rem; }
 .progress-toast button { min-height: 40px; margin-left: .8rem; padding: 0 .7rem; border: 1px solid var(--amber); background: transparent; color: var(--amber-light); font-weight: 800; cursor: pointer; }
 .progress-toast button { min-height:44px; }
@@ -379,7 +379,7 @@ h2 { margin: 0; font: 900 clamp(2.35rem, 5vw, 4.4rem)/.98 var(--display); letter
   .quality-strip dl { grid-template-columns: repeat(2, 1fr); }
   .site-footer { align-items: flex-start; flex-direction: column; }
   .footer-links { justify-content: flex-start; }
-  .dialog-number { display: none; }
+  .pattern-dialog::after { display: none; }
   .problem-filter-panel > div:first-child { align-items: flex-start; flex-direction: column; gap: .2rem; }
   .problem-filter-list { max-height: 220px; overflow: auto; }
   .pattern-card-footer { align-items: flex-start; flex-direction: column; }
