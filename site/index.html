@@ -36,9 +36,9 @@
 <body>
   <a class="skip-link" href="#main">跳到主要内容</a>
   <header class="site-header">
-    <a class="brand" href="./" aria-label="C# 设计模式学习地图首页">
+    <a class="brand" href="./" aria-label="Design Patterns C# 学习地图首页">
       <span class="brand-mark" aria-hidden="true">{ }</span>
-      <span><strong>Design Patterns</strong><small>C# 学习地图</small></span>
+      <span><strong>Design Patterns</strong> <small>C# 学习地图</small></span>
     </a>
     <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span aria-hidden="true">☰</span><span>菜单</span></button>
     <nav id="site-nav" aria-label="主导航">
@@ -139,7 +139,7 @@
         </div>
       </div>
 
-      <div class="pattern-toolbar" aria-label="筛选设计模式">
+      <div class="pattern-toolbar" role="group" aria-label="筛选设计模式">
         <label class="search-box" for="pattern-search"><span class="search-icon" aria-hidden="true">⌕</span><span class="search-copy"><strong>搜索模式</strong><input id="pattern-search" type="search" placeholder="名称、意图或场景…" autocomplete="off"></span></label>
         <div class="filter-list" role="group" aria-label="按 GoF 分类筛选">
           <button class="filter-button active" type="button" data-category="all" aria-pressed="true">全部 <span>23</span></button>
@@ -230,7 +230,6 @@
   <dialog class="pattern-dialog" id="pattern-dialog" aria-labelledby="dialog-title">
     <button class="dialog-close" type="button" id="dialog-close" aria-label="关闭">×</button>
     <p class="dialog-category" id="dialog-category"></p>
-    <p class="dialog-number" id="dialog-number"></p>
     <h2 id="dialog-title"></h2>
     <p class="dialog-intent" id="dialog-intent"></p>
     <div class="dialog-scenario"><span>示例场景</span><p id="dialog-scenario"></p></div>

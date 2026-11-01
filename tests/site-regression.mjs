@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { join, resolve } from "node:path";
@@ -168,6 +168,7 @@ try {
   await page.locator("#pattern-dialog").waitFor({ state: "visible" });
   assert.match(page.url(), /[?&]pattern=adapter/u);
   assert.equal(await page.locator("#dialog-progress-summary").textContent(), "0 / 4");
+  await assertNoSeriousAxeViolations(page, "模式详情对话框");
   await page.keyboard.press("Escape");
   await page.waitForFunction(() => !document.querySelector("#pattern-dialog").open);
 
@@ -228,6 +229,29 @@ try {
   await page.waitForFunction(() => !document.querySelector('.pattern-card[data-progress-id="pattern:adapter"]').classList.contains("learned"));
   await syncPage.close();
 
+  await page.goto(`${baseUrl}guides/learning-path.html`);
+  const continueLink = page.locator("[data-guide-continue]");
+  assert.equal(await continueLink.isHidden(), true, "首次访问不应在目录下显示空的继续阅读条");
+  assert.equal(await page.locator("[data-guide-prev]").isHidden(), true, "第一章没有上一章链接");
+  assert.match(await page.locator("[data-guide-next]").textContent(), /→/u);
+  assert.equal(await page.locator("[data-guide-next]").isVisible(), true);
+  await page.evaluate(() => localStorage.setItem("csharp-design-patterns-guide-position-v1:learning-path", JSON.stringify({
+    version: 1,
+    headingId: document.querySelector(".learning-layout > main h2[id]").id,
+    updatedAt: Date.now(),
+  })));
+  await page.reload();
+  assert.equal(await continueLink.isVisible(), true, "有阅读位置时应显示继续阅读");
+  assert.match(await continueLink.textContent(), /继续阅读：/u);
+
+  await page.goto(`${baseUrl}guides/pattern-index.html`);
+  assert.equal(await page.locator(".learning-layout > main tbody tr").count(), 23, "模式索引应保留 23 行表格");
+  assert.doesNotMatch(await page.locator(".learning-layout > main").textContent(), /GENERATED PATTERN INDEX/u, "同步脚本的注释标记不应显示");
+  for (const guide of readdirSync(join(siteRoot, "guides")).filter((name) => name.endsWith(".html"))) {
+    const prose = readFileSync(join(siteRoot, "guides", guide), "utf8").replace(/<pre[\s\S]*?<\/pre>|<code>[\s\S]*?<\/code>/gu, "");
+    assert.ok(!prose.includes("&lt;!--"), `${guide} 把 HTML 注释渲染成了可见文字`);
+  }
+
   await page.goto(`${baseUrl}guides/online-store.html`);
   await page.locator(".guide-milestones").waitFor();
   const milestones = page.locator(".guide-milestone [data-progress-task]");
@@ -237,6 +261,12 @@ try {
   assert.equal(await milestones.nth(1).isEnabled(), true);
   assert.match(await page.locator("#guide-milestone-summary").textContent(), /1 \/ 4/u);
   assert.ok(await page.locator(".toc-chapters > li .toc-sections").count() > 0, "指南目录应按 H2/H3 分组");
+
+  for (const [path, label] of [["guides/learning-path.html", "学习路线指南"], ["guides/repository-overview.html", "仓库总览指南"]]) {
+    await page.goto(`${baseUrl}${path}`);
+    await page.locator(".learning-layout").waitFor();
+    await assertNoSeriousAxeViolations(page, label);
+  }
 
   await page.goto(`${baseUrl}quiz.html`);
   await page.locator("#question-options input").first().waitFor();
