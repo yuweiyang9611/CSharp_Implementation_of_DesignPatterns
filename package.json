@@ -9,7 +9,7 @@
     "test:exercises": "node tests/exercise-state.mjs"
   },
   "devDependencies": {
-    "axe-core": "4.13.0",
-    "playwright-core": "1.63.0"
+    "axe-core": "4.14.0",
+    "playwright-core": "1.64.1"
   }
 }
