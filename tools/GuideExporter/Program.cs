@@ -304,7 +304,7 @@ internal static partial class MarkdownRenderer
                         ? string.Empty
                         : $" class=\"language-{WebUtility.HtmlEncode(codeLanguage)}\"";
                     codeBlockCount++;
-                    body.Append($"<pre tabindex=\"0\" aria-label=\"代码块 {codeBlockCount}，可横向滚动\"><code{languageClass}>");
+                    body.Append($"<pre tabindex=\"0\" role=\"group\" aria-label=\"代码块 {codeBlockCount}，可横向滚动\"><code{languageClass}>");
                     body.Append(WebUtility.HtmlEncode(code.ToString().TrimEnd('\r', '\n')));
                     body.AppendLine("</code></pre>");
                     inCode = false;

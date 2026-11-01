@@ -44,7 +44,7 @@ public sealed class MarkdownRendererTests
         Assert.Contains("<code>&lt;tag&gt;</code>", html, StringComparison.Ordinal);
         Assert.Contains("<strong>safe</strong>", html, StringComparison.Ordinal);
         Assert.Contains("if (left &lt; right) return;", html, StringComparison.Ordinal);
-        Assert.Contains("<pre tabindex=\"0\" aria-label=\"代码块 1，可横向滚动\">", html, StringComparison.Ordinal);
+        Assert.Contains("<pre tabindex=\"0\" role=\"group\" aria-label=\"代码块 1，可横向滚动\">", html, StringComparison.Ordinal);
     }
 
     [Fact]
