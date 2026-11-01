@@ -82,7 +82,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
 .guide-toc-list a { display: block; padding: 6px 8px; border-left: 3px solid transparent; color: #24466f; text-decoration: none; }
 .guide-toc-list a:hover, .guide-toc-list a:focus-visible { background: #eef4fc; }
 .guide-toc-list a[aria-current="location"] { border-left-color: #275dad; background: #eef4fc; color: #13294b; font-weight: 800; }
-.guide-continue { display: block; margin-top: 14px; padding: 10px; background: #eef4fc; color: #1c57a5; text-decoration: none; font-weight: 800; }
+.guide-continue:not([hidden]) { display: block; margin-top: 14px; padding: 10px; background: #eef4fc; color: #1c57a5; text-decoration: none; font-weight: 800; }
 .guide-chapter-nav { display: grid; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #ced8e7; }
 .guide-chapter-nav a { color: #24466f; text-decoration: none; font-size: 12px; }
 .guide-top-link { display: inline-block; margin-top: 12px; color: #556176; }

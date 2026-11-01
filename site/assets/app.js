@@ -112,7 +112,7 @@
         <div class="pattern-body">
           <h3>${escapeHtml(pattern.english)}</h3><p class="pattern-chinese">${escapeHtml(pattern.chinese)}模式</p>
           <p class="pattern-intent">${escapeHtml(pattern.intent)}</p>
-          <div class="pattern-problems" aria-label="适用问题">${tags}</div>
+          <div class="pattern-problems" role="group" aria-label="适用问题">${tags}</div>
           <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情 <span aria-hidden="true">→</span></button>
         </div>
         <div class="pattern-card-footer">

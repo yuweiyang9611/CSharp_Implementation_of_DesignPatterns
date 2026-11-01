@@ -490,7 +490,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
     </section>
     <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><p class="lesson-kicker">LEARNING EVIDENCE</p><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
-      <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
+      <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
       <section class="lesson-panel"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="command-box"><div><span>从仓库根目录运行</span><button type="button" data-copy-command="$command">复制命令</button></div><code>$command</code></div><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码 <span>↗</span></a><a href="$($pattern.practiceUrl)">实战项目落点 <span>↗</span></a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节 <span>→</span></a></div></section>
       <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
       <section class="lesson-panel"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
@@ -518,7 +518,7 @@ $fallbackCards = @($patterns | ForEach-Object {
     @"
 <article class="pattern-card $($categoryColors[$pattern.category])">
   <div class="pattern-card-top"><span class="pattern-number">$(('{0:00}' -f $pattern.number))</span><span class="category-badge"><i>$($categoryShort[$pattern.category])</i>$(Encode-Html $categoryLabels[$pattern.category])</span></div>
-  <div class="pattern-body"><h3>$(Encode-Html $pattern.english)</h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件 <span aria-hidden="true">→</span></a></div>
+  <div class="pattern-body"><h3>$(Encode-Html $pattern.english)</h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" role="group" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件 <span aria-hidden="true">→</span></a></div>
   <div class="pattern-card-footer"><a href="patterns/$($pattern.key).html">完整课件</a></div>
 </article>
 "@
