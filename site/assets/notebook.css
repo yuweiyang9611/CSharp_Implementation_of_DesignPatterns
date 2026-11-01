@@ -1,0 +1,285 @@
+/* Shared notebook language for every site under yuweiyang9611.github.io. */
+
+/* Latin UI faces draw Chinese quotes and dashes too narrow, so these come from a CJK face. */
+@font-face {
+  font-family: "NB CJK Marks";
+  font-weight: 400;
+  src: local("Microsoft YaHei UI"), local("Microsoft YaHei"), local("PingFang SC"), local("Noto Sans CJK SC");
+  unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026;
+}
+@font-face {
+  font-family: "NB CJK Marks";
+  font-weight: 700;
+  src: local("Microsoft YaHei UI Bold"), local("Microsoft YaHei Bold"), local("PingFang SC Semibold"), local("Noto Sans CJK SC Bold");
+  unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026;
+}
+
+@view-transition { navigation: auto; }
+
+:root {
+  --nb-paper: #f7f8f6;
+  --nb-sheet: #eef1f2;
+  --nb-ink: #1c2b45;
+  --nb-ink-soft: #4a5870;
+  --nb-rule: #cbd3dc;
+  --nb-rule-strong: #7f8da1;
+  --nb-mark: #b3261e;
+  --nb-select: #c9d6ea;
+  --nb-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+  --nb-sans: "NB CJK Marks", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+  --nb-mono: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, "Microsoft YaHei", monospace;
+  --nb-head-height: 3.25rem;
+  --nb-gutter: clamp(1rem, 4vw, 3rem);
+  --nb-page: 72rem;
+  --nb-measure: 42rem;
+  --nb-inset: max(var(--nb-gutter), calc((100% - var(--nb-page)) / 2 + var(--nb-gutter)));
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --nb-paper: #141b2b;
+  --nb-sheet: #1c2536;
+  --nb-ink: #e6eaf0;
+  --nb-ink-soft: #a9b4c4;
+  --nb-rule: #2f3b52;
+  --nb-rule-strong: #6d7c95;
+  --nb-mark: #f2766c;
+  --nb-select: #33486e;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nb-head-height) + .75rem);
+  scrollbar-color: var(--nb-rule-strong) transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--nb-paper);
+  color: var(--nb-ink);
+  font: 400 1rem/1.75 var(--nb-sans);
+  overflow-wrap: break-word;
+  line-break: strict;
+  text-spacing-trim: trim-start;
+  text-autospace: normal;
+}
+
+h1, h2, h3, h4 { margin: 0; color: inherit; text-wrap: pretty; }
+h1, h2 { font-family: var(--nb-serif); font-weight: 600; line-height: 1.35; }
+h1 { font-size: clamp(1.625rem, 1.4rem + 1vw, 2rem); word-break: keep-all; overflow-wrap: anywhere; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1rem; font-weight: 700; line-height: 1.5; }
+p { margin: 0; text-wrap: pretty; }
+ul, ol { margin: 0; padding: 0; }
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--nb-rule-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: .22em;
+}
+a:hover { text-decoration-color: currentColor; }
+
+::selection { background: var(--nb-select); color: var(--nb-ink); }
+:focus-visible { outline: 2px solid var(--nb-ink); outline-offset: 2px; }
+
+code, kbd, pre, samp { font-family: var(--nb-mono); font-size: .875em; font-variant-ligatures: none; }
+kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 2px; }
+
+.skip-link {
+  position: fixed;
+  top: -5rem;
+  left: 1rem;
+  z-index: 100;
+  padding: .5rem .875rem;
+  background: var(--nb-ink);
+  color: var(--nb-paper);
+}
+.skip-link:focus { top: .5rem; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.nb-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: .375rem .875rem;
+  border: 1px solid var(--nb-rule-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .9375rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nb-button:hover { border-color: var(--nb-ink); }
+.nb-button[disabled] { color: var(--nb-ink-soft); border-style: dashed; cursor: not-allowed; }
+.nb-button--solid { border-color: var(--nb-ink); background: var(--nb-ink); color: var(--nb-paper); }
+
+.nb-input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: .375rem .625rem;
+  border: 1px solid var(--nb-rule-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.nb-input::placeholder { color: var(--nb-ink-soft); opacity: 1; }
+
+/* Running head: one line naming the book, always in reach. */
+.nb-head {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+  min-height: var(--nb-head-height);
+  padding: 0 var(--nb-inset);
+  border-bottom: 1px solid var(--nb-ink);
+  background: var(--nb-paper);
+  view-transition-name: nb-head;
+}
+.nb-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nb-head-height);
+  font-family: var(--nb-serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.nb-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.125rem; font-size: .9375rem; }
+.nb-nav a, .nb-theme {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--nb-ink-soft);
+  text-decoration: none;
+}
+.nb-nav a:hover, .nb-nav a[aria-current], .nb-theme:hover {
+  color: var(--nb-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .32em;
+}
+.nb-theme { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+.nb-nav-toggle {
+  display: none;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: .9375rem;
+  cursor: pointer;
+}
+
+@media (max-width: 56rem) {
+  .js .nb-nav-toggle { display: inline-flex; align-items: center; justify-content: flex-end; }
+  .js .nb-nav--collapsible { display: none; width: 100%; padding-bottom: .5rem; }
+  .js .nb-nav--collapsible.open { display: flex; }
+  .nb-nav--collapsible a, .nb-nav--collapsible .nb-theme { flex: 1 1 40%; }
+}
+
+/* Record line: the gutter shows what has been done. Solid is done, dashed is not done yet.
+   --nb-fraction is how far the solid part reaches, and the stopped tick sits at that point. */
+.nb-entry { position: relative; padding-left: 1.25rem; --nb-fraction: 0; }
+.nb-entry[data-record="done"] { --nb-fraction: 1; }
+.nb-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: -1px;
+  left: 0;
+  width: 2px;
+  border-left: 1px dashed var(--nb-rule-strong);
+  background: linear-gradient(var(--nb-ink), var(--nb-ink)) -1px 0 / 2px calc(var(--nb-fraction) * 100%) no-repeat;
+  transition: background-size .5s cubic-bezier(.16, 1, .3, 1);
+}
+.nb-entry[aria-current]::after {
+  content: "";
+  position: absolute;
+  top: max(.5rem, calc(var(--nb-fraction) * 100%));
+  left: -.25rem;
+  width: .625rem;
+  height: 2px;
+  background: var(--nb-mark);
+}
+
+.nb-stopped { color: var(--nb-mark); font-size: .8125rem; font-weight: 700; line-height: 1.5; }
+
+/* The record itself: a square box, countersigned in red. */
+input[type="checkbox"] {
+  appearance: none;
+  flex: none;
+  display: inline-grid;
+  place-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  border: 1px solid var(--nb-ink);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: .9rem;
+  height: .9rem;
+  background: var(--nb-mark);
+  clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 18%, 84% 6%, 36% 72%);
+  transform: scale(0);
+  transition: transform .18s cubic-bezier(.16, 1, .3, 1);
+}
+input[type="checkbox"]:checked::before { transform: scale(1); }
+input[type="checkbox"]:disabled { border: 1px dashed var(--nb-rule-strong); cursor: not-allowed; }
+
+/* Pasted output: a printout stuck into the page, not a fake window. */
+.nb-paste {
+  margin: 0;
+  padding: .75rem 1rem;
+  border-block: 1px solid var(--nb-rule-strong);
+  background: var(--nb-sheet);
+  font-family: var(--nb-mono);
+  font-size: .875rem;
+  line-height: 1.65;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+}
+
+@media (forced-colors: active) {
+  .nb-entry::before { border-left-color: CanvasText; }
+  .nb-entry[aria-current]::after { background: Highlight; }
+  input[type="checkbox"] { appearance: auto; }
+  input[type="checkbox"]::before { display: none; }
+}
+
+@media print {
+  .nb-head { position: static; }
+  .nb-nav, .nb-nav-toggle { display: none; }
+}

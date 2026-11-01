@@ -168,7 +168,7 @@
     lastSavedHeadingId = saved.headingId;
     continueLink.hidden = false;
     continueLink.href = `#${saved.headingId}`;
-    continueLink.textContent = `继续阅读：${savedHeading.textContent.trim()} →`;
+    continueLink.textContent = `继续阅读：${savedHeading.textContent.trim()}`;
   }
 
   const catalog = window.PatternCatalog;
