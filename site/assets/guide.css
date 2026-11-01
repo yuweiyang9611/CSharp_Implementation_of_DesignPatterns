@@ -114,7 +114,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px soli
   .learning-layout > main h2 { font-size: clamp(28px, 4vw, 36px); }
   .learning-layout > main h3 { font-size: clamp(21px, 3vw, 26px); }
   .learning-layout > main p { text-align: left; }
-  .learning-layout > main p a { text-decoration: underline; text-underline-offset: 3px; }
+  .learning-layout > main a { text-decoration: underline; text-underline-offset: 3px; }
   .learning-layout > main pre { max-width: 100%; white-space: pre; overflow-x: auto; overflow-wrap: normal; }
   .learning-layout > main pre:focus-visible { outline: 3px solid #5a85c2; outline-offset: 3px; }
   .learning-layout > main .table-wrap {

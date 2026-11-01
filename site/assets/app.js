@@ -113,7 +113,7 @@
           <h3>${escapeHtml(pattern.english)}</h3><p class="pattern-chinese">${escapeHtml(pattern.chinese)}模式</p>
           <p class="pattern-intent">${escapeHtml(pattern.intent)}</p>
           <div class="pattern-problems" role="group" aria-label="适用问题">${tags}</div>
-          <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看 ${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}详情">查看详情 <span aria-hidden="true">→</span></button>
+          <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情 <span aria-hidden="true">→</span></button>
         </div>
         <div class="pattern-card-footer">
           <a href="patterns/${pattern.key}.html">完整课件</a>
@@ -244,7 +244,6 @@
     if (!pattern) return;
     const category = categoryMeta[pattern.category];
     document.querySelector("#dialog-category").textContent = `${category.short} · ${category.label}`;
-    document.querySelector("#dialog-number").textContent = String(pattern.number).padStart(2, "0");
     document.querySelector("#dialog-title").textContent = `${pattern.english} / ${pattern.chinese}`;
     document.querySelector("#dialog-intent").textContent = pattern.intent;
     document.querySelector("#dialog-scenario").textContent = pattern.scenario;
@@ -255,6 +254,7 @@
     const current = progress.itemProgress(`pattern:${pattern.key}`);
     document.querySelector("#dialog-progress-summary").textContent = `${current.completed} / ${current.total}`;
     elements.dialog.dataset.pattern = pattern.key;
+    elements.dialog.dataset.number = String(pattern.number).padStart(2, "0");
 
     const url = new URL(window.location.href);
     url.searchParams.set("pattern", pattern.key);

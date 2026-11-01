@@ -68,9 +68,13 @@ internal static class GuideExporter
 
         var profilePath = Path.Combine(Path.GetTempPath(), $"design-pattern-guide-{Guid.NewGuid():N}");
         Directory.CreateDirectory(profilePath);
-        var temporaryPdfPath = Path.Combine(
+        // The browser never creates this directory, so once it is deleted, a browser
+        // that outlives this run fails its write instead of leaving a stray PDF.
+        var temporaryDirectory = Path.Combine(
             outputDirectory,
-            $".{Path.GetFileNameWithoutExtension(outputPath)}.{Guid.NewGuid():N}.tmp.pdf");
+            $".{Path.GetFileNameWithoutExtension(outputPath)}.{Guid.NewGuid():N}.tmp");
+        Directory.CreateDirectory(temporaryDirectory);
+        var temporaryPdfPath = Path.Combine(temporaryDirectory, "export.pdf");
 
         try
         {
@@ -79,6 +83,10 @@ internal static class GuideExporter
                 UseShellExecute = false,
                 CreateNoWindow = true,
             };
+
+            // When this is set, Edge relaunches itself and the launcher exits 0 at once,
+            // leaving a browser that neither its exit code nor Kill below can reach.
+            startInfo.Environment.Remove("__COMPAT_LAYER");
 
             startInfo.ArgumentList.Add("--headless=new");
             startInfo.ArgumentList.Add("--disable-gpu");
@@ -96,31 +104,10 @@ internal static class GuideExporter
             startInfo.ArgumentList.Add($"--print-to-pdf={temporaryPdfPath}");
             startInfo.ArgumentList.Add(new Uri(htmlPath).AbsoluteUri);
 
-            using var process = Process.Start(startInfo)
-                ?? throw new InvalidOperationException("Could not start the browser process.");
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-            try
+            var exitCode = await BrowserPdfExport.RunAsync(startInfo, temporaryPdfPath, TimeSpan.FromSeconds(60));
+            if (exitCode != 0)
             {
-                await process.WaitForExitAsync(timeout.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                if (!process.HasExited)
-                {
-                    process.Kill(entireProcessTree: true);
-                    await process.WaitForExitAsync();
-                }
-
-                Console.Error.WriteLine("Browser PDF export timed out after 60 seconds.");
-                return 5;
-            }
-
-            if (process.ExitCode != 0 ||
-                !File.Exists(temporaryPdfPath) ||
-                new FileInfo(temporaryPdfPath).Length == 0)
-            {
-                Console.Error.WriteLine($"Browser PDF export failed with exit code {process.ExitCode}.");
-                return 4;
+                return exitCode;
             }
 
             if (File.Exists(outputPath))
@@ -140,7 +127,7 @@ internal static class GuideExporter
         {
             try
             {
-                File.Delete(temporaryPdfPath);
+                Directory.Delete(temporaryDirectory, recursive: true);
             }
             catch (IOException)
             {
@@ -180,6 +167,107 @@ internal static class GuideExporter
         }
 
         return Directory.GetCurrentDirectory();
+    }
+}
+
+internal static class BrowserPdfExport
+{
+    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(250);
+    private static readonly byte[] PdfHeader = "%PDF-"u8.ToArray();
+    private static readonly byte[] PdfTrailer = "%%EOF"u8.ToArray();
+
+    public static async Task<int> RunAsync(ProcessStartInfo startInfo, string pdfPath, TimeSpan timeout)
+    {
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Could not start the browser process.");
+        using var cancellation = new CancellationTokenSource(timeout);
+        try
+        {
+            await process.WaitForExitAsync(cancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                await process.WaitForExitAsync();
+            }
+
+            Console.Error.WriteLine($"Browser PDF export timed out after {timeout.TotalSeconds:0} seconds.");
+            return 5;
+        }
+
+        if (process.ExitCode != 0)
+        {
+            Console.Error.WriteLine($"Browser PDF export failed with exit code {process.ExitCode}.");
+            return 4;
+        }
+
+        // Exit code 0 proves nothing about the PDF: Edge also returns it when printing
+        // fails, and a launcher that handed off exits before the real browser writes.
+        if (!await WaitForCompletePdfAsync(pdfPath, PollInterval, cancellation.Token))
+        {
+            Console.Error.WriteLine(
+                $"Browser exited with code 0, but no complete PDF appeared within {timeout.TotalSeconds:0} seconds.");
+            return 4;
+        }
+
+        return 0;
+    }
+
+    public static async Task<bool> WaitForCompletePdfAsync(
+        string path,
+        TimeSpan pollInterval,
+        CancellationToken cancellationToken)
+    {
+        long? previousLength = null;
+        try
+        {
+            while (true)
+            {
+                var length = ReadCompletePdfLength(path);
+                if (length is not null && length == previousLength)
+                {
+                    return true;
+                }
+
+                previousLength = length;
+                await Task.Delay(pollInterval, cancellationToken);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+    }
+
+    private static long? ReadCompletePdfLength(string path)
+    {
+        Span<byte> header = stackalloc byte[PdfHeader.Length];
+        Span<byte> tail = stackalloc byte[PdfTrailer.Length + 2];
+        try
+        {
+            // On Windows this open also fails while the browser still has the file open.
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None);
+            if (stream.Length < header.Length + tail.Length)
+            {
+                return null;
+            }
+
+            stream.ReadExactly(header);
+            stream.Seek(-tail.Length, SeekOrigin.End);
+            stream.ReadExactly(tail);
+            var isComplete = header.SequenceEqual(PdfHeader) && tail.TrimEnd("\r\n"u8).EndsWith(PdfTrailer);
+            return isComplete ? stream.Length : null;
+        }
+        catch (IOException)
+        {
+            return null;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 }
 
