@@ -1,166 +1,128 @@
-:root { --guide-header-offset: 72px; }
-
-html { scroll-padding-top: calc(var(--guide-header-offset) + 16px); }
-body { padding: 0 !important; background: #edf1f7 !important; }
-body > .skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; background: #f0b429; color: #10252a; font-weight: 800; }
-body > .skip-link:focus { top: 1rem; }
-[id] { scroll-margin-top: calc(var(--guide-header-offset) + 16px); }
-a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #f0b429; outline-offset: 3px; }
-
-.learning-site-header {
-  max-width: none !important;
-  min-height: 64px;
-  margin: 0 auto;
-  padding: 12px clamp(18px, 5vw, 64px) !important;
-  background: #10252a;
-  color: #fffdf8;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  box-shadow: 0 6px 20px #10252a30;
-}
-.learning-site-header a { color: inherit; text-decoration: none; }
-.learning-site-brand { min-height: 44px; display: flex; align-items: center; gap: 10px; font-weight: 800; }
-.learning-site-mark { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid #f0b429; color: #f0b429; font: 700 10px Consolas, monospace; }
-.learning-site-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; font-size: 14px; }
-.learning-site-nav a { color: #bdd0cd; }
-.learning-site-nav a:hover { color: #ffd874; }
-.learning-nav-toggle {
-  display: none;
-  min-width: 44px;
-  min-height: 44px;
-  border: 1px solid #587074;
-  background: transparent;
-  color: #fffdf8;
-  font: 700 14px "Microsoft YaHei", sans-serif;
-  cursor: pointer;
-}
-.learning-site-nav a { display: inline-flex; min-height: 44px; align-items: center; }
-.learning-site-nav a[aria-current="page"] { color: #ffd874; text-decoration: underline; text-underline-offset: 5px; }
-
-.learning-layout {
-  width: min(1180px, 100%);
-  margin: 0 auto;
-  padding: 32px 24px 48px;
-  display: grid;
-  grid-template-columns: minmax(220px, 260px) minmax(0, 760px);
-  justify-content: center;
-  align-items: start;
-  gap: 28px;
-}
-.learning-layout.without-toc { grid-template-columns: minmax(0, 760px); }
-.learning-layout > main {
-  width: 100%;
-  min-width: 0;
-  max-width: 760px !important;
-  margin: 0 !important;
-  padding: clamp(34px, 6vw, 68px) clamp(28px, 5vw, 60px) !important;
-}
-.guide-toc {
-  position: sticky;
-  top: calc(var(--guide-header-offset) + 20px);
-  max-height: calc(100vh - var(--guide-header-offset) - 40px);
-  overflow: auto;
-  padding: 16px;
-  border: 1px solid #ced8e7;
-  background: #fff;
-  box-shadow: 0 3px 18px #25344b18;
-  font: 14px/1.45 "Microsoft YaHei", "PingFang SC", sans-serif;
-}
-.guide-toc-title { margin: 0; color: #13294b; font-size: 16px; font-weight: 800; }
-.guide-toc-toggle { display: none; }
-.guide-toc-list { margin-top: 12px; }
-.guide-toc-list ol { margin: 0; padding: 0; list-style: none; }
-.guide-toc-list .toc-sections { margin: 2px 0 8px; }
-.guide-toc-list li { margin: 0; }
-.guide-toc-list li.depth-2 a { padding-left: 14px; color: #556176; font-size: 12px; }
-.guide-toc-list a { display: block; padding: 6px 8px; border-left: 3px solid transparent; color: #24466f; text-decoration: none; }
-.guide-toc-list a:hover, .guide-toc-list a:focus-visible { background: #eef4fc; }
-.guide-toc-list a[aria-current="location"] { border-left-color: #275dad; background: #eef4fc; color: #13294b; font-weight: 800; }
-.guide-continue:not([hidden]) { display: block; margin-top: 14px; padding: 10px; background: #eef4fc; color: #1c57a5; text-decoration: none; font-weight: 800; }
-.guide-chapter-nav { display: grid; gap: 7px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #ced8e7; }
-.guide-chapter-nav a { color: #24466f; text-decoration: none; font-size: 12px; }
-.guide-top-link { display: inline-block; margin-top: 12px; color: #556176; }
-.learning-site-footer { max-width: none !important; margin: 0 auto; padding: 18px; background: #10252a; color: #bdd0cd; text-align: center; font: 14px "Microsoft YaHei", "PingFang SC", sans-serif; }
-.learning-site-footer a { color: #ffd874; text-decoration: underline; text-underline-offset: 3px; }
-.guide-milestones { margin: -18px 0 38px; padding: 24px; border: 1px solid #c9d3df; background: #f1f6fb; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
-.guide-milestones > div:first-child { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: end; }
-.guide-milestones > div:first-child p { grid-column: 1 / -1; margin: 0; color: #1d5b9e; font-size: 11px; font-weight: 900; letter-spacing: .14em; }
-.guide-milestones h2 { margin: 0 !important; padding: 0 !important; border: 0 !important; font-size: 24px !important; }
-#guide-milestone-summary { color: #52647a; font-size: 13px; font-weight: 800; }
-.guide-milestone-list { display: grid; gap: 8px; margin-top: 18px; }
-.guide-milestone { min-height: 58px; padding: 13px; border: 1px solid #b7c7d9; background: #fff; }
-.guide-milestone span,.guide-milestone strong,.guide-milestone code { display: block; }
-.guide-milestone strong { color: #13294b; }
-.guide-milestone-copy p { margin: 3px 0 0 !important; color: #526176; font-size: 13px; }
-.guide-milestone-command { margin-top: 9px; padding: 9px; background: #e9f0f8; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
-.guide-milestone-command code { color: #24466f; overflow-wrap: anywhere; font-size: 11px; }
-.guide-milestone-command button { min-height: 44px; padding: 0 10px; border: 1px solid #7891af; background: #fff; color: #163e70; font-weight: 800; cursor: pointer; }
-.guide-milestone-check { min-height: 48px; margin-top: 9px; padding-top: 9px; border-top: 1px dashed #c5d1de; display: flex; align-items: center; gap: 10px; color: #304b69; font-size: 13px; font-weight: 800; cursor: pointer; }
-.guide-milestone-check input { width: 22px; height: 22px; margin: 0; accent-color: #275dad; }
-.guide-milestone.completed { border-color: #56806b; box-shadow: inset 4px 0 #56806b; }
-.guide-milestone.locked { background: #f4f5f6; border-color: #d2d7dc; }
-.guide-milestone.locked .guide-milestone-check { cursor: not-allowed; }
-.guide-milestone-note { margin: 12px 0 0 !important; color: #626e7b; font-size: 12px; }
-.guide-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
-
+/* The guide exporter embeds print styles in each page. Everything here is for the screen,
+   and loads after them, so print output is unaffected. */
 @media screen {
-  .learning-layout > main h1 { font-size: clamp(34px, 5vw, 48px); text-align: left; letter-spacing: 0; }
-  .learning-layout > main h2 { font-size: clamp(28px, 4vw, 36px); }
-  .learning-layout > main h3 { font-size: clamp(21px, 3vw, 26px); }
-  .learning-layout > main p { text-align: left; }
-  .learning-layout > main a { text-decoration: underline; text-underline-offset: 3px; }
-  .learning-layout > main pre { max-width: 100%; white-space: pre; overflow-x: auto; overflow-wrap: normal; }
-  .learning-layout > main pre:focus-visible { outline: 3px solid #5a85c2; outline-offset: 3px; }
-  .learning-layout > main .table-wrap {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    -webkit-overflow-scrolling: touch;
+  body { padding: 0 !important; background: var(--nb-paper) !important; color: var(--nb-ink); font: 400 1rem/1.75 var(--nb-sans); }
+  html { color: var(--nb-ink); font: 400 1rem/1.75 var(--nb-sans); }
+
+  .learning-site-header { margin: 0; }
+
+  .learning-layout {
+    display: grid;
+    grid-template-columns: minmax(13rem, 17rem) minmax(0, var(--nb-measure));
+    justify-content: start;
+    align-items: start;
+    gap: 3rem;
+    max-width: var(--nb-page);
+    margin: 0 auto;
+    padding: 1.75rem var(--nb-gutter) 3rem;
   }
-  .learning-layout > main .table-wrap:focus-visible { outline: 3px solid #275dad; outline-offset: 3px; }
+  .learning-layout.without-toc { grid-template-columns: minmax(0, var(--nb-measure)); }
+  .learning-layout > main { width: 100%; min-width: 0; max-width: none; margin: 0; padding: 0; background: none; box-shadow: none; }
+
+  .learning-layout > main h1,
+  .learning-layout > main h2 { color: inherit; font-family: var(--nb-serif); font-weight: 600; letter-spacing: 0; text-align: left; }
+  .learning-layout > main h1 { margin: 0 0 1.25rem; font-size: clamp(1.625rem, 1.4rem + 1vw, 2rem); line-height: 1.35; }
+  .learning-layout > main h2 { margin: 2.5rem 0 .75rem; padding: 0 0 .375rem; border-bottom: 1px solid var(--nb-ink); font-size: 1.375rem; line-height: 1.4; }
+  .learning-layout > main h3 { margin: 1.75rem 0 .5rem; padding: 0; border: 0; color: inherit; font-size: 1.0625rem; font-weight: 600; line-height: 1.5; }
+  .learning-layout > main h4 { margin: 1.25rem 0 .375rem; color: inherit; font-size: 1rem; font-weight: 600; }
+  .learning-layout > main p { margin: 0 0 1em; text-align: left; overflow-wrap: anywhere; }
+  .learning-layout > main strong { color: inherit; font-weight: 600; }
+  .learning-layout > main a { color: inherit; text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-decoration-thickness: 1px; text-underline-offset: .22em; }
+  .learning-layout > main a:hover { text-decoration-color: currentColor; }
+  .learning-layout > main ul, .learning-layout > main ol { margin: 0 0 1em; padding-left: 1.5rem; }
+  .learning-layout > main li { margin: .25em 0; }
+  .learning-layout > main hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--nb-rule); }
+  .learning-layout > main blockquote { margin: 1rem 0; padding: 0 0 0 1rem; border-left: 1px solid var(--nb-rule-strong); background: none; color: var(--nb-ink-soft); }
+
+  .learning-layout > main code { padding: .08em .3em; border-radius: 2px; background: var(--nb-sheet); color: inherit; font: .875em/1.6 var(--nb-mono); }
+  .learning-layout > main pre {
+    max-width: 100%;
+    margin: 1rem 0;
+    padding: .75rem 1rem;
+    overflow-x: auto;
+    border: 0;
+    border-block: 1px solid var(--nb-rule-strong);
+    border-radius: 0;
+    background: var(--nb-sheet);
+    color: inherit;
+    font: .875rem/1.65 var(--nb-mono);
+    white-space: pre;
+    overflow-wrap: normal;
+  }
+  .learning-layout > main pre code { padding: 0; background: none; font: inherit; }
+  .learning-layout > main pre:focus-visible, .learning-layout > main .table-wrap:focus-visible { outline: 2px solid var(--nb-ink); outline-offset: 2px; }
+
+  .learning-layout > main .table-wrap { width: 100%; max-width: 100%; min-width: 0; margin: 1rem 0; overflow-x: auto; overscroll-behavior-inline: contain; }
   .learning-layout > main .table-wrap table { min-width: 640px; }
+  .learning-layout > main table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+  .learning-layout > main th, .learning-layout > main td { padding: .5rem .625rem .5rem 0; border: 0; border-bottom: 1px solid var(--nb-rule); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  .learning-layout > main th { border-bottom-color: var(--nb-ink); background: none; color: inherit; font-weight: 600; }
+  .learning-layout > main tr:nth-child(even) td { background: none; }
+
+  /* Contents: the gutter of the page, with the current section marked. */
+  .guide-toc {
+    position: sticky;
+    top: calc(var(--nb-head-height) + 1rem);
+    max-height: calc(100dvh - var(--nb-head-height) - 2rem);
+    overflow: auto;
+    font-size: .875rem;
+    line-height: 1.5;
+  }
+  .guide-toc-title { margin: 0; font-weight: 600; }
+  .guide-toc-toggle { display: none; }
+  .guide-toc-list { margin-top: .5rem; }
+  .guide-toc-list ol { margin: 0; padding: 0; list-style: none; }
+  .guide-toc-list .toc-sections { margin: 0 0 .25rem; }
+  .guide-toc-list li { margin: 0; }
+  .guide-toc-list a {
+    display: block;
+    padding: .25rem 0 .25rem .75rem;
+    border-left: 1px dashed var(--nb-rule-strong);
+    color: var(--nb-ink-soft);
+    text-decoration: none;
+  }
+  .guide-toc-list li.depth-2 a { padding-left: 1.5rem; font-size: .8125rem; }
+  .guide-toc-list a:hover { color: var(--nb-ink); }
+  .guide-toc-list a[aria-current="location"] { border-left: 1px solid var(--nb-ink); color: var(--nb-ink); font-weight: 700; }
+  .guide-continue:not([hidden]) { display: block; margin-top: .75rem; font-weight: 600; text-decoration-color: var(--nb-mark); }
+  .guide-chapter-nav { display: grid; gap: .25rem; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--nb-rule); }
+  .guide-chapter-nav a, .guide-top-link { color: var(--nb-ink-soft); }
+  .guide-top-link { display: inline-block; margin-top: .5rem; }
+
+  .guide-milestones { margin: 0 0 2rem; }
+  .guide-milestones > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 1rem; padding-bottom: .375rem; border-bottom: 1px solid var(--nb-ink); }
+  .learning-layout > main .guide-milestones h2 { margin: 0; padding: 0; border: 0; font-size: 1.125rem; }
+  #guide-milestone-summary { color: var(--nb-ink-soft); font-size: .875rem; font-variant-numeric: tabular-nums; }
+  .guide-milestone { padding-block: .75rem; border-bottom: 1px solid var(--nb-rule); }
+  .guide-milestone.completed { --nb-fraction: 1; }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked)::after { content: ""; position: absolute; top: 0; left: -.25rem; width: .625rem; height: 2px; background: var(--nb-mark); }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong::after { content: "停在这里"; display: block; color: var(--nb-mark); font-size: .8125rem; }
+  .guide-milestone strong { display: block; }
+  .learning-layout > main .guide-milestone-copy p { margin: .125rem 0 0; color: var(--nb-ink-soft); font-size: .9375rem; }
+  .guide-milestone-command { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .75rem; margin-top: .5rem; padding: .25rem .75rem; border-block: 1px solid var(--nb-rule-strong); background: var(--nb-sheet); }
+  .learning-layout > main .guide-milestone-command code { flex: 1 1 100%; min-width: 0; padding: 0; background: none; overflow-x: auto; white-space: pre; }
+  .guide-milestone-command button { min-height: 2.75rem; padding: 0; border: 0; background: none; color: var(--nb-ink-soft); font: inherit; font-size: .875rem; text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-underline-offset: .22em; cursor: pointer; }
+  .guide-milestone-check { display: flex; align-items: center; gap: .625rem; min-height: 2.75rem; margin-top: .25rem; font-size: .9375rem; cursor: pointer; }
+  .guide-milestone.locked { color: var(--nb-ink-soft); }
+  .guide-milestone.locked .guide-milestone-check { cursor: not-allowed; }
+  .learning-layout > main .guide-milestone-note { margin: .5rem 0 0; color: var(--nb-ink-soft); font-size: .875rem; }
+  .guide-announcement { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .learning-site-footer { padding: 1rem var(--nb-inset); border-top: 1px solid var(--nb-rule); color: var(--nb-ink-soft); font-size: .875rem; }
 }
 
-@media (max-width: 900px) {
-  .learning-site-header { align-items: center !important; flex-flow: row wrap !important; gap: 8px !important; }
-  .learning-site-brand { min-width: 0; flex: 1; }
-  .js .learning-nav-toggle { display: inline-grid; place-items: center; }
-  .learning-site-nav { width: 100%; padding-top: 8px; border-top: 1px solid #355057; }
-  .js .learning-site-nav { display: none !important; }
-  .js .learning-site-nav.open { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px !important; }
-  .learning-site-nav a { min-height: 44px; }
-  .learning-layout { display: block; width: 100%; padding: 0; }
-  .guide-toc { position: relative; top: auto; z-index: 20; max-height: none; padding: 10px 18px; border-width: 0 0 1px; box-shadow: 0 5px 14px #25344b20; }
-  .guide-toc-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .js .guide-toc-toggle { display: inline-flex; min-height: 44px; align-items: center; padding: 0 12px; border: 1px solid #8ca0ba; background: #fff; color: #13294b; font: 700 14px "Microsoft YaHei", sans-serif; }
+@media screen and (max-width: 56rem) {
+  .learning-layout { display: block; padding: 0 var(--nb-gutter) 2.5rem; }
+  .guide-toc { position: static; max-height: none; padding-block: .25rem; border-bottom: 1px solid var(--nb-rule); }
+  .guide-toc-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .js .guide-toc-toggle { display: inline-flex; align-items: center; min-height: 2.75rem; padding: 0; border: 0; background: none; color: var(--nb-ink-soft); font: inherit; text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-underline-offset: .22em; cursor: pointer; }
   .js .guide-toc-list, .js .guide-continue, .js .guide-chapter-nav, .js .guide-top-link { display: none; }
-  .guide-toc.open { max-height: calc(100vh - var(--guide-header-offset)); overflow: auto; }
-  .js .guide-toc.open .guide-toc-list, .js .guide-toc.open .guide-continue:not([hidden]), .js .guide-toc.open .guide-chapter-nav, .js .guide-toc.open .guide-top-link { display: block; }
+  .js .guide-toc.open .guide-toc-list, .js .guide-toc.open .guide-continue:not([hidden]), .js .guide-toc.open .guide-top-link { display: block; }
   .js .guide-toc.open .guide-chapter-nav { display: grid; }
-  .learning-layout > main { max-width: none !important; padding: 30px 18px 48px !important; box-shadow: none !important; }
-  .guide-milestones { margin: 0 0 30px; padding: 18px; }
-  .guide-milestones > div:first-child { grid-template-columns: 1fr; }
-  .learning-layout > main h1 { margin-top: 0; font-size: clamp(30px, 9vw, 42px); line-height: 1.22; }
-  .learning-layout > main h2 { margin-top: 38px; padding-bottom: 10px; font-size: clamp(25px, 7vw, 32px); }
-  .learning-layout > main h3 { margin-top: 30px; font-size: clamp(20px, 5.5vw, 25px); }
-  .learning-layout > main h4 { font-size: 18px; }
-  .learning-layout > main p { text-align: left; overflow-wrap: anywhere; }
-  .learning-layout > main ul, .learning-layout > main ol { margin-left: 0; padding-left: 24px; }
-  .learning-layout > main th, .learning-layout > main td { overflow-wrap: anywhere; }
-  .learning-site-footer { max-width: none !important; }
+  .learning-layout > main { padding-top: 1.25rem; }
 }
 
 @media print {
-  body { background: white !important; }
   .learning-site-header, .learning-site-footer, .guide-toc, body > .skip-link { display: none !important; }
-  .learning-layout { display: block; width: auto; margin: 0; padding: 0; }
-  .learning-layout > main { max-width: 178mm !important; padding: 0 !important; box-shadow: none !important; }
+  .learning-layout { display: block; }
 }

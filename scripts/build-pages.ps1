@@ -153,14 +153,14 @@ foreach ($core in $coreCatalog) {
       id = 'change'; kind = 'change'; title = '制造一个最小变化'; href = '#evidence-change'
       task = $templateText
       target = [string]$extra.source
-      acceptance = @('修改前写下输出预测。', ('只修改“{0}”附近的代码。' -f $extra.changeAxis), '客户端原有使用方式保持不变。')
+      acceptance = @('修改前写下输出预测。', '只修改隔离这个变化的代码。', '客户端原有使用方式保持不变。')
     },
     [pscustomobject][ordered]@{
       id = 'verify'; kind = 'verify'; title = '验证并解释取舍'; href = '#evidence-verify'
       task = "运行全部模式烟雾测试，再回答为什么此场景不优先使用 $($extra.related[0])。"
       command = 'dotnet run --project tests/DesignPatterns.SmokeTests --configuration Release'
       reflectionPattern = [string]$extra.related[0]
-      acceptance = @('烟雾测试通过 23/23。', ('我能结合“{0}”解释选择。' -f $extra.whenUse))
+      acceptance = @('烟雾测试通过 23/23。', ('我能结合“{0}”解释选择。' -f $extra.whenUse.TrimEnd('。')))
     }
   )
   $patterns.Add([pscustomobject][ordered]@{
@@ -285,6 +285,8 @@ foreach ($page in $pages) {
   <meta name="twitter:image" content="$imageUrl">
   <link rel="canonical" href="$pageUrl">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <script src="../assets/theme.js"></script>
+  <link rel="stylesheet" href="../assets/notebook.css">
   <link rel="stylesheet" href="../assets/guide.css">
   $jsonLd
 "@
@@ -334,7 +336,7 @@ foreach ($page in $pages) {
   <nav class="guide-toc-list" id="guide-toc-list" aria-label="本页目录">$tocItems</nav>
   <a class="guide-continue" data-guide-continue hidden></a>
   <nav class="guide-chapter-nav" aria-label="章节导航"><a data-guide-prev hidden></a><a data-guide-next hidden></a></nav>
-  <a class="guide-top-link" href="#main">返回顶部 ↑</a>
+  <a class="guide-top-link" href="#main">返回顶部</a>
 </aside>
 "@
   }
@@ -352,25 +354,34 @@ foreach ($page in $pages) {
     $milestoneCards = @($item.milestones | ForEach-Object {
         $milestone = $_
         $commandHtml = if ($milestone.PSObject.Properties.Name -contains 'command') {
-          '<div class="guide-milestone-command"><code>' + (Encode-Html $milestone.command) + '</code><button type="button" data-copy-command="' + (Encode-Html $milestone.command) + '">复制命令</button></div>'
+          '<div class="guide-milestone-command"><code tabindex="0">' + (Encode-Html $milestone.command) + '</code><button type="button" data-copy-command="' + (Encode-Html $milestone.command) + '">复制命令</button></div>'
         } else { '' }
-        '<article class="guide-milestone"><div class="guide-milestone-copy"><strong>' + (Encode-Html $milestone.title) + '</strong><p>' +
+        '<article class="guide-milestone nb-entry"><div class="guide-milestone-copy"><strong>' + (Encode-Html $milestone.title) + '</strong><p>' +
           (Encode-Html $milestone.task) + '</p>' + $commandHtml + '</div><label class="guide-milestone-check"><input type="checkbox" data-progress-task="' +
           (Encode-Html $milestone.id) + '"><span>我已完成：' + (Encode-Html $milestone.title) + '</span></label></article>'
       }) -join ''
-    $milestonePanel = '<section class="guide-milestones" aria-labelledby="guide-milestones-title"><div><p>PROJECT MILESTONES</p><h2 id="guide-milestones-title">用可验证里程碑推进</h2><span id="guide-milestone-summary">0 / ' + $item.milestones.Count + ' 已完成</span></div><div class="guide-milestone-list">' + $milestoneCards + '</div><p class="guide-milestone-note">里程碑必须按顺序完成；记录会与首页的课程进度同步。</p></section>'
+    $milestonePanel = '<section class="guide-milestones" aria-labelledby="guide-milestones-title"><div><h2 id="guide-milestones-title">用可验证里程碑推进</h2><span id="guide-milestone-summary">0 / ' + $item.milestones.Count + ' 已完成</span></div><div class="guide-milestone-list">' + $milestoneCards + '</div><p class="guide-milestone-note">里程碑必须按顺序完成；记录会与首页的课程进度同步。</p></section>'
   }
   $header = @"
-<header class="learning-site-header">
-  <a class="learning-site-brand" href="../index.html"><span class="learning-site-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
-  <button class="learning-nav-toggle" type="button" aria-expanded="false" aria-controls="learning-site-nav">菜单</button>
-  <nav class="learning-site-nav" id="learning-site-nav" aria-label="课程导航"><a href="learning-path.html"$currentLearning>学习路线</a><a href="pattern-index.html"$currentPatterns>23 种模式</a><a href="projects.html"$currentProjects>实战项目</a><a href="labs.html"$currentLabs>高级实验</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../playground.html">编码练习</a><a href="../index.html">返回首页</a></nav>
+<header class="learning-site-header nb-head">
+  <a class="learning-site-brand nb-brand" href="../index.html">C# 设计模式</a>
+  <button class="learning-nav-toggle nb-nav-toggle" type="button" aria-expanded="false" aria-controls="learning-site-nav">菜单</button>
+  <nav class="learning-site-nav nb-nav nb-nav--collapsible" id="learning-site-nav" aria-label="课程导航"><a href="pattern-index.html"$currentPatterns>模式</a><a href="learning-path.html"$currentLearning>路线</a><a href="../playground.html">编码练习</a><a href="../quiz.html">辨析训练</a><a href="projects.html"$currentProjects>项目</a><a href="labs.html"$currentLabs>实验</a><a href="../index.html#site-search">搜索</a><a href="$repositoryUrl">GitHub</a><a href="https://yuweiyang9611.github.io/">全部项目</a></nav>
 </header>
 "@
   $footer = '<footer class="learning-site-footer">内容来自同一 GitHub 仓库并随主分支自动更新 · <a href="../index.html">返回学习地图</a></footer>'
 
   $html = $html.Replace('</head>', $metadata + '</head>')
-  $html = $html.Replace('<body><main>', '<body data-guide-id="' + $guideId + '"' + $learningAttribute + '><a class="skip-link" href="#main">跳到正文</a>' + $header + '<div class="' + $layoutClass + '">' + $toc + '<main id="main">' + $milestonePanel)
+  $html = $html.Replace('<body><main>', '<body data-guide-id="' + $guideId + '"' + $learningAttribute + '><a class="skip-link" href="#main">跳到正文</a>' + $header + '<div class="' + $layoutClass + '">' + $toc + '<main id="main">')
+  $html = [regex]::Replace($html, '<h1\b[^>]*>.*?</h1>', {
+      param($match)
+      [regex]::Replace($match.Value, '(\d) (?=\p{IsCJKUnifiedIdeographs})', '$1&nbsp;')
+    }, [Text.RegularExpressions.RegexOptions]::Singleline)
+  if ($milestonePanel) {
+    # After the title, so a guide opens with what it is before its checklist.
+    if ($html.Contains('</h1>')) { $html = ([regex]'</h1>').Replace($html, '</h1>' + $milestonePanel.Replace('$', '$$'), 1) }
+    else { $html = $html.Replace('<main id="main">', '<main id="main">' + $milestonePanel) }
+  }
   $html = $html.Replace('</head>', '<link rel="stylesheet" href="../assets/storage-status.css"></head>')
   $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/storage-status.js" defer></script><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script></body>')
   [IO.File]::WriteAllText($outputPath, $html, [Text.UTF8Encoding]::new($false))
@@ -397,8 +408,8 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
     }) -join ''
   $previous = if ($index -gt 0) { $patterns[$index - 1] } else { $null }
   $next = if ($index -lt $patterns.Count - 1) { $patterns[$index + 1] } else { $null }
-  $previousHtml = if ($null -ne $previous) { '<a href="' + $previous.key + '.html">← ' + (Encode-Html $previous.english) + '</a>' } else { '<a href="../index.html#patterns">← 返回模式地图</a>' }
-  $nextHtml = if ($null -ne $next) { '<a href="' + $next.key + '.html">' + (Encode-Html $next.english) + ' →</a>' } else { '<a href="../guides/practice.html">进入组合项目 →</a>' }
+  $previousHtml = if ($null -ne $previous) { '<a href="' + $previous.key + '.html">上一个：' + (Encode-Html $previous.english) + '</a>' } else { '<a href="../index.html#patterns">返回模式地图</a>' }
+  $nextHtml = if ($null -ne $next) { '<a href="' + $next.key + '.html">下一个：' + (Encode-Html $next.english) + '</a>' } else { '<a href="../guides/practice.html">进入组合项目</a>' }
   $jsonLd = Get-JsonLdScript -Value ([ordered]@{
       '@context' = 'https://schema.org'
       '@type' = 'LearningResource'
@@ -411,13 +422,12 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       teaches = @($pattern.intent, $pattern.changeAxis)
       isPartOf = [ordered]@{ '@type' = 'Course'; name = 'C# 设计模式学习地图'; url = $pagesBase }
     })
-  $command = 'dotnet run --project src/DesignPatterns.Runner -- ' + $pattern.key
   $evidenceCardsHtml = @($pattern.evidenceCards | ForEach-Object {
       $card = $_
       $commandHtml = ''
       if ($card.PSObject.Properties.Name -contains 'command') {
         $encodedCommand = Encode-Html $card.command
-        $commandHtml = '<div class="evidence-command"><button type="button" data-copy-command="' + $encodedCommand + '">复制命令</button><code>' + $encodedCommand + '</code></div>'
+        $commandHtml = '<div class="evidence-command"><code tabindex="0">' + $encodedCommand + '</code><button type="button" data-copy-command="' + $encodedCommand + '">复制命令</button></div>'
       }
       $expectedHtml = ''
       if ($card.PSObject.Properties.Name -contains 'expectedOutput') {
@@ -426,7 +436,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       }
       $targetHtml = ''
       if ($card.PSObject.Properties.Name -contains 'target') {
-        $targetHtml = '<p class="evidence-target">修改入口：<a href="' + (Encode-Html $pattern.sourceUrl) + '"><code>' + (Encode-Html $card.target) + '</code> ↗</a></p>'
+        $targetHtml = '<p class="evidence-target">修改入口：<a href="' + (Encode-Html $pattern.sourceUrl) + '"><code>' + (Encode-Html $card.target) + '</code></a></p>'
       }
       $acceptanceHtml = ''
       if ($card.PSObject.Properties.Name -contains 'acceptance') {
@@ -434,8 +444,8 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
         $acceptanceHtml = '<ul class="evidence-acceptance">' + $items + '</ul>'
       }
       @"
-<article class="evidence-card" id="evidence-$($card.id)" data-evidence-card="$($card.id)">
-  <p class="evidence-kind">$(Encode-Html $card.kind)</p>
+<article class="evidence-card nb-entry" id="evidence-$($card.id)" data-evidence-card="$($card.id)">
+
   <h3 id="$($pattern.key)-evidence-$($card.id)-title">$(Encode-Html $card.title)</h3>
   <p>$(Encode-Html $card.task)</p>
   $targetHtml$commandHtml$expectedHtml$acceptanceHtml
@@ -466,6 +476,8 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <meta name="twitter:image" content="$imageUrl">
   <link rel="canonical" href="$pageUrl">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <script src="../assets/theme.js"></script>
+  <link rel="stylesheet" href="../assets/notebook.css">
   <link rel="stylesheet" href="../assets/pattern.css">
   <title>$(Encode-Html $title)</title>
   $jsonLd
@@ -477,21 +489,21 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
 </head>
 <body data-pattern-key="$($pattern.key)">
   <a class="skip-link" href="#main">跳到正文</a>
-  <header class="lesson-header">
-    <a class="lesson-brand" href="../index.html"><span class="lesson-mark" aria-hidden="true">{ }</span><span>C# 设计模式学习地图</span></a>
-    <button class="lesson-nav-toggle" id="lesson-nav-toggle" type="button" aria-expanded="false" aria-controls="lesson-nav">菜单</button>
-    <nav class="lesson-nav" id="lesson-nav" aria-label="课程导航"><a href="../guides/learning-path.html">学习路线</a><a href="../index.html#patterns" aria-current="page">23 种模式</a><a href="../guides/projects.html">实战项目</a><a href="../index.html#site-search">全文搜索</a><a href="../quiz.html">辨析训练</a><a href="../playground.html">编码练习</a><a href="$repositoryUrl">GitHub ↗</a></nav>
+  <header class="lesson-header nb-head">
+    <a class="lesson-brand nb-brand" href="../index.html">C# 设计模式</a>
+    <button class="lesson-nav-toggle nb-nav-toggle" id="lesson-nav-toggle" type="button" aria-expanded="false" aria-controls="lesson-nav">菜单</button>
+    <nav class="lesson-nav nb-nav nb-nav--collapsible" id="lesson-nav" aria-label="课程导航"><a href="../index.html#patterns" aria-current="page">模式</a><a href="../guides/learning-path.html">路线</a><a href="../playground.html">编码练习</a><a href="../quiz.html">辨析训练</a><a href="../guides/projects.html">项目</a><a href="../guides/labs.html">实验</a><a href="../index.html#site-search">搜索</a><a href="$repositoryUrl">GitHub</a><a href="https://yuweiyang9611.github.io/">全部项目</a></nav>
   </header>
   <main class="lesson-main" id="main">
     <p class="lesson-breadcrumb"><a href="../index.html#patterns">模式地图</a> / $(Encode-Html $categoryLabels[$pattern.category]) / $(Encode-Html $pattern.english)</p>
-    <section class="lesson-hero" data-number="$(('{0:00}' -f $pattern.number))">
-      <div class="lesson-copy"><p class="lesson-kicker">$(Encode-Html $categoryLabels[$pattern.category]) · Pattern $(('{0:00}' -f $pattern.number))</p><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
+    <section class="lesson-hero">
+      <div class="lesson-copy"><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
       <aside class="lesson-progress"><p>我的证据进度</p><strong id="lesson-progress-count">0 / 4</strong><div class="lesson-progress-track" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</p></aside>
     </section>
-    <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><p class="lesson-kicker">LEARNING EVIDENCE</p><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
+    <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
       <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
-      <section class="lesson-panel"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="command-box"><div><span>从仓库根目录运行</span><button type="button" data-copy-command="$command">复制命令</button></div><code>$command</code></div><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码 <span>↗</span></a><a href="$($pattern.practiceUrl)">实战项目落点 <span>↗</span></a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节 <span>→</span></a></div></section>
+      <section class="lesson-panel"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码</a><a href="$($pattern.practiceUrl)">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
       <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
       <section class="lesson-panel"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
       <section class="lesson-panel full"><h2>相似模式对比</h2><ul class="related-list">$relatedHtml</ul></section>
@@ -516,10 +528,9 @@ $fallbackCards = @($patterns | ForEach-Object {
         '<span>' + (Encode-Html $tagById[$_].label) + '</span>'
       }) -join ''
     @"
-<article class="pattern-card $($categoryColors[$pattern.category])">
+<article class="pattern-card nb-entry $($categoryColors[$pattern.category])">
   <div class="pattern-card-top"><span class="pattern-number">$(('{0:00}' -f $pattern.number))</span><span class="category-badge"><i>$($categoryShort[$pattern.category])</i>$(Encode-Html $categoryLabels[$pattern.category])</span></div>
-  <div class="pattern-body"><h3>$(Encode-Html $pattern.english)</h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" role="group" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件 <span aria-hidden="true">→</span></a></div>
-  <div class="pattern-card-footer"><a href="patterns/$($pattern.key).html">完整课件</a></div>
+  <div class="pattern-body"><h3><a href="patterns/$($pattern.key).html">$(Encode-Html $pattern.english)</a></h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" role="group" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件</a></div>
 </article>
 "@
   }) -join "`n"

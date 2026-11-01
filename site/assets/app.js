@@ -104,19 +104,19 @@
     const taskLabel = current.verified ? "4 / 4 · 已验证" : `${current.completed} / ${current.total} · ${escapeHtml(current.nextTask.title)}`;
 
     return `
-      <article class="pattern-card ${category.color}${current.verified ? " learned" : ""}" data-progress-id="${id}">
+      <article class="pattern-card nb-entry ${category.color}${current.verified ? " learned" : ""}" data-progress-id="${id}">
         <div class="pattern-card-top">
           <span class="pattern-number">${String(pattern.number).padStart(2, "0")}</span>
+          <span class="nb-stopped" hidden>停在这里</span>
           <span class="category-badge"><i>${category.short}</i>${category.label}</span>
         </div>
         <div class="pattern-body">
-          <h3>${escapeHtml(pattern.english)}</h3><p class="pattern-chinese">${escapeHtml(pattern.chinese)}模式</p>
+          <h3><a href="patterns/${pattern.key}.html">${escapeHtml(pattern.english)}</a></h3><p class="pattern-chinese">${escapeHtml(pattern.chinese)}模式</p>
           <p class="pattern-intent">${escapeHtml(pattern.intent)}</p>
           <div class="pattern-problems" role="group" aria-label="适用问题">${tags}</div>
-          <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情 <span aria-hidden="true">→</span></button>
+          <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情</button>
         </div>
         <div class="pattern-card-footer">
-          <a href="patterns/${pattern.key}.html">完整课件</a>
           <a class="pattern-task-link" href="${taskUrl}">${taskLabel}</a>
         </div>
       </article>`;
@@ -134,7 +134,21 @@
     ].join(" ").toLocaleLowerCase("zh-CN");
   }
 
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey || elements.dialog.open) return;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+    event.preventDefault();
+    elements.search.focus();
+  });
+
+  function focusSiteSearch() {
+    if (window.location.hash === "#site-search") document.querySelector("#site-search-input").focus({ preventScroll: true });
+  }
+  window.addEventListener("hashchange", focusSiteSearch);
+  focusSiteSearch();
+
   function renderProblemFilters() {
+    if (activeProblems.size > 0) elements.problemFilters.closest("details").open = true;
     const counts = new Map();
     for (const pattern of patterns) {
       for (const id of pattern.problemTags) counts.set(id, (counts.get(id) ?? 0) + 1);
@@ -199,7 +213,7 @@
       const link = container.querySelector("a");
       const nextTask = current.nextTask ?? item.tasks[0];
       link.href = itemTaskUrl(item, nextTask);
-      link.textContent = current.verified ? "全部完成，重新复习 →" : `下一步：${nextTask.title} →`;
+      link.textContent = current.verified ? "全部完成，重新复习" : `下一步：${nextTask.title}`;
     }
   }
 
@@ -209,16 +223,16 @@
     elements.progressSummary.textContent = `${summary.earnedTasks} / ${summary.totalTasks} 个任务 · ${summary.verifiedItems} / ${summary.totalItems} 已验证`;
     elements.progressTrack.setAttribute("aria-valuenow", String(summary.earnedTasks));
     elements.progressTrack.setAttribute("aria-valuemax", String(summary.totalTasks));
-    elements.progressBar.style.width = `${summary.percent}%`;
+    elements.progressBar.style.transform = `scaleX(${summary.percent / 100})`;
 
     const resume = progress.resumeItem();
     if (resume) {
       elements.continueLink.href = resume.url;
       elements.continueLink.textContent = summary.verifiedItems === summary.totalItems
-        ? "全部完成，选择一个主题复习 →"
+        ? "全部完成，选择一个主题复习"
         : summary.earnedTasks === 0
-          ? `从 ${resume.title} 开始：${resume.nextAction} →`
-          : `继续学习：${resume.title} · ${resume.nextAction} →`;
+          ? `从 ${resume.title} 开始：${resume.nextAction}`
+          : `继续学习：${resume.title} · ${resume.nextAction}`;
     }
 
     document.querySelectorAll(".pattern-card[data-progress-id]").forEach((card) => {
@@ -226,6 +240,11 @@
       const pattern = patterns.find((candidate) => `pattern:${candidate.key}` === card.dataset.progressId);
       if (!current || !pattern) return;
       card.classList.toggle("learned", current.verified);
+      card.style.setProperty("--nb-fraction", String(current.total ? current.completed / current.total : 0));
+      const stopped = summary.earnedTasks > 0 && resume?.id === card.dataset.progressId;
+      card.toggleAttribute("aria-current", stopped);
+      if (stopped) card.setAttribute("aria-current", "true");
+      card.querySelector(".nb-stopped").hidden = !stopped;
       const link = card.querySelector(".pattern-task-link");
       const nextTask = current.nextTask ?? pattern.evidenceCards[0];
       link.href = itemTaskUrl({ url: `patterns/${pattern.key}.html` }, nextTask);
@@ -500,7 +519,7 @@
   setTerminalExpanded(!compactMedia.matches);
   progress.subscribe(updateProgress);
   review?.subscribe(updateProgress);
-  exercises?.subscribe(() => { const stats = exercises.stats(); document.querySelector("#coding-summary").textContent = `${stats.passed} / ${stats.total} 道编码练习已通过 →`; });
+  exercises?.subscribe(() => { const stats = exercises.stats(); document.querySelector("#coding-summary").textContent = `${stats.passed} / ${stats.total} 道编码练习已通过`; });
   renderPatterns();
   const requestedPattern = new URL(window.location.href).searchParams.get("pattern");
   if (requestedPattern) openPattern(requestedPattern, { pushHistory: false });

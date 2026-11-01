@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10252a">
+  <meta name="theme-color" content="#f7f8f6">
   <meta name="description" content="在浏览器中编译、运行并验证 {{EXERCISE_COUNT}} 道 C# 练习。">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="C# 设计模式学习地图">
@@ -22,6 +22,8 @@
   <title>浏览器 C# 编码练习 · C# 设计模式学习地图</title>
   <link rel="canonical" href="{{PAGES_BASE}}playground.html">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script src="assets/theme.js"></script>
+  <link rel="stylesheet" href="assets/notebook.css">
   <link rel="stylesheet" href="assets/playground.css">
   <link rel="stylesheet" href="assets/storage-status.css">
   <script src="assets/storage-status.js" defer></script>
@@ -31,16 +33,15 @@
 </head>
 <body>
   <a class="skip-link" href="#main">跳到编码练习</a>
-  <header class="quiz-header"><a href="index.html"><span aria-hidden="true">{ }</span>C# 设计模式学习地图</a><nav aria-label="课程导航"><a href="index.html">学习地图</a><a href="quiz.html">辨析训练</a><a href="guides/learning-path.html">学习路线</a></nav></header>
+  <header class="quiz-header nb-head"><a class="nb-brand" href="index.html">C# 设计模式</a><nav class="nb-nav" aria-label="课程导航"><a href="index.html#patterns">模式</a><a href="guides/learning-path.html">路线</a><a href="playground.html" aria-current="page">编码练习</a><a href="quiz.html">辨析训练</a><a href="guides/projects.html">项目</a><a href="guides/labs.html">实验</a><a href="index.html#site-search">搜索</a><a href="{{REPOSITORY_URL}}">GitHub</a><a href="https://yuweiyang9611.github.io/">全部项目</a></nav></header>
   <main id="main" class="playground-main">
-    <p>C# CODE PRACTICE</p><h1>把判断写成代码。</h1>
-    <p>{{EXERCISE_COUNT}} 道改错与扩展练习。先预测行为，再运行验收；编码完成度单独统计。</p>
+    <h1>编码练习</h1>
+    <p class="playground-lead">{{EXERCISE_COUNT}} 道改错与扩展练习。先预测行为，再运行验收；编码完成度单独统计。</p>
     <p id="exercise-progress" role="status">正在读取记录…</p>
     <label for="exercise-select">选择练习</label><select id="exercise-select"></select>
     <p id="exercise-task"></p><p id="current-result"></p>
     <div class="editor-grid">
-      <section aria-label="代码编辑"><label for="code-editor">C# 源码</label><textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="runtime-limits"></textarea>
-        <div class="actions"><button id="run-code" type="button">运行验收</button><button id="stop-code" type="button" disabled>停止</button><button id="reset-code" type="button">恢复初始代码</button></div>
+      <section aria-label="代码编辑"><div class="actions"><button id="run-code" type="button">运行验收</button><button id="stop-code" type="button" disabled>停止</button><button id="reset-code" type="button">恢复初始代码</button></div><label for="code-editor">C# 源码</label><textarea id="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="runtime-limits"></textarea>
         <p id="runtime-limits">首次运行按需下载编译环境。源码上限 100 KB，输出上限 64 KB；加载、编译、执行分别限时 60、30、5 秒。支持纯 C#、集合和 LINQ；不支持安装 NuGet 包。</p>
       </section>
       <section class="results" aria-label="验收结果"><p id="run-status" role="status">准备运行</p><h2>编译诊断</h2><pre id="diagnostics"></pre><h2>逐项验收</h2><ul id="check-results"></ul><h2>输出与异常</h2><pre id="output"></pre></section>
