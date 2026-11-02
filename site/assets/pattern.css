@@ -14,7 +14,7 @@
   border-bottom: 1px solid var(--nb-rule-bold);
 }
 .lesson-copy h1 { display: inline; }
-.lesson-chinese { display: inline; margin-left: .75rem; color: var(--nb-ink-soft); font-family: var(--nb-serif); font-size: 1.125rem; font-weight: 600; }
+.lesson-chinese { display: inline; margin-left: .75rem; color: var(--nb-ink-soft); font-size: 1.125rem; font-weight: 600; }
 .lesson-intent { max-width: var(--nb-measure); margin-top: .5rem; }
 .lesson-progress { font-size: .875rem; color: var(--nb-ink-soft); }
 .lesson-progress strong { display: block; color: var(--nb-ink); font-size: 1.125rem; font-variant-numeric: tabular-nums; }
@@ -122,7 +122,7 @@
 .related-list a { display: inline-flex; flex-direction: column; min-height: 2.75rem; justify-content: center; }
 .related-list span { color: var(--nb-ink-soft); font-size: .875rem; }
 
-.lesson-pager { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; font-family: var(--nb-serif); font-weight: 600; }
+.lesson-pager { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; font-weight: 600; }
 .lesson-pager a { display: inline-flex; align-items: center; min-height: 2.75rem; }
 
 .lesson-footer { padding: 1rem var(--nb-inset); border-top: 1px solid var(--nb-rule); color: var(--nb-ink-soft); font-size: .875rem; }

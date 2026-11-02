@@ -1,17 +1,11 @@
 /* Shared notebook language for every site under yuweiyang9611.github.io. */
 
-/* Latin UI faces draw Chinese quotes and dashes too narrow, so these come from a CJK face. */
+/* Noto Sans SC draws the middle dot full width, which opens wide gaps in labels such as "a · b". */
 @font-face {
-  font-family: "NB CJK Marks";
-  font-weight: 400;
-  src: local("Microsoft YaHei UI"), local("Microsoft YaHei"), local("PingFang SC"), local("Noto Sans CJK SC");
-  unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026;
-}
-@font-face {
-  font-family: "NB CJK Marks";
-  font-weight: 700;
-  src: local("Microsoft YaHei UI Bold"), local("Microsoft YaHei Bold"), local("PingFang SC Semibold"), local("Noto Sans CJK SC Bold");
-  unicode-range: U+2014, U+2018-2019, U+201C-201D, U+2026;
+  font-family: "NB Dot";
+  font-weight: 100 900;
+  src: local("Segoe UI"), local("Helvetica Neue"), local("Roboto"), local("Arial");
+  unicode-range: U+00B7;
 }
 
 @view-transition { navigation: auto; }
@@ -50,9 +44,8 @@
   --nb-rule-bold: var(--nb-ink);
   --nb-fill: var(--nb-blue);
   --nb-on-fill: var(--nb-paper);
-  --nb-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
-  --nb-sans: "NB CJK Marks", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
-  --nb-mono: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, "Microsoft YaHei", monospace;
+  --nb-sans: "NB Dot", "Noto Sans SC", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+  --nb-mono: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", monospace;
   --nb-head-height: 3.25rem;
   --nb-gutter: clamp(1rem, 4vw, 3rem);
   --nb-page: 72rem;
@@ -114,10 +107,11 @@ body {
 }
 
 h1, h2, h3, h4 { margin: 0; color: inherit; text-wrap: pretty; }
-h1, h2 { font-family: var(--nb-serif); font-weight: 600; line-height: 1.35; }
+h1, h2 { font-weight: 600; line-height: 1.35; }
 h1 { font-size: clamp(1.625rem, 1.4rem + 1vw, 2rem); word-break: keep-all; overflow-wrap: anywhere; }
 h2 { font-size: 1.375rem; }
-h3 { font-size: 1rem; font-weight: 700; line-height: 1.5; }
+h3 { font-size: 1rem; font-weight: 600; line-height: 1.5; }
+b, strong { font-weight: 600; }
 p { margin: 0; text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; }
 
@@ -207,7 +201,6 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   display: inline-flex;
   align-items: center;
   min-height: var(--nb-head-height);
-  font-family: var(--nb-serif);
   font-size: 1.0625rem;
   font-weight: 600;
   color: inherit;
@@ -224,7 +217,7 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
 .nb-nav a:hover, .nb-theme button:hover { color: var(--nb-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; }
 .nb-nav a[aria-current], .nb-theme button[aria-pressed="true"] {
   color: var(--nb-link);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: .32em;
@@ -280,7 +273,7 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
 /* The stopped row is the one row with a fill, so the eye finds it in a long register. */
 .nb-entry[aria-current] { background: var(--nb-stopped-wash); }
 
-.nb-stopped { color: var(--nb-stopped); font-size: .875rem; font-weight: 700; line-height: 1.5; }
+.nb-stopped { color: var(--nb-stopped); font-size: .875rem; font-weight: 600; line-height: 1.5; }
 
 /* The record itself: a square box, ticked in green. */
 input[type="checkbox"] {

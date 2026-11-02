@@ -61,7 +61,7 @@
 #runtime-limits { color: var(--nb-ink-soft); font-size: .875rem; }
 
 .results { padding-left: 1rem; border-left: 1px solid var(--nb-rule); }
-.results h2 { margin-top: 1rem; font-family: var(--nb-sans); font-size: .9375rem; }
+.results h2 { margin-top: 1rem; font-size: .9375rem; }
 #run-status { min-height: 1.75em; font-weight: 600; }
 #check-results { padding-left: 1.25rem; }
 #diagnostics:empty::before, #output:empty::before, #check-results:empty::before { content: "运行后显示在这里"; color: var(--nb-ink-soft); font: .875rem/1.65 var(--nb-sans); }

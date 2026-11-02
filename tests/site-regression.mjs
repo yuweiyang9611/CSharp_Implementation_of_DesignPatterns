@@ -337,6 +337,8 @@ try {
   assert.ok(codeColors.keywords > 0 && codeColors.types > 0, "C# 代码块应带语法配色");
   assert.equal(codeColors.same, true, "语法配色不能改变代码文本");
   assert.equal(await mobile.locator(".nb-theme button").count(), 2, "页头应提供白天和晚上两种配色");
+  const fontFamilies = await mobile.evaluate(() => new Set(["body", ".nb-brand", "h1", "h2", "h3"].map((selector) => getComputedStyle(document.querySelector(selector)).fontFamily)).size);
+  assert.equal(fontFamilies, 1, "标题和正文应使用同一种字体");
 
   await mobile.goto(`${baseUrl}patterns/adapter.html`);
   await mobile.locator(".lesson-main").waitFor();

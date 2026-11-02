@@ -13,7 +13,7 @@
 
 .section-head { margin-bottom: .75rem; }
 .section-head p { max-width: var(--nb-measure); margin-top: .125rem; color: var(--nb-ink-soft); font-size: .9375rem; }
-.field-label { font-family: var(--nb-sans); font-size: 1rem; font-weight: 700; }
+.field-label { font-size: 1rem; font-weight: 600; }
 .field-note { color: var(--nb-ink-soft); font-size: .875rem; }
 
 /* First screen: where you stopped, beside the thing to run. */
@@ -26,8 +26,7 @@
 .continue-learning {
   display: block;
   margin-top: 1rem;
-  font-family: var(--nb-serif);
-  font-size: clamp(1.25rem, 1.1rem + .6vw, 1.5rem);
+  font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.45;
   text-decoration-color: var(--nb-stopped);
@@ -90,7 +89,7 @@
 .filter-button:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; }
 .filter-button[aria-pressed="true"] {
   color: var(--nb-hue, var(--nb-link));
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: .32em;
@@ -166,8 +165,8 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
 #site-search-form button { flex: none; }
 #site-search-results { list-style: none; margin-top: .5rem; border-top: 1px solid var(--nb-rule); }
 #site-search-results li { padding-block: .625rem; border-bottom: 1px solid var(--nb-rule); }
-#site-search-results a { display: block; font-weight: 700; }
-#site-search-results strong { font-weight: 700; }
+#site-search-results a { display: block; font-weight: 600; }
+#site-search-results strong { font-weight: 600; }
 #site-search-results span { display: block; color: var(--nb-ink-soft); font-size: .875rem; font-weight: 400; }
 #site-search-results p { color: var(--nb-ink-soft); font-size: .875rem; }
 #site-search-results mark { background: var(--nb-blue-wash); color: inherit; }

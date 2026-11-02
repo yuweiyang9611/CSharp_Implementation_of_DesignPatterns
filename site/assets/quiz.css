@@ -4,7 +4,7 @@ main { max-width: var(--nb-page); margin: 0 auto; padding: 1.5rem var(--nb-gutte
 .quiz-hero p { max-width: var(--nb-measure); margin-top: .5rem; color: var(--nb-ink-soft); }
 .quiz-hero dl { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin: 0; }
 .quiz-hero dl div { display: flex; gap: .375rem; align-items: baseline; }
-.quiz-hero dt { font-weight: 700; font-variant-numeric: tabular-nums; }
+.quiz-hero dt { font-weight: 600; font-variant-numeric: tabular-nums; }
 #quiz-mastered { color: var(--nb-done); }
 .quiz-hero dd { order: 1; margin: 0; color: var(--nb-ink-soft); font-size: .875rem; }
 
@@ -21,7 +21,7 @@ main { max-width: var(--nb-page); margin: 0 auto; padding: 1.5rem var(--nb-gutte
   cursor: pointer;
 }
 .quiz-toolbar button:hover, .quiz-empty button:hover { color: var(--nb-ink); }
-.quiz-toolbar button[aria-pressed="true"] { color: var(--nb-link); font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .32em; }
+.quiz-toolbar button[aria-pressed="true"] { color: var(--nb-link); font-weight: 600; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .32em; }
 .quiz-empty button { text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-underline-offset: .22em; }
 .quiz-toolbar #reset-review { margin-left: auto; color: var(--nb-wrong); font-size: .875rem; }
 
