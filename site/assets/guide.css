@@ -32,7 +32,7 @@
   .learning-layout > main ul, .learning-layout > main ol { margin: 0 0 1em; padding-left: 1.5rem; }
   .learning-layout > main li { margin: .25em 0; }
   .learning-layout > main hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--nb-rule); }
-  .learning-layout > main blockquote { margin: 1rem 0; padding: .625rem .875rem; border: 0; background: var(--nb-caution-wash); color: inherit; }
+  .learning-layout > main blockquote { margin: 1rem 0; padding: 0 0 0 1rem; border: 0; border-left: 1px solid var(--nb-rule-strong); background: none; color: inherit; }
   .learning-layout > main blockquote > :last-child { margin-bottom: 0; }
 
   .learning-layout > main code { padding: .08em .3em; border-radius: 2px; background: var(--nb-sheet); color: var(--nb-code); font: .875em/1.6 var(--nb-mono); }

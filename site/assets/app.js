@@ -12,7 +12,7 @@
   document.documentElement.classList.add("js");
 
   const categoryMeta = {
-    Creational: { label: "创建型", short: "C", hue: "yellow" },
+    Creational: { label: "创建型", short: "C", hue: "blue" },
     Structural: { label: "结构型", short: "S", hue: "purple" },
     Behavioral: { label: "行为型", short: "B", hue: "cyan" },
   };

@@ -18,34 +18,29 @@
 
 :root {
   --nb-paper: #f4efe4;
-  --nb-sheet: #ece6d9;
+  --nb-sheet: #e7e0d0;
   --nb-ink: #25211b;
-  --nb-ink-soft: #4d463b;
-  --nb-rule: #cfc6b3;
-  --nb-rule-strong: #6f6656;
+  --nb-ink-soft: #4a4338;
+  --nb-rule: #bdb39e;
+  --nb-rule-strong: #6a6152;
   --nb-select: #d9d0ba;
-  /* Seven colours, each with one job. All pass 7:1 on paper, on sheet and on every wash, in both schemes.
+  /* Five colours, each with one job. Orange and yellow are left out on purpose: at 7:1 they turn brown,
+     the same family as the warm paper, and stop standing out.
+     All pass 7:1 on paper, on sheet and on every wash, in both schemes.
      tests/home.mjs enforces this, so check a new value there before keeping it. */
-  --nb-red: #950c26;
-  --nb-red-wash: #fce0e0;
-  --nb-orange: #743a00;
-  --nb-orange-wash: #f8e3d5;
-  --nb-yellow: #574900;
-  --nb-yellow-wash: #f6ecc6;
-  --nb-green: #005528;
-  --nb-green-wash: #daeede;
-  --nb-cyan: #02525a;
-  --nb-cyan-wash: #d2eef1;
-  --nb-blue: #03469a;
-  --nb-blue-wash: #dce9fc;
-  --nb-purple: #652f8c;
-  --nb-purple-wash: #ede3f8;
+  --nb-red: #90031e;
+  --nb-red-wash: #ffdddb;
+  --nb-green: #01521d;
+  --nb-green-wash: #d5eed8;
+  --nb-cyan: #034d58;
+  --nb-cyan-wash: #c9eef6;
+  --nb-blue: #103f9c;
+  --nb-blue-wash: #dae7fe;
+  --nb-purple: #66278a;
   --nb-wrong: var(--nb-red);
   --nb-wrong-wash: var(--nb-red-wash);
-  --nb-stopped: var(--nb-orange);
-  --nb-stopped-wash: var(--nb-orange-wash);
-  --nb-caution: var(--nb-yellow);
-  --nb-caution-wash: var(--nb-yellow-wash);
+  --nb-stopped: var(--nb-blue);
+  --nb-stopped-wash: var(--nb-blue-wash);
   --nb-done: var(--nb-green);
   --nb-done-wash: var(--nb-green-wash);
   --nb-run: var(--nb-cyan);
@@ -69,27 +64,22 @@
 @media screen {
 :root[data-theme="dark"] {
   --nb-paper: #1c1a17;
-  --nb-sheet: #26231f;
+  --nb-sheet: #2c2924;
   --nb-ink: #e2dac9;
-  --nb-ink-soft: #bdb3a0;
-  --nb-rule: #3d3932;
-  --nb-rule-strong: #8f8675;
+  --nb-ink-soft: #c4baa7;
+  --nb-rule: #4c473e;
+  --nb-rule-strong: #958c7b;
   --nb-select: #4a4437;
-  --nb-red: #fb9b9b;
-  --nb-red-wash: #352221;
-  --nb-orange: #eba674;
-  --nb-orange-wash: #332419;
-  --nb-yellow: #c9b563;
-  --nb-yellow-wash: #2c2816;
-  --nb-green: #80c593;
-  --nb-green-wash: #1c2c20;
-  --nb-cyan: #65c3ce;
-  --nb-cyan-wash: #142c2f;
-  --nb-blue: #92b7ef;
-  --nb-blue-wash: #1e2836;
-  --nb-purple: #c8a9e5;
-  --nb-purple-wash: #2c2433;
-  --nb-rule-bold: #8f8675;
+  --nb-red: #ffa19d;
+  --nb-red-wash: #3d2322;
+  --nb-green: #88ca91;
+  --nb-green-wash: #1d3120;
+  --nb-cyan: #67c8db;
+  --nb-cyan-wash: #0f3137;
+  --nb-blue: #9abcf9;
+  --nb-blue-wash: #202b3f;
+  --nb-purple: #d1adec;
+  --nb-rule-bold: #958c7b;
   --nb-fill: #1e4e95;
   --nb-on-fill: #f4efe4;
   color-scheme: dark;
@@ -98,8 +88,6 @@
 
 /* A site's own groups, such as topics or categories, borrow one colour for a word or a number. */
 [data-hue="red"] { --nb-hue: var(--nb-red); }
-[data-hue="orange"] { --nb-hue: var(--nb-orange); }
-[data-hue="yellow"] { --nb-hue: var(--nb-yellow); }
 [data-hue="green"] { --nb-hue: var(--nb-green); }
 [data-hue="cyan"] { --nb-hue: var(--nb-cyan); }
 [data-hue="blue"] { --nb-hue: var(--nb-blue); }
@@ -340,8 +328,8 @@ input[type="checkbox"]:disabled { border: 1px dashed var(--nb-rule-strong); curs
   .tok-type { color: var(--nb-cyan); }
   .tok-call { color: var(--nb-blue); }
   .tok-string { color: var(--nb-green); }
-  .tok-number { color: var(--nb-orange); }
-  .tok-meta { color: var(--nb-yellow); }
+  .tok-number { color: var(--nb-purple); }
+  .tok-meta { color: var(--nb-ink-soft); }
 }
 
 @media (prefers-reduced-motion: reduce) {

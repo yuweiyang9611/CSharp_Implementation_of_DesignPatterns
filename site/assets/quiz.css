@@ -5,7 +5,6 @@ main { max-width: var(--nb-page); margin: 0 auto; padding: 1.5rem var(--nb-gutte
 .quiz-hero dl { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin: 0; }
 .quiz-hero dl div { display: flex; gap: .375rem; align-items: baseline; }
 .quiz-hero dt { font-weight: 700; font-variant-numeric: tabular-nums; }
-#quiz-due { color: var(--nb-caution); }
 #quiz-mastered { color: var(--nb-done); }
 .quiz-hero dd { order: 1; margin: 0; color: var(--nb-ink-soft); font-size: .875rem; }
 

@@ -170,7 +170,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
 #site-search-results strong { font-weight: 700; }
 #site-search-results span { display: block; color: var(--nb-ink-soft); font-size: .875rem; font-weight: 400; }
 #site-search-results p { color: var(--nb-ink-soft); font-size: .875rem; }
-#site-search-results mark { background: var(--nb-caution-wash); color: inherit; }
+#site-search-results mark { background: var(--nb-blue-wash); color: inherit; }
 
 /* Ruled rows for everything else, on the same columns as the register. */
 .rows { list-style: none; border-top: 1px solid var(--nb-rule-bold); }
@@ -192,7 +192,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
 .guide-list .row { grid-template-columns: calc(var(--col-key) + var(--col-gap) + var(--col-name)) minmax(0, 1fr); }
 
 .quiz-line { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; color: var(--nb-ink-soft); }
-.quiz-line strong { color: var(--nb-caution); font-size: 1.125rem; font-variant-numeric: tabular-nums; }
+.quiz-line strong { color: var(--nb-ink); font-size: 1.125rem; font-variant-numeric: tabular-nums; }
 
 .records .field-note { max-width: var(--nb-measure); }
 .progress-actions {

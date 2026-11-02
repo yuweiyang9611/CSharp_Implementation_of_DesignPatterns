@@ -505,7 +505,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
       <section class="lesson-panel" data-hue="cyan"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码</a><a href="$($pattern.practiceUrl)">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
       <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
-      <section class="lesson-panel" data-hue="yellow"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
+      <section class="lesson-panel" data-hue="red"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
       <section class="lesson-panel full"><h2>相似模式对比</h2><ul class="related-list">$relatedHtml</ul></section>
     </div>
     <nav class="lesson-pager" aria-label="模式课件导航">$previousHtml$nextHtml</nav>
@@ -520,7 +520,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
 
 $homePath = Join-Path $stageDirectory 'index.html'
 $homeHtml = Get-Content -LiteralPath $homePath -Raw -Encoding utf8
-$categoryHues = @{ Creational = 'yellow'; Structural = 'purple'; Behavioral = 'cyan' }
+$categoryHues = @{ Creational = 'blue'; Structural = 'purple'; Behavioral = 'cyan' }
 $categoryShort = @{ Creational = 'C'; Structural = 'S'; Behavioral = 'B' }
 $fallbackCards = @($patterns | ForEach-Object {
     $pattern = $_

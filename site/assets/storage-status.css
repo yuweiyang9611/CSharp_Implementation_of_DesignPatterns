@@ -5,8 +5,8 @@
   grid-column: 1 / -1;
   margin: 1rem 0;
   padding: .625rem .875rem;
-  border: 1px solid var(--nb-caution);
-  background: var(--nb-caution-wash);
+  border: 1px solid var(--nb-wrong);
+  background: var(--nb-wrong-wash);
   color: var(--nb-ink);
   overflow-wrap: anywhere;
 }
