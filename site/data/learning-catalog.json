@@ -887,7 +887,7 @@
           "id": "strategy",
           "label": "Strategy / 策略",
           "patternKey": "strategy",
-          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。当前题目的决定性约束是：行为由对象当前生命周期决定并需要保护转换时选 State；调用者自由替换等价算法时才选 Strategy。"
         },
         {
           "id": "state",
@@ -922,13 +922,13 @@
           "id": "bridge",
           "label": "Bridge / 桥接",
           "patternKey": "bridge",
-          "explanation": "该方案适用于：两个正交维度都在变化，并且需要运行时自由组合时。 当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+          "explanation": "该方案适用于：两个正交维度都在变化，并且需要运行时自由组合时。当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
         },
         {
           "id": "facade",
           "label": "Facade / 外观",
           "patternKey": "facade",
-          "explanation": "该方案适用于：多个子系统必须按固定业务顺序协作，而调用者只关心一个用例时。 当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
+          "explanation": "该方案适用于：多个子系统必须按固定业务顺序协作，而调用者只关心一个用例时。当前题目的决定性约束是：已有接口不兼容时选 Adapter；两个维度独立扩展时选 Bridge；为复杂子系统提供用例入口时选 Facade。"
         }
       ],
       "lessonHref": "patterns/adapter.html#evidence-read"
@@ -951,7 +951,7 @@
           "id": "factory-method",
           "label": "Factory Method / 工厂方法",
           "patternKey": "factory-method",
-          "explanation": "该方案适用于：父类掌握流程，但子类应决定实例化哪一种产品时。 当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+          "explanation": "该方案适用于：父类掌握流程，但子类应决定实例化哪一种产品时。当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
         },
         {
           "id": "abstract-factory",
@@ -963,7 +963,7 @@
           "id": "builder",
           "label": "Builder / 建造者",
           "patternKey": "builder",
-          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。当前题目的决定性约束是：一次选择一整套兼容产品时选 Abstract Factory；只延迟一个产品的创建选 Factory Method；分步骤构建复杂对象选 Builder。"
         }
       ],
       "lessonHref": "patterns/abstract-factory.html#evidence-read"
@@ -991,7 +991,7 @@
           "id": "memento",
           "label": "Memento / 备忘录",
           "patternKey": "memento",
-          "explanation": "该方案适用于：需要撤销或恢复完整状态，同时不能暴露对象内部表示时。 当前题目的决定性约束是：需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
+          "explanation": "该方案适用于：需要撤销或恢复完整状态，同时不能暴露对象内部表示时。当前题目的决定性约束是：需要排队、记录或重放请求时选 Command；只需要在不暴露内部结构的前提下保存状态快照时选 Memento。"
         }
       ],
       "lessonHref": "patterns/command.html#evidence-read"
@@ -1013,7 +1013,7 @@
           "id": "observer",
           "label": "Observer / 观察者",
           "patternKey": "observer",
-          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。 当前题目的决定性约束是：多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
+          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。当前题目的决定性约束是：多个同事对象需要集中协调时选 Mediator；一个主题只需广播变化而订阅者彼此独立时选 Observer。"
         },
         {
           "id": "mediator",
@@ -1047,7 +1047,7 @@
           "id": "decorator",
           "label": "Decorator / 装饰器",
           "patternKey": "decorator",
-          "explanation": "该方案适用于：需要在运行时叠加缓存、审计、费用或格式等横切行为时。 当前题目的决定性约束是：控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
+          "explanation": "该方案适用于：需要在运行时叠加缓存、审计、费用或格式等横切行为时。当前题目的决定性约束是：控制访问、生命周期或远程边界时选 Proxy；按顺序叠加可选业务职责时选 Decorator。"
         }
       ],
       "lessonHref": "patterns/proxy.html#evidence-read"
@@ -1075,7 +1075,7 @@
           "id": "composite",
           "label": "Composite / 组合",
           "patternKey": "composite",
-          "explanation": "该方案适用于：领域天然形成树形结构，客户端应一致处理叶子和容器时。 当前题目的决定性约束是：迭代器封装遍历协议；组合模式统一树节点，但不直接定义遍历游标。"
+          "explanation": "该方案适用于：领域天然形成树形结构，客户端应一致处理叶子和容器时。当前题目的决定性约束是：迭代器封装遍历协议；组合模式统一树节点，但不直接定义遍历游标。"
         }
       ],
       "lessonHref": "patterns/iterator.html#evidence-read"
@@ -1103,7 +1103,7 @@
           "id": "strategy",
           "label": "Strategy / 策略",
           "patternKey": "strategy",
-          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：模板方法固定骨架并开放步骤；策略更适合整体可替换算法。"
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。当前题目的决定性约束是：模板方法固定骨架并开放步骤；策略更适合整体可替换算法。"
         }
       ],
       "lessonHref": "patterns/template-method.html#evidence-read"
@@ -1131,7 +1131,7 @@
           "id": "builder",
           "label": "Builder / 建造者",
           "patternKey": "builder",
-          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：原型复制现成配置并明确深浅复制边界；建造者负责从步骤组装对象。"
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。当前题目的决定性约束是：原型复制现成配置并明确深浅复制边界；建造者负责从步骤组装对象。"
         }
       ],
       "lessonHref": "patterns/prototype.html#evidence-read"
@@ -1159,7 +1159,7 @@
           "id": "flyweight",
           "label": "Flyweight / 享元",
           "patternKey": "flyweight",
-          "explanation": "该方案适用于：经过测量确认，大量相似细粒度对象造成显著内存成本时。 当前题目的决定性约束是：单例约束实例与生命周期；享元共享多种可复用内部状态，不能替代进程级实例约束。"
+          "explanation": "该方案适用于：经过测量确认，大量相似细粒度对象造成显著内存成本时。当前题目的决定性约束是：单例约束实例与生命周期；享元共享多种可复用内部状态，不能替代进程级实例约束。"
         }
       ],
       "lessonHref": "patterns/singleton.html#evidence-read"
@@ -1187,7 +1187,7 @@
           "id": "iterator",
           "label": "Iterator / 迭代器",
           "patternKey": "iterator",
-          "explanation": "该方案适用于：自定义容器需要多种遍历、惰性序列或隐藏内部结构时。 当前题目的决定性约束是：组合提供叶子与容器的统一操作；迭代器只负责遍历。"
+          "explanation": "该方案适用于：自定义容器需要多种遍历、惰性序列或隐藏内部结构时。当前题目的决定性约束是：组合提供叶子与容器的统一操作；迭代器只负责遍历。"
         }
       ],
       "lessonHref": "patterns/composite.html#evidence-read"
@@ -1215,7 +1215,7 @@
           "id": "proxy",
           "label": "Proxy / 代理",
           "patternKey": "proxy",
-          "explanation": "该方案适用于：需要延迟加载、权限、缓存、远程访问或审计，而客户端协议应保持不变时。 当前题目的决定性约束是：装饰器组合可选业务职责；代理重点在访问控制或远程边界。"
+          "explanation": "该方案适用于：需要延迟加载、权限、缓存、远程访问或审计，而客户端协议应保持不变时。当前题目的决定性约束是：装饰器组合可选业务职责；代理重点在访问控制或远程边界。"
         }
       ],
       "lessonHref": "patterns/decorator.html#evidence-read"
@@ -1243,7 +1243,7 @@
           "id": "singleton",
           "label": "Singleton / 单例",
           "patternKey": "singleton",
-          "explanation": "该方案适用于：进程内确实只能有一个无状态或不可变协调对象，且生命周期边界明确时。 当前题目的决定性约束是：享元共享不可变内在状态，位置留在外部；单例无法表达多种样式。"
+          "explanation": "该方案适用于：进程内确实只能有一个无状态或不可变协调对象，且生命周期边界明确时。当前题目的决定性约束是：享元共享不可变内在状态，位置留在外部；单例无法表达多种样式。"
         }
       ],
       "lessonHref": "patterns/flyweight.html#evidence-read"
@@ -1271,7 +1271,7 @@
           "id": "strategy",
           "label": "Strategy / 策略",
           "patternKey": "strategy",
-          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：访问者集中跨节点类型的操作；策略解决同一职责下的可替换算法。"
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。当前题目的决定性约束是：访问者集中跨节点类型的操作；策略解决同一职责下的可替换算法。"
         }
       ],
       "lessonHref": "patterns/visitor.html#evidence-read"
@@ -1299,7 +1299,7 @@
           "id": "mediator",
           "label": "Mediator / 中介者",
           "patternKey": "mediator",
-          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。 当前题目的决定性约束是：责任链表达有序传递与短路；中介者集中同事对象之间的协调规则。"
+          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。当前题目的决定性约束是：责任链表达有序传递与短路；中介者集中同事对象之间的协调规则。"
         }
       ],
       "lessonHref": "patterns/chain-of-responsibility.html#evidence-read"
@@ -1327,7 +1327,7 @@
           "id": "strategy",
           "label": "Strategy / 策略",
           "patternKey": "strategy",
-          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：解释器为简单语法定义求值规则；策略本身不负责解析语言。"
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。当前题目的决定性约束是：解释器为简单语法定义求值规则；策略本身不负责解析语言。"
         }
       ],
       "lessonHref": "patterns/interpreter.html#evidence-read"
@@ -1355,7 +1355,7 @@
           "id": "command",
           "label": "Command / 命令",
           "patternKey": "command",
-          "explanation": "该方案适用于：操作需要排队、重试、日志、撤销或宏组合时。 当前题目的决定性约束是：备忘录保存封装的状态快照；命令将动作变为对象，当前没有管理动作的需求。"
+          "explanation": "该方案适用于：操作需要排队、重试、日志、撤销或宏组合时。当前题目的决定性约束是：备忘录保存封装的状态快照；命令将动作变为对象，当前没有管理动作的需求。"
         }
       ],
       "lessonHref": "patterns/memento.html#evidence-read"
@@ -1383,7 +1383,7 @@
           "id": "abstract-factory",
           "label": "Abstract Factory / 抽象工厂",
           "patternKey": "abstract-factory",
-          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。 当前题目的决定性约束是：工厂方法延迟一个产品的创建；抽象工厂面向一组相关兼容产品。"
+          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。当前题目的决定性约束是：工厂方法延迟一个产品的创建；抽象工厂面向一组相关兼容产品。"
         }
       ],
       "lessonHref": "patterns/factory-method.html#evidence-read"
@@ -1411,7 +1411,7 @@
           "id": "prototype",
           "label": "Prototype / 原型",
           "patternKey": "prototype",
-          "explanation": "该方案适用于：创建成本高、配置复杂，且从现有对象复制比重新构建更清楚时。 当前题目的决定性约束是：建造者收拢组装步骤与最终校验；原型依赖已有可复制的实例。"
+          "explanation": "该方案适用于：创建成本高、配置复杂，且从现有对象复制比重新构建更清楚时。当前题目的决定性约束是：建造者收拢组装步骤与最终校验；原型依赖已有可复制的实例。"
         }
       ],
       "lessonHref": "patterns/builder.html#evidence-read"
@@ -1439,7 +1439,7 @@
           "id": "adapter",
           "label": "Adapter / 适配器",
           "patternKey": "adapter",
-          "explanation": "该方案适用于：接入遗留代码、第三方 SDK、不同协议或单位体系时。 当前题目的决定性约束是：外观提供完整用例入口；适配器解决接口不兼容，不能替代业务用例编排。"
+          "explanation": "该方案适用于：接入遗留代码、第三方 SDK、不同协议或单位体系时。当前题目的决定性约束是：外观提供完整用例入口；适配器解决接口不兼容，不能替代业务用例编排。"
         }
       ],
       "lessonHref": "patterns/facade.html#evidence-read"
@@ -1466,13 +1466,13 @@
           "id": "strategy",
           "label": "Strategy / 策略",
           "patternKey": "strategy",
-          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。 当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
+          "explanation": "该方案适用于：同一业务目标存在多套算法，需要独立测试或运行时选择时。当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
         },
         {
           "id": "state",
           "label": "State / 状态",
           "patternKey": "state",
-          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。 当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
+          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。当前题目的决定性约束是：使用 Math.Clamp 的简单函数即可，额外的算法接口和状态类没有对应的变化需求。"
         }
       ],
       "lessonHref": "guides/learning-path.html"
@@ -1499,13 +1499,13 @@
           "id": "state",
           "label": "State / 状态",
           "patternKey": "state",
-          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。 当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
+          "explanation": "该方案适用于：行为明显依赖生命周期状态，转换规则需要被对象模型保护时。当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
         },
         {
           "id": "interpreter",
           "label": "Interpreter / 解释器",
           "patternKey": "interpreter",
-          "explanation": "该方案适用于：语法很小、领域受控，并且组合表达式比硬编码条件更清楚时。 当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
+          "explanation": "该方案适用于：语法很小、领域受控，并且组合表达式比硬编码条件更清楚时。当前题目的决定性约束是：只读字典就能表达映射；数据标签不是状态机，也不是需要解释的语言。"
         }
       ],
       "lessonHref": "guides/learning-path.html"
@@ -1532,13 +1532,13 @@
           "id": "builder",
           "label": "Builder / 建造者",
           "patternKey": "builder",
-          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。 当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
+          "explanation": "该方案适用于：构造参数很多、存在必填组合或需要分步校验时。当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
         },
         {
           "id": "abstract-factory",
           "label": "Abstract Factory / 抽象工厂",
           "patternKey": "abstract-factory",
-          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。 当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
+          "explanation": "该方案适用于：客户端必须一次获得相互兼容的一组产品时。当前题目的决定性约束是：使用构造函数保持简单；只有出现复杂步骤或兼容产品族时才引入对应创建模式。"
         }
       ],
       "lessonHref": "guides/learning-path.html"
@@ -1565,13 +1565,13 @@
           "id": "observer",
           "label": "Observer / 观察者",
           "patternKey": "observer",
-          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。 当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
+          "explanation": "该方案适用于：一个事件需要通知数量不定、可动态订阅的多个响应者时。当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
         },
         {
           "id": "mediator",
           "label": "Mediator / 中介者",
           "patternKey": "mediator",
-          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。 当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
+          "explanation": "该方案适用于：多个对象形成网状依赖，交互规则需要集中观察与修改时。当前题目的决定性约束是：一个委托参数即可满足一次回调，不需要维护订阅集合或创建协调中心。"
         }
       ],
       "lessonHref": "guides/learning-path.html"

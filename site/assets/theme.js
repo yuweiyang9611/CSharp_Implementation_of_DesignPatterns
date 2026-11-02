@@ -24,6 +24,33 @@
     });
   }
 
+  // Chromium squeezes most touching Chinese marks, but leaves a curly quote beside a comma or full stop
+  // a full em apart, as in ”， and ，“. The font's `halt` feature sets the first of the two at half width.
+  const looseMarks = /[”’](?=[，。、；：？！])|[，。、；：？！](?=[“‘])/g;
+  const notProse = "code, kbd, pre, samp, script, style, textarea, svg, [contenteditable], .nb-halt";
+
+  function squeeze(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const loose = [];
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.data.search(looseMarks) !== -1 && !node.parentElement?.closest(notProse)) loose.push(node);
+    }
+    for (const node of loose) {
+      const parts = document.createDocumentFragment();
+      let start = 0;
+      for (const match of node.data.matchAll(looseMarks)) {
+        const mark = document.createElement("span");
+        mark.className = "nb-halt";
+        mark.textContent = match[0];
+        if (match.index > start) parts.append(node.data.slice(start, match.index));
+        parts.append(mark);
+        start = match.index + 1;
+      }
+      if (start < node.data.length) parts.append(node.data.slice(start));
+      node.replaceWith(parts);
+    }
+  }
+
   const system = window.matchMedia("(prefers-color-scheme: dark)");
   apply(saved() ?? (system.matches ? "dark" : "light"));
   system.addEventListener("change", (event) => {
@@ -37,6 +64,21 @@
     fonts.href = "/kit/v1/fonts.css";
     document.head.append(fonts);
   }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    squeeze(document.body);
+    // Text that scripts add later, such as search results, gets the same treatment.
+    const later = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          const root = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+          if (root?.isConnected) squeeze(root);
+        }
+      }
+      later.takeRecords(); // the wrapping above is not new text
+    });
+    later.observe(document.body, { childList: true, subtree: true });
+  });
 
   document.addEventListener("DOMContentLoaded", () => {
     const nav = document.querySelector(".nb-nav");

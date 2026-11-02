@@ -339,6 +339,19 @@ try {
   assert.equal(await mobile.locator(".nb-theme button").count(), 2, "页头应提供白天和晚上两种配色");
   const fontFamilies = await mobile.evaluate(() => new Set(["body", ".nb-brand", "h1", "h2", "h3"].map((selector) => getComputedStyle(document.querySelector(selector)).fontFamily)).size);
   assert.equal(fontFamilies, 1, "标题和正文应使用同一种字体");
+  const marks = await mobile.evaluate(() => {
+    const loose = /[”’][，。、；：？！]|[，。、；：？！][“‘]/;
+    const walker = document.createTreeWalker(document.querySelector("main"), NodeFilter.SHOW_TEXT);
+    let open = 0;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (loose.test(node.data) && !node.parentElement.closest("code, pre")) open += 1;
+    }
+    return { open, halved: document.querySelectorAll("main .nb-halt").length };
+  });
+  assert.equal(marks.open, 0, "引号挨着逗号句号时，前一个标点应排成半宽");
+  assert.ok(marks.halved > 0, "基础教程里应有被压缩的相邻标点");
+  const tocBreak = await mobile.locator(".guide-toc-list a").first().evaluate((link) => getComputedStyle(link).wordBreak);
+  assert.equal(tocBreak, "keep-all", "目录项只在空格和标点处换行");
 
   await mobile.goto(`${baseUrl}patterns/adapter.html`);
   await mobile.locator(".lesson-main").waitFor();

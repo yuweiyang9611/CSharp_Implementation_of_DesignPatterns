@@ -83,6 +83,7 @@
     color: var(--nb-ink-soft);
     text-decoration: none;
   }
+  .guide-toc-list a, .guide-continue, .guide-chapter-nav a { word-break: keep-all; overflow-wrap: anywhere; text-wrap: pretty; }
   .guide-toc-list li.depth-2 a { padding-left: 1.5rem; font-size: .875rem; }
   .guide-toc-list a:hover { color: var(--nb-ink); }
   .guide-toc-list a[aria-current="location"] { border-left: 1px solid var(--nb-link); color: var(--nb-link); font-weight: 600; }
