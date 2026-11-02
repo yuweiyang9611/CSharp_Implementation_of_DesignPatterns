@@ -50,7 +50,7 @@
   content: "停在这里";
   display: block;
   color: var(--nb-stopped);
-  font-size: .8125rem;
+  font-size: .875rem;
 }
 .evidence-card h3 { grid-column: 1; grid-row: 1 / span 6; font-size: 1.0625rem; }
 .evidence-card > :not(h3) { grid-column: 2; }

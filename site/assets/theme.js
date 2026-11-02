@@ -4,7 +4,7 @@
 
   const root = document.documentElement;
   const storageKey = "site-theme";
-  const paper = { light: "#f7f8f6", dark: "#141b2b" };
+  const paper = { light: "#f4efe4", dark: "#1c1a17" };
   const schemes = [["light", "白天"], ["dark", "晚上"]];
 
   function saved() {

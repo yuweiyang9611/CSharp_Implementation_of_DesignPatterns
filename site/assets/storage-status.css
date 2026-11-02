@@ -15,7 +15,7 @@
 .storage-warning button {
   min-height: 2.75rem;
   padding: .375rem .875rem;
-  border: 1px solid var(--nb-fill);
+  border: 1px solid var(--nb-link);
   border-radius: 2px;
   background: var(--nb-fill);
   color: var(--nb-on-fill);

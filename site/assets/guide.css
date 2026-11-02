@@ -83,7 +83,7 @@
     color: var(--nb-ink-soft);
     text-decoration: none;
   }
-  .guide-toc-list li.depth-2 a { padding-left: 1.5rem; font-size: .8125rem; }
+  .guide-toc-list li.depth-2 a { padding-left: 1.5rem; font-size: .875rem; }
   .guide-toc-list a:hover { color: var(--nb-ink); }
   .guide-toc-list a[aria-current="location"] { border-left: 1px solid var(--nb-link); color: var(--nb-link); font-weight: 700; }
   .guide-continue:not([hidden]) { display: block; margin-top: .75rem; font-weight: 600; text-decoration-color: var(--nb-stopped); }
@@ -100,7 +100,7 @@
   .guide-milestone.completed .guide-milestone-copy > strong { color: var(--nb-done); }
   .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong { color: var(--nb-stopped); }
   .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked)::after { content: ""; position: absolute; top: 0; left: -.25rem; width: .625rem; height: 2px; background: var(--nb-stopped); }
-  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong::after { content: "停在这里"; display: block; color: var(--nb-stopped); font-size: .8125rem; }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong::after { content: "停在这里"; display: block; color: var(--nb-stopped); font-size: .875rem; }
   .guide-milestone strong { display: block; }
   .learning-layout > main .guide-milestone-copy p { margin: .125rem 0 0; color: var(--nb-ink-soft); font-size: .9375rem; }
   .guide-milestone-command { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .75rem; margin-top: .5rem; padding: .25rem .75rem; background: var(--nb-run-wash); }

@@ -56,9 +56,9 @@
 }
 .playground-main button:hover { border-color: var(--nb-link); color: var(--nb-link); }
 .playground-main button:disabled { border-style: dashed; color: var(--nb-ink-soft); cursor: not-allowed; }
-.playground-main #run-code, .playground-main #run-code:hover { border-color: var(--nb-fill); background: var(--nb-fill); color: var(--nb-on-fill); }
+.playground-main #run-code, .playground-main #run-code:hover { border-color: var(--nb-link); background: var(--nb-fill); color: var(--nb-on-fill); }
 .playground-main #run-code:disabled { border-color: var(--nb-rule-strong); background: none; color: var(--nb-ink-soft); }
-#runtime-limits { color: var(--nb-ink-soft); font-size: .8125rem; }
+#runtime-limits { color: var(--nb-ink-soft); font-size: .875rem; }
 
 .results { padding-left: 1rem; border-left: 1px solid var(--nb-rule); }
 .results h2 { margin-top: 1rem; font-family: var(--nb-sans); font-size: .9375rem; }

@@ -69,7 +69,7 @@
 .terminal-bar button:hover { color: var(--nb-ink); }
 .terminal-toggle { display: none; }
 .js .terminal-toggle { display: inline-block; }
-.terminal-body .nb-paste { font-size: .8125rem; }
+.terminal-body .nb-paste { font-size: .875rem; }
 .paste-command { color: var(--nb-run); font-weight: 600; }
 .terminal-note, .environment-note { margin-top: .625rem; color: var(--nb-ink-soft); font-size: .875rem; }
 
@@ -128,7 +128,7 @@
 }
 .pattern-card-top, .pattern-body { display: contents; }
 .pattern-number { grid-column: 1; grid-row: 1; font-family: var(--nb-mono); font-size: .875rem; color: var(--nb-ink-soft); }
-.category-badge { grid-column: 1; grid-row: 2; color: var(--nb-hue); font-size: .8125rem; }
+.category-badge { grid-column: 1; grid-row: 2; color: var(--nb-hue); font-size: .875rem; }
 .category-badge i { display: none; }
 .pattern-card .nb-stopped { grid-column: 1; grid-row: 3; }
 .pattern-card h3 { grid-column: 2; grid-row: 1; font-size: 1.0625rem; }
@@ -136,7 +136,7 @@
 .pattern-card h3 a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .22em; }
 .pattern-chinese { grid-column: 2; grid-row: 2; color: var(--nb-ink-soft); font-size: .875rem; }
 .pattern-intent { grid-column: 3; grid-row: 1; font-size: .9375rem; line-height: 1.65; }
-.pattern-problems { grid-column: 3; grid-row: 2; display: flex; flex-wrap: wrap; gap: 0 .75rem; color: var(--nb-ink-soft); font-size: .8125rem; }
+.pattern-problems { grid-column: 3; grid-row: 2; display: flex; flex-wrap: wrap; gap: 0 .75rem; color: var(--nb-ink-soft); font-size: .875rem; }
 .pattern-card-footer { grid-column: 4; grid-row: 1; font-size: .875rem; }
 .pattern-task-link { color: var(--nb-ink-soft); font-variant-numeric: tabular-nums; }
 .pattern-card.learned .pattern-task-link { color: var(--nb-done); font-weight: 600; }
@@ -149,7 +149,7 @@
   background: none;
   color: var(--nb-ink-soft);
   font: inherit;
-  font-size: .8125rem;
+  font-size: .875rem;
   text-decoration: none;
   cursor: pointer;
 }
@@ -168,7 +168,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
 #site-search-results li { padding-block: .625rem; border-bottom: 1px solid var(--nb-rule); }
 #site-search-results a { display: block; font-weight: 700; }
 #site-search-results strong { font-weight: 700; }
-#site-search-results span { display: block; color: var(--nb-ink-soft); font-size: .8125rem; font-weight: 400; }
+#site-search-results span { display: block; color: var(--nb-ink-soft); font-size: .875rem; font-weight: 400; }
 #site-search-results p { color: var(--nb-ink-soft); font-size: .875rem; }
 #site-search-results mark { background: var(--nb-caution-wash); color: inherit; }
 
@@ -184,7 +184,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
 .row-key { color: var(--nb-ink-soft); font-size: .875rem; line-height: 1.75; }
 .row h3 { font-size: 1.0625rem; }
 .row p { color: var(--nb-ink-soft); font-size: .9375rem; line-height: 1.65; }
-.row-tags { display: block; font-size: .8125rem; }
+.row-tags { display: block; font-size: .875rem; }
 .work-row { grid-template-columns: var(--col-key) var(--col-name) minmax(0, 1fr) var(--col-state); }
 .work-state { font-size: .875rem; font-variant-numeric: tabular-nums; }
 .work-state span { display: block; color: var(--nb-ink-soft); }
@@ -228,7 +228,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
   padding: 1rem var(--nb-inset);
   border-top: 1px solid var(--nb-rule);
   color: var(--nb-ink-soft);
-  font-size: .8125rem;
+  font-size: .875rem;
 }
 .footer-links a { margin-left: 1rem; }
 .footer-links a:first-child { margin-left: 0; }
@@ -243,7 +243,7 @@ a.pattern-open { text-decoration: underline; text-decoration-color: var(--nb-rul
   background: var(--nb-paper);
   color: var(--nb-ink);
 }
-.pattern-dialog::backdrop { background: rgb(20 27 43 / 55%); }
+.pattern-dialog::backdrop { background: rgb(37 33 27 / 55%); }
 :root[data-theme="dark"] .pattern-dialog::backdrop { background: rgb(0 0 0 / 60%); }
 .dialog-close { float: right; margin: 0 0 .5rem 1rem; }
 .dialog-category { color: var(--nb-hue, var(--nb-ink-soft)); font-size: .875rem; }
