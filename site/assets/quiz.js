@@ -120,7 +120,7 @@
     elements.feedbackRule.textContent = [current.decisionRule, ...current.options.map((option) => `${option.label}：${option.explanation}`)].join("\n\n");
     elements.feedbackLesson.href = current.lessonHref;
     elements.next.hidden = false;
-    elements.next.textContent = cursor + 1 < queue.length ? "下一题 →" : "完成本轮 →";
+    elements.next.textContent = cursor + 1 < queue.length ? "下一题" : "完成本轮";
     elements.feedback.focus?.();
     refreshStats();
   });
