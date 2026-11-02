@@ -5,8 +5,8 @@
   grid-column: 1 / -1;
   margin: 1rem 0;
   padding: .625rem .875rem;
-  border: 2px solid var(--nb-mark);
-  background: var(--nb-paper);
+  border: 1px solid var(--nb-caution);
+  background: var(--nb-caution-wash);
   color: var(--nb-ink);
   overflow-wrap: anywhere;
 }
@@ -15,10 +15,10 @@
 .storage-warning button {
   min-height: 2.75rem;
   padding: .375rem .875rem;
-  border: 1px solid var(--nb-ink);
+  border: 1px solid var(--nb-fill);
   border-radius: 2px;
-  background: var(--nb-ink);
-  color: var(--nb-paper);
+  background: var(--nb-fill);
+  color: var(--nb-on-fill);
   font: inherit;
   cursor: pointer;
 }

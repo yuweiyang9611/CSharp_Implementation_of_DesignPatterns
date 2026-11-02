@@ -383,7 +383,7 @@ foreach ($page in $pages) {
     else { $html = $html.Replace('<main id="main">', '<main id="main">' + $milestonePanel) }
   }
   $html = $html.Replace('</head>', '<link rel="stylesheet" href="../assets/storage-status.css"></head>')
-  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/storage-status.js" defer></script><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script></body>')
+  $html = $html.Replace('</main></body>', '</main></div>' + $footer + '<p class="guide-announcement" id="guide-announcement" aria-live="polite"></p><script src="../assets/storage-status.js" defer></script><script src="../assets/progress.js" defer></script><script src="../assets/catalog.js" defer></script><script src="../assets/guide.js" defer></script><script src="../assets/code-colors.js" defer></script></body>')
   [IO.File]::WriteAllText($outputPath, $html, [Text.UTF8Encoding]::new($false))
 }
 
@@ -503,9 +503,9 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
     <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
       <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
-      <section class="lesson-panel"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码</a><a href="$($pattern.practiceUrl)">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
+      <section class="lesson-panel" data-hue="cyan"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码</a><a href="$($pattern.practiceUrl)">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
       <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
-      <section class="lesson-panel"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
+      <section class="lesson-panel" data-hue="yellow"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
       <section class="lesson-panel full"><h2>相似模式对比</h2><ul class="related-list">$relatedHtml</ul></section>
     </div>
     <nav class="lesson-pager" aria-label="模式课件导航">$previousHtml$nextHtml</nav>
@@ -520,7 +520,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
 
 $homePath = Join-Path $stageDirectory 'index.html'
 $homeHtml = Get-Content -LiteralPath $homePath -Raw -Encoding utf8
-$categoryColors = @{ Creational = 'amber'; Structural = 'coral'; Behavioral = 'teal' }
+$categoryHues = @{ Creational = 'yellow'; Structural = 'purple'; Behavioral = 'cyan' }
 $categoryShort = @{ Creational = 'C'; Structural = 'S'; Behavioral = 'B' }
 $fallbackCards = @($patterns | ForEach-Object {
     $pattern = $_
@@ -528,7 +528,7 @@ $fallbackCards = @($patterns | ForEach-Object {
         '<span>' + (Encode-Html $tagById[$_].label) + '</span>'
       }) -join ''
     @"
-<article class="pattern-card nb-entry $($categoryColors[$pattern.category])">
+<article class="pattern-card nb-entry" data-hue="$($categoryHues[$pattern.category])">
   <div class="pattern-card-top"><span class="pattern-number">$(('{0:00}' -f $pattern.number))</span><span class="category-badge"><i>$($categoryShort[$pattern.category])</i>$(Encode-Html $categoryLabels[$pattern.category])</span></div>
   <div class="pattern-body"><h3><a href="patterns/$($pattern.key).html">$(Encode-Html $pattern.english)</a></h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" role="group" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件</a></div>
 </article>

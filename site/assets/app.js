@@ -12,9 +12,9 @@
   document.documentElement.classList.add("js");
 
   const categoryMeta = {
-    Creational: { label: "创建型", short: "C", color: "amber" },
-    Structural: { label: "结构型", short: "S", color: "coral" },
-    Behavioral: { label: "行为型", short: "B", color: "teal" },
+    Creational: { label: "创建型", short: "C", hue: "yellow" },
+    Structural: { label: "结构型", short: "S", hue: "purple" },
+    Behavioral: { label: "行为型", short: "B", hue: "cyan" },
   };
   const patterns = catalog.patterns;
   const problemTags = new Map(catalog.problemTags.map((tag) => [tag.id, tag]));
@@ -104,7 +104,7 @@
     const taskLabel = current.verified ? "4 / 4 · 已验证" : `${current.completed} / ${current.total} · ${escapeHtml(current.nextTask.title)}`;
 
     return `
-      <article class="pattern-card nb-entry ${category.color}${current.verified ? " learned" : ""}" data-progress-id="${id}">
+      <article class="pattern-card nb-entry${current.verified ? " learned" : ""}" data-hue="${category.hue}" data-progress-id="${id}">
         <div class="pattern-card-top">
           <span class="pattern-number">${String(pattern.number).padStart(2, "0")}</span>
           <span class="nb-stopped" hidden>停在这里</span>
@@ -263,6 +263,7 @@
     if (!pattern) return;
     const category = categoryMeta[pattern.category];
     document.querySelector("#dialog-category").textContent = `${category.short} · ${category.label}`;
+    document.querySelector("#dialog-category").dataset.hue = category.hue;
     document.querySelector("#dialog-title").textContent = `${pattern.english} / ${pattern.chinese}`;
     document.querySelector("#dialog-intent").textContent = pattern.intent;
     document.querySelector("#dialog-scenario").textContent = pattern.scenario;

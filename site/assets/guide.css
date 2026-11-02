@@ -22,19 +22,21 @@
   .learning-layout > main h1,
   .learning-layout > main h2 { color: inherit; font-family: var(--nb-serif); font-weight: 600; letter-spacing: 0; text-align: left; }
   .learning-layout > main h1 { margin: 0 0 1.25rem; font-size: clamp(1.625rem, 1.4rem + 1vw, 2rem); line-height: 1.35; }
-  .learning-layout > main h2 { margin: 2.5rem 0 .75rem; padding: 0 0 .375rem; border-bottom: 1px solid var(--nb-ink); font-size: 1.375rem; line-height: 1.4; }
+  .learning-layout > main h2 { margin: 2.5rem 0 .75rem; padding: 0 0 .375rem; border-bottom: 1px solid var(--nb-rule-bold); font-size: 1.375rem; line-height: 1.4; }
   .learning-layout > main h3 { margin: 1.75rem 0 .5rem; padding: 0; border: 0; color: inherit; font-size: 1.0625rem; font-weight: 600; line-height: 1.5; }
   .learning-layout > main h4 { margin: 1.25rem 0 .375rem; color: inherit; font-size: 1rem; font-weight: 600; }
   .learning-layout > main p { margin: 0 0 1em; text-align: left; overflow-wrap: anywhere; }
   .learning-layout > main strong { color: inherit; font-weight: 600; }
-  .learning-layout > main a { color: inherit; text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-decoration-thickness: 1px; text-underline-offset: .22em; }
+  .learning-layout > main a { color: var(--nb-link); text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-decoration-thickness: 1px; text-underline-offset: .22em; }
   .learning-layout > main a:hover { text-decoration-color: currentColor; }
   .learning-layout > main ul, .learning-layout > main ol { margin: 0 0 1em; padding-left: 1.5rem; }
   .learning-layout > main li { margin: .25em 0; }
   .learning-layout > main hr { margin: 2rem 0; border: 0; border-top: 1px solid var(--nb-rule); }
-  .learning-layout > main blockquote { margin: 1rem 0; padding: 0 0 0 1rem; border-left: 1px solid var(--nb-rule-strong); background: none; color: var(--nb-ink-soft); }
+  .learning-layout > main blockquote { margin: 1rem 0; padding: .625rem .875rem; border: 0; background: var(--nb-caution-wash); color: inherit; }
+  .learning-layout > main blockquote > :last-child { margin-bottom: 0; }
 
-  .learning-layout > main code { padding: .08em .3em; border-radius: 2px; background: var(--nb-sheet); color: inherit; font: .875em/1.6 var(--nb-mono); }
+  .learning-layout > main code { padding: .08em .3em; border-radius: 2px; background: var(--nb-sheet); color: var(--nb-code); font: .875em/1.6 var(--nb-mono); }
+  .learning-layout > main a code { color: inherit; }
   .learning-layout > main pre {
     max-width: 100%;
     margin: 1rem 0;
@@ -49,14 +51,14 @@
     white-space: pre;
     overflow-wrap: normal;
   }
-  .learning-layout > main pre code { padding: 0; background: none; font: inherit; }
-  .learning-layout > main pre:focus-visible, .learning-layout > main .table-wrap:focus-visible { outline: 2px solid var(--nb-ink); outline-offset: 2px; }
+  .learning-layout > main pre code { padding: 0; background: none; color: inherit; font: inherit; }
+  .learning-layout > main pre:focus-visible, .learning-layout > main .table-wrap:focus-visible { outline: 2px solid var(--nb-link); outline-offset: 2px; }
 
   .learning-layout > main .table-wrap { width: 100%; max-width: 100%; min-width: 0; margin: 1rem 0; overflow-x: auto; overscroll-behavior-inline: contain; }
   .learning-layout > main .table-wrap table { min-width: 640px; }
   .learning-layout > main table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
   .learning-layout > main th, .learning-layout > main td { padding: .5rem .625rem .5rem 0; border: 0; border-bottom: 1px solid var(--nb-rule); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
-  .learning-layout > main th { border-bottom-color: var(--nb-ink); background: none; color: inherit; font-weight: 600; }
+  .learning-layout > main th { border-bottom-color: var(--nb-rule-bold); background: none; color: inherit; font-weight: 600; }
   .learning-layout > main tr:nth-child(even) td { background: none; }
 
   /* Contents: the gutter of the page, with the current section marked. */
@@ -83,24 +85,28 @@
   }
   .guide-toc-list li.depth-2 a { padding-left: 1.5rem; font-size: .8125rem; }
   .guide-toc-list a:hover { color: var(--nb-ink); }
-  .guide-toc-list a[aria-current="location"] { border-left: 1px solid var(--nb-ink); color: var(--nb-ink); font-weight: 700; }
-  .guide-continue:not([hidden]) { display: block; margin-top: .75rem; font-weight: 600; text-decoration-color: var(--nb-mark); }
+  .guide-toc-list a[aria-current="location"] { border-left: 1px solid var(--nb-link); color: var(--nb-link); font-weight: 700; }
+  .guide-continue:not([hidden]) { display: block; margin-top: .75rem; font-weight: 600; text-decoration-color: var(--nb-stopped); }
   .guide-chapter-nav { display: grid; gap: .25rem; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--nb-rule); }
   .guide-chapter-nav a, .guide-top-link { color: var(--nb-ink-soft); }
   .guide-top-link { display: inline-block; margin-top: .5rem; }
 
   .guide-milestones { margin: 0 0 2rem; }
-  .guide-milestones > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 1rem; padding-bottom: .375rem; border-bottom: 1px solid var(--nb-ink); }
+  .guide-milestones > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 1rem; padding-bottom: .375rem; border-bottom: 1px solid var(--nb-rule-bold); }
   .learning-layout > main .guide-milestones h2 { margin: 0; padding: 0; border: 0; font-size: 1.125rem; }
   #guide-milestone-summary { color: var(--nb-ink-soft); font-size: .875rem; font-variant-numeric: tabular-nums; }
   .guide-milestone { padding-block: .75rem; border-bottom: 1px solid var(--nb-rule); }
   .guide-milestone.completed { --nb-fraction: 1; }
-  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked)::after { content: ""; position: absolute; top: 0; left: -.25rem; width: .625rem; height: 2px; background: var(--nb-mark); }
-  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong::after { content: "停在这里"; display: block; color: var(--nb-mark); font-size: .8125rem; }
+  .guide-milestone.completed .guide-milestone-copy > strong { color: var(--nb-done); }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong { color: var(--nb-stopped); }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked)::after { content: ""; position: absolute; top: 0; left: -.25rem; width: .625rem; height: 2px; background: var(--nb-stopped); }
+  .guide-milestone.completed + .guide-milestone:not(.completed):not(.locked) .guide-milestone-copy > strong::after { content: "停在这里"; display: block; color: var(--nb-stopped); font-size: .8125rem; }
   .guide-milestone strong { display: block; }
   .learning-layout > main .guide-milestone-copy p { margin: .125rem 0 0; color: var(--nb-ink-soft); font-size: .9375rem; }
-  .guide-milestone-command { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .75rem; margin-top: .5rem; padding: .25rem .75rem; border-block: 1px solid var(--nb-rule-strong); background: var(--nb-sheet); }
-  .learning-layout > main .guide-milestone-command code { flex: 1 1 100%; min-width: 0; padding: 0; background: none; overflow-x: auto; white-space: pre; }
+  .guide-milestone-command { display: flex; flex-wrap: wrap; align-items: center; gap: 0 .75rem; margin-top: .5rem; padding: .25rem .75rem; background: var(--nb-run-wash); }
+  .learning-layout > main .guide-milestone-command code { flex: 1 1 100%; min-width: 0; padding: 0; background: none; color: var(--nb-run); overflow-x: auto; white-space: pre; }
+  .guide-milestone.locked .guide-milestone-command { background: var(--nb-sheet); }
+  .learning-layout > main .guide-milestone.locked .guide-milestone-command code { color: var(--nb-ink-soft); }
   .guide-milestone-command button { min-height: 2.75rem; padding: 0; border: 0; background: none; color: var(--nb-ink-soft); font: inherit; font-size: .875rem; text-decoration: underline; text-decoration-color: var(--nb-rule-strong); text-underline-offset: .22em; cursor: pointer; }
   .guide-milestone-check { display: flex; align-items: center; gap: .625rem; min-height: 2.75rem; margin-top: .25rem; font-size: .9375rem; cursor: pointer; }
   .guide-milestone.locked { color: var(--nb-ink-soft); }

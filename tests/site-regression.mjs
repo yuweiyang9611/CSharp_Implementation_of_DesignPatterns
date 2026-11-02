@@ -326,6 +326,17 @@ try {
   });
   assert.ok(anchorPosition.top > anchorPosition.headerBottom, `深链接标题被固定导航遮挡：${JSON.stringify(anchorPosition)}`);
   await assertNoSeriousAxeViolations(mobile, "移动端基础教程");
+  const codeColors = await mobile.locator("pre code.language-csharp").first().evaluate(async (code) => {
+    const page = new DOMParser().parseFromString(await (await fetch(location.href)).text(), "text/html");
+    return {
+      keywords: code.querySelectorAll(".tok-keyword").length,
+      types: code.querySelectorAll(".tok-type").length,
+      same: code.textContent === page.querySelector("pre code.language-csharp").textContent,
+    };
+  });
+  assert.ok(codeColors.keywords > 0 && codeColors.types > 0, "C# 代码块应带语法配色");
+  assert.equal(codeColors.same, true, "语法配色不能改变代码文本");
+  assert.equal(await mobile.locator(".nb-theme button").count(), 2, "页头应提供白天和晚上两种配色");
 
   await mobile.goto(`${baseUrl}patterns/adapter.html`);
   await mobile.locator(".lesson-main").waitFor();

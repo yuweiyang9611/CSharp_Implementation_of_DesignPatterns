@@ -23,8 +23,37 @@
   --nb-ink-soft: #4a5870;
   --nb-rule: #cbd3dc;
   --nb-rule-strong: #7f8da1;
-  --nb-mark: #b3261e;
   --nb-select: #c9d6ea;
+  /* Seven colours, each with one job. All pass 4.5:1 on paper, on sheet and on every wash, in both schemes. */
+  --nb-red: #b8232b;
+  --nb-red-wash: #fbe9e8;
+  --nb-orange: #ad4e00;
+  --nb-orange-wash: #fbeee2;
+  --nb-yellow: #856300;
+  --nb-yellow-wash: #f8f0cf;
+  --nb-green: #1b7a3d;
+  --nb-green-wash: #e2f3e4;
+  --nb-cyan: #00727f;
+  --nb-cyan-wash: #dcf2f3;
+  --nb-blue: #1d5fc4;
+  --nb-blue-wash: #e3ecfb;
+  --nb-purple: #7a3db8;
+  --nb-purple-wash: #f0e8fa;
+  --nb-wrong: var(--nb-red);
+  --nb-wrong-wash: var(--nb-red-wash);
+  --nb-stopped: var(--nb-orange);
+  --nb-stopped-wash: var(--nb-orange-wash);
+  --nb-caution: var(--nb-yellow);
+  --nb-caution-wash: var(--nb-yellow-wash);
+  --nb-done: var(--nb-green);
+  --nb-done-wash: var(--nb-green-wash);
+  --nb-run: var(--nb-cyan);
+  --nb-run-wash: var(--nb-cyan-wash);
+  --nb-link: var(--nb-blue);
+  --nb-code: var(--nb-purple);
+  --nb-rule-bold: var(--nb-ink);
+  --nb-fill: var(--nb-blue);
+  --nb-on-fill: var(--nb-paper);
   --nb-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
   --nb-sans: "NB CJK Marks", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
   --nb-mono: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, "Microsoft YaHei", monospace;
@@ -36,6 +65,7 @@
   color-scheme: light;
 }
 
+@media screen {
 :root[data-theme="dark"] {
   --nb-paper: #141b2b;
   --nb-sheet: #1c2536;
@@ -43,10 +73,36 @@
   --nb-ink-soft: #a9b4c4;
   --nb-rule: #2f3b52;
   --nb-rule-strong: #6d7c95;
-  --nb-mark: #f2766c;
   --nb-select: #33486e;
+  --nb-red: #ff8a85;
+  --nb-red-wash: #36212a;
+  --nb-orange: #ffa564;
+  --nb-orange-wash: #31251c;
+  --nb-yellow: #eac452;
+  --nb-yellow-wash: #312b18;
+  --nb-green: #6fd68e;
+  --nb-green-wash: #17301f;
+  --nb-cyan: #54cfdc;
+  --nb-cyan-wash: #162e39;
+  --nb-blue: #82b4ff;
+  --nb-blue-wash: #1c2b47;
+  --nb-purple: #c8a6ff;
+  --nb-purple-wash: #2a2444;
+  --nb-rule-bold: #6d7c95;
+  --nb-fill: #2f6fd8;
+  --nb-on-fill: #ffffff;
   color-scheme: dark;
 }
+}
+
+/* A site's own groups, such as topics or categories, borrow one colour for a word or a number. */
+[data-hue="red"] { --nb-hue: var(--nb-red); }
+[data-hue="orange"] { --nb-hue: var(--nb-orange); }
+[data-hue="yellow"] { --nb-hue: var(--nb-yellow); }
+[data-hue="green"] { --nb-hue: var(--nb-green); }
+[data-hue="cyan"] { --nb-hue: var(--nb-cyan); }
+[data-hue="blue"] { --nb-hue: var(--nb-blue); }
+[data-hue="purple"] { --nb-hue: var(--nb-purple); }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -77,7 +133,7 @@ p { margin: 0; text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; }
 
 a {
-  color: inherit;
+  color: var(--nb-link);
   text-decoration: underline;
   text-decoration-color: var(--nb-rule-strong);
   text-decoration-thickness: 1px;
@@ -86,7 +142,7 @@ a {
 a:hover { text-decoration-color: currentColor; }
 
 ::selection { background: var(--nb-select); color: var(--nb-ink); }
-:focus-visible { outline: 2px solid var(--nb-ink); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--nb-link); outline-offset: 2px; }
 
 code, kbd, pre, samp { font-family: var(--nb-mono); font-size: .875em; font-variant-ligatures: none; }
 kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 2px; }
@@ -125,9 +181,9 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   text-decoration: none;
   cursor: pointer;
 }
-.nb-button:hover { border-color: var(--nb-ink); }
+.nb-button:hover { border-color: var(--nb-link); color: var(--nb-link); }
 .nb-button[disabled] { color: var(--nb-ink-soft); border-style: dashed; cursor: not-allowed; }
-.nb-button--solid { border-color: var(--nb-ink); background: var(--nb-ink); color: var(--nb-paper); }
+.nb-button--solid, .nb-button--solid:hover { border-color: var(--nb-fill); background: var(--nb-fill); color: var(--nb-on-fill); }
 
 .nb-input {
   width: 100%;
@@ -138,6 +194,7 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   background: transparent;
   color: inherit;
   font: inherit;
+  caret-color: var(--nb-link);
 }
 .nb-input::placeholder { color: var(--nb-ink-soft); opacity: 1; }
 
@@ -153,7 +210,7 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   gap: 0 1.5rem;
   min-height: var(--nb-head-height);
   padding: 0 var(--nb-inset);
-  border-bottom: 1px solid var(--nb-ink);
+  border-bottom: 1px solid var(--nb-rule-bold);
   background: var(--nb-paper);
   view-transition-name: nb-head;
 }
@@ -164,23 +221,28 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   font-family: var(--nb-serif);
   font-size: 1.0625rem;
   font-weight: 600;
+  color: inherit;
   text-decoration: none;
 }
-.nb-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.125rem; font-size: .9375rem; }
-.nb-nav a, .nb-theme {
+.nb-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.125rem; margin-left: auto; font-size: .9375rem; }
+.nb-nav a, .nb-theme button {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
   color: var(--nb-ink-soft);
   text-decoration: none;
 }
-.nb-nav a:hover, .nb-nav a[aria-current], .nb-theme:hover {
-  color: var(--nb-ink);
+.nb-nav a:hover, .nb-theme button:hover { color: var(--nb-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .32em; }
+.nb-nav a[aria-current], .nb-theme button[aria-pressed="true"] {
+  color: var(--nb-link);
+  font-weight: 700;
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 2px;
   text-underline-offset: .32em;
 }
-.nb-theme { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
+/* Day and night sit together, set off from the links by a hairline. */
+.nb-theme { display: inline-flex; gap: .625rem; padding-left: 1.125rem; border-left: 1px solid var(--nb-rule); font-size: .9375rem; }
+.nb-theme button { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
 .nb-nav-toggle {
   display: none;
   min-width: 2.75rem;
@@ -194,10 +256,12 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
 }
 
 @media (max-width: 56rem) {
-  .js .nb-nav-toggle { display: inline-flex; align-items: center; justify-content: flex-end; }
+  .nb-head > .nb-theme { order: 1; margin-left: auto; padding-left: 0; border-left: 0; }
+  .js .nb-nav-toggle { order: 2; display: inline-flex; align-items: center; justify-content: flex-end; }
+  .nb-nav { order: 3; width: 100%; margin-left: 0; }
   .js .nb-nav--collapsible { display: none; width: 100%; padding-bottom: .5rem; }
   .js .nb-nav--collapsible.open { display: flex; }
-  .nb-nav--collapsible a, .nb-nav--collapsible .nb-theme { flex: 1 1 40%; }
+  .nb-nav--collapsible a { flex: 1 1 40%; }
 }
 
 /* Record line: the gutter shows what has been done. Solid is done, dashed is not done yet.
@@ -212,7 +276,7 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   left: 0;
   width: 2px;
   border-left: 1px dashed var(--nb-rule-strong);
-  background: linear-gradient(var(--nb-ink), var(--nb-ink)) -1px 0 / 2px calc(var(--nb-fraction) * 100%) no-repeat;
+  background: linear-gradient(var(--nb-done), var(--nb-done)) -1px 0 / 2px calc(var(--nb-fraction) * 100%) no-repeat;
   transition: background-size .5s cubic-bezier(.16, 1, .3, 1);
 }
 .nb-entry[aria-current]::after {
@@ -222,12 +286,14 @@ kbd { padding: 0 .35em; border: 1px solid var(--nb-rule-strong); border-radius: 
   left: -.25rem;
   width: .625rem;
   height: 2px;
-  background: var(--nb-mark);
+  background: var(--nb-stopped);
 }
+/* The stopped row is the one row with a fill, so the eye finds it in a long register. */
+.nb-entry[aria-current] { background: var(--nb-stopped-wash); }
 
-.nb-stopped { color: var(--nb-mark); font-size: .8125rem; font-weight: 700; line-height: 1.5; }
+.nb-stopped { color: var(--nb-stopped); font-size: .8125rem; font-weight: 700; line-height: 1.5; }
 
-/* The record itself: a square box, countersigned in red. */
+/* The record itself: a square box, ticked in green. */
 input[type="checkbox"] {
   appearance: none;
   flex: none;
@@ -245,7 +311,7 @@ input[type="checkbox"]::before {
   content: "";
   width: .9rem;
   height: .9rem;
-  background: var(--nb-mark);
+  background: var(--nb-done);
   clip-path: polygon(14% 52%, 0 66%, 38% 100%, 100% 18%, 84% 6%, 36% 72%);
   transform: scale(0);
   transition: transform .18s cubic-bezier(.16, 1, .3, 1);
@@ -266,6 +332,17 @@ input[type="checkbox"]:disabled { border: 1px dashed var(--nb-rule-strong); curs
   white-space: pre;
 }
 
+/* Code colours. code-colors.js or an engine's highlighter sets the classes. Print stays black. */
+@media screen {
+  .tok-comment { color: var(--nb-ink-soft); }
+  .tok-keyword { color: var(--nb-purple); }
+  .tok-type { color: var(--nb-cyan); }
+  .tok-call { color: var(--nb-blue); }
+  .tok-string { color: var(--nb-green); }
+  .tok-number { color: var(--nb-orange); }
+  .tok-meta { color: var(--nb-yellow); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @view-transition { navigation: none; }
   html { scroll-behavior: auto; }
@@ -281,5 +358,5 @@ input[type="checkbox"]:disabled { border: 1px dashed var(--nb-rule-strong); curs
 
 @media print {
   .nb-head { position: static; }
-  .nb-nav, .nb-nav-toggle { display: none; }
+  .nb-nav, .nb-nav-toggle, .nb-theme { display: none; }
 }

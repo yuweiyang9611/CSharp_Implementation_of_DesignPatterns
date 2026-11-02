@@ -29,6 +29,7 @@
   border-radius: 2px;
   background: var(--nb-sheet);
   color: inherit;
+  caret-color: var(--nb-link);
   font: .875rem/1.7 var(--nb-mono);
   tab-size: 4;
   white-space: pre;
@@ -53,9 +54,10 @@
   font-size: .9375rem;
   cursor: pointer;
 }
-.playground-main button:hover { border-color: var(--nb-ink); }
+.playground-main button:hover { border-color: var(--nb-link); color: var(--nb-link); }
 .playground-main button:disabled { border-style: dashed; color: var(--nb-ink-soft); cursor: not-allowed; }
-#run-code { border-color: var(--nb-ink); background: var(--nb-ink); color: var(--nb-paper); }
+.playground-main #run-code, .playground-main #run-code:hover { border-color: var(--nb-fill); background: var(--nb-fill); color: var(--nb-on-fill); }
+.playground-main #run-code:disabled { border-color: var(--nb-rule-strong); background: none; color: var(--nb-ink-soft); }
 #runtime-limits { color: var(--nb-ink-soft); font-size: .8125rem; }
 
 .results { padding-left: 1rem; border-left: 1px solid var(--nb-rule); }
@@ -64,8 +66,9 @@
 #check-results { padding-left: 1.25rem; }
 #diagnostics:empty::before, #output:empty::before, #check-results:empty::before { content: "运行后显示在这里"; color: var(--nb-ink-soft); font: .875rem/1.65 var(--nb-sans); }
 #check-results:empty { padding-left: 0; }
-.passed { color: var(--nb-ink); font-weight: 600; }
-.failed { color: var(--nb-mark); }
+.passed { color: var(--nb-done); font-weight: 600; }
+.failed { color: var(--nb-wrong); }
+#diagnostics:not(:empty) { color: var(--nb-wrong); }
 
 .playground-main details { margin-top: 1rem; padding-block: .5rem; border-top: 1px solid var(--nb-rule); }
 .playground-main summary { padding-block: .5rem; cursor: pointer; }
