@@ -5,21 +5,27 @@
 }
 .lesson-breadcrumb { color: var(--nb-ink-soft); font-size: .875rem; }
 
-.lesson-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem);
-  gap: 1rem 3rem;
-  align-items: end;
-  padding-block: 1rem 1.5rem;
-  border-bottom: 1px solid var(--nb-rule-bold);
+.lesson-hero { padding-block: .75rem 1.5rem; border-bottom: 1px solid var(--nb-rule-bold); }
+/* The band is the lesson's card head: the category's fill, with the four-task progress on it. */
+.lesson-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: .75rem 1.125rem;
+  border-radius: var(--nb-radius);
+  background: var(--nb-hue-fill);
+  color: var(--nb-on-fill);
 }
+.lesson-band-eyebrow { font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .lesson-copy h1 { display: inline; }
 .lesson-chinese { display: inline; margin-left: .75rem; color: var(--nb-ink-soft); font-size: 1.125rem; font-weight: 600; }
 .lesson-intent { max-width: var(--nb-measure); margin-top: .5rem; }
-.lesson-progress { font-size: .875rem; color: var(--nb-ink-soft); }
-.lesson-progress strong { display: block; color: var(--nb-ink); font-size: 1.125rem; font-variant-numeric: tabular-nums; }
-.lesson-progress-track { position: relative; height: 2px; margin-block: .375rem; border-top: 1px dashed var(--nb-rule-strong); }
-.lesson-progress-track span { position: absolute; top: -1px; left: 0; width: 100%; height: 2px; background: var(--nb-done); transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.16, 1, .3, 1); }
+.lesson-progress { display: flex; flex: 0 1 26rem; flex-wrap: wrap; gap: 0 .75rem; min-width: 0; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.lesson-progress strong { font-weight: 600; }
+.lesson-progress-track { flex: 1 1 100%; order: 1; margin-top: .25rem; }
 
 .evidence-section { padding-block: 1.75rem; }
 .evidence-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .25rem 2rem; align-items: baseline; margin-bottom: .75rem; }

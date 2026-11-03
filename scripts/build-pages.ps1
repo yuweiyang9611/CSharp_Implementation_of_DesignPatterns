@@ -388,6 +388,7 @@ foreach ($page in $pages) {
 }
 
 $categoryLabels = @{ Creational = '创建型'; Structural = '结构型'; Behavioral = '行为型' }
+$categoryHues = @{ Creational = 'blue'; Structural = 'purple'; Behavioral = 'cyan' }
 $tagById = @{}
 foreach ($tag in $learningCatalog.problemTags) { $tagById[$tag.id] = $tag }
 for ($index = 0; $index -lt $patterns.Count; $index++) {
@@ -497,8 +498,11 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <main class="lesson-main" id="main">
     <p class="lesson-breadcrumb"><a href="../index.html#patterns">模式地图</a> / $(Encode-Html $categoryLabels[$pattern.category]) / $(Encode-Html $pattern.english)</p>
     <section class="lesson-hero">
+      <div class="lesson-band" data-hue="$($categoryHues[$pattern.category])">
+        <p class="lesson-band-eyebrow">$(Encode-Html $categoryLabels[$pattern.category]) · $(('{0:00}' -f $pattern.number))</p>
+        <div class="lesson-progress"><p>我的证据进度 <strong id="lesson-progress-count">0 / 4</strong></p><div class="lesson-progress-track nb-bar nb-bar--on-fill" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</p></div>
+      </div>
       <div class="lesson-copy"><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
-      <aside class="lesson-progress"><p>我的证据进度</p><strong id="lesson-progress-count">0 / 4</strong><div class="lesson-progress-track" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</p></aside>
     </section>
     <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
     <div class="lesson-grid">
@@ -520,17 +524,13 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
 
 $homePath = Join-Path $stageDirectory 'index.html'
 $homeHtml = Get-Content -LiteralPath $homePath -Raw -Encoding utf8
-$categoryHues = @{ Creational = 'blue'; Structural = 'purple'; Behavioral = 'cyan' }
-$categoryShort = @{ Creational = 'C'; Structural = 'S'; Behavioral = 'B' }
+# Without JavaScript there is no record to read, so the fallback card has no ring.
 $fallbackCards = @($patterns | ForEach-Object {
     $pattern = $_
-    $tagSpans = @($pattern.problemTags | ForEach-Object {
-        '<span>' + (Encode-Html $tagById[$_].label) + '</span>'
-      }) -join ''
     @"
-<article class="pattern-card nb-entry" data-hue="$($categoryHues[$pattern.category])">
-  <div class="pattern-card-top"><span class="pattern-number">$(('{0:00}' -f $pattern.number))</span><span class="category-badge"><i>$($categoryShort[$pattern.category])</i>$(Encode-Html $categoryLabels[$pattern.category])</span></div>
-  <div class="pattern-body"><h3><a href="patterns/$($pattern.key).html">$(Encode-Html $pattern.english)</a></h3><p class="pattern-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="pattern-problems" role="group" aria-label="适用问题">$tagSpans</div><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件</a></div>
+<article class="pattern-card nb-card nb-entry" data-hue="$($categoryHues[$pattern.category])">
+  <div class="nb-card-head"><div><p class="nb-card-eyebrow"><span class="category-badge">$(Encode-Html $categoryLabels[$pattern.category])</span> · <span class="pattern-number">$(('{0:00}' -f $pattern.number))</span></p><h3><a href="patterns/$($pattern.key).html">$(Encode-Html $pattern.english)</a><span class="pattern-chinese">$(Encode-Html $pattern.chinese)</span></h3></div></div>
+  <div class="nb-card-body"><p class="pattern-intent">$(Encode-Html $pattern.intent)</p><div class="nb-card-meta"><a class="pattern-open" href="patterns/$($pattern.key).html">打开课件</a></div></div>
 </article>
 "@
   }) -join "`n"

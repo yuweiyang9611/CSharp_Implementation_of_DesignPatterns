@@ -35,7 +35,7 @@
     const track = document.querySelector(".lesson-progress-track");
     track.setAttribute("aria-valuenow", String(current.completed));
     track.setAttribute("aria-valuemax", String(current.total));
-    document.querySelector("#lesson-progress-bar").style.transform = `scaleX(${current.percent / 100})`;
+    track.style.setProperty("--nb-fraction", String(current.percent / 100));
     const summary = progress.summary();
     document.querySelector("#lesson-progress-summary").textContent =
       `全课程 ${summary.percent}% · ${summary.verifiedItems} / ${summary.totalItems} 已验证`;
