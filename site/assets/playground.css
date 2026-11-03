@@ -10,7 +10,7 @@
   min-height: 2.75rem;
   padding: .375rem .625rem;
   border: 1px solid var(--nb-rule-strong);
-  border-radius: 2px;
+  border-radius: var(--nb-radius-control);
   background: var(--nb-paper);
   color: inherit;
   font: inherit;
@@ -26,7 +26,7 @@
   padding: .75rem 1rem;
   resize: vertical;
   border: 1px solid var(--nb-rule-strong);
-  border-radius: 2px;
+  border-radius: var(--nb-radius-control);
   background: var(--nb-sheet);
   color: inherit;
   caret-color: var(--nb-link);
@@ -47,7 +47,7 @@
   min-height: 2.75rem;
   padding: .375rem .875rem;
   border: 1px solid var(--nb-rule-strong);
-  border-radius: 2px;
+  border-radius: var(--nb-radius-control);
   background: none;
   color: inherit;
   font: inherit;

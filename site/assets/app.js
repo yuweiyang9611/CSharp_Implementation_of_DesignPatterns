@@ -47,6 +47,7 @@
     progressTrack: document.querySelector("#progress-track"),
     progressBar: document.querySelector("#progress-bar"),
     continueLink: document.querySelector("#continue-learning"),
+    resumeGo: document.querySelector("#resume-go"),
     resetProgress: document.querySelector("#reset-progress"),
     exportProgress: document.querySelector("#export-progress"),
     exportMarkdown: document.querySelector("#export-markdown"),
@@ -93,31 +94,42 @@
     return task.href.startsWith("#") ? `${item.url}${task.href}` : task.href;
   }
 
+  function fractionOf(current) {
+    return current.total ? current.completed / current.total : 0;
+  }
+
+  function setRing(ring, current) {
+    const fraction = fractionOf(current);
+    const percent = `${Math.round(fraction * 100)}%`;
+    ring.style.setProperty("--nb-fraction", String(fraction));
+    ring.querySelector("span").textContent = percent;
+    ring.setAttribute("aria-label", `完成 ${percent}`);
+  }
+
   function patternCard(pattern) {
     const category = categoryMeta[pattern.category];
     const id = `pattern:${pattern.key}`;
     const current = progress.itemProgress(id);
-    const tags = pattern.problemTags.map((tagId) =>
-      `<span>${escapeHtml(problemTags.get(tagId)?.label ?? tagId)}</span>`,
-    ).join("");
     const taskUrl = itemTaskUrl({ url: `patterns/${pattern.key}.html` }, current.nextTask);
     const taskLabel = current.verified ? "4 / 4 · 已验证" : `${current.completed} / ${current.total} · ${escapeHtml(current.nextTask.title)}`;
+    const percent = `${Math.round(fractionOf(current) * 100)}%`;
 
     return `
-      <article class="pattern-card nb-entry${current.verified ? " learned" : ""}" data-hue="${category.hue}" data-progress-id="${id}">
-        <div class="pattern-card-top">
-          <span class="pattern-number">${String(pattern.number).padStart(2, "0")}</span>
+      <article class="pattern-card nb-card nb-entry${current.verified ? " learned" : ""}" data-hue="${category.hue}" data-progress-id="${id}">
+        <div class="nb-card-head">
+          <div>
+            <p class="nb-card-eyebrow"><span class="category-badge">${category.label}</span> · <span class="pattern-number">${String(pattern.number).padStart(2, "0")}</span></p>
+            <h3><a href="patterns/${pattern.key}.html">${escapeHtml(pattern.english)}</a><span class="pattern-chinese">${escapeHtml(pattern.chinese)}</span></h3>
+          </div>
+          <div class="nb-ring" role="img" aria-label="完成 ${percent}" style="--nb-fraction: ${fractionOf(current)}"><span>${percent}</span></div>
+        </div>
+        <div class="nb-card-body">
           <span class="nb-stopped" hidden>停在这里</span>
-          <span class="category-badge"><i>${category.short}</i>${category.label}</span>
-        </div>
-        <div class="pattern-body">
-          <h3><a href="patterns/${pattern.key}.html">${escapeHtml(pattern.english)}</a></h3><p class="pattern-chinese">${escapeHtml(pattern.chinese)}模式</p>
           <p class="pattern-intent">${escapeHtml(pattern.intent)}</p>
-          <div class="pattern-problems" role="group" aria-label="适用问题">${tags}</div>
-          <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情</button>
-        </div>
-        <div class="pattern-card-footer">
-          <a class="pattern-task-link" href="${taskUrl}">${taskLabel}</a>
+          <div class="nb-card-meta">
+            <a class="pattern-task-link" href="${taskUrl}">${taskLabel}</a>
+            <button class="pattern-open" type="button" data-open-pattern="${pattern.key}" aria-label="查看详情：${escapeHtml(pattern.english)} ${escapeHtml(pattern.chinese)}模式">查看详情</button>
+          </div>
         </div>
       </article>`;
   }
@@ -155,7 +167,7 @@
     }
     elements.problemFilters.innerHTML = catalog.problemTags
       .filter((tag) => counts.has(tag.id))
-      .map((tag) => `<button type="button" class="problem-filter${activeProblems.has(tag.id) ? " active" : ""}" data-problem="${tag.id}" aria-pressed="${activeProblems.has(tag.id)}">${escapeHtml(tag.label)} <span>${counts.get(tag.id)}</span></button>`)
+      .map((tag) => `<button type="button" class="problem-filter nb-chip${activeProblems.has(tag.id) ? " active" : ""}" data-problem="${tag.id}" aria-pressed="${activeProblems.has(tag.id)}">${escapeHtml(tag.label)} <span class="nb-chip-count">${counts.get(tag.id)}</span></button>`)
       .join("");
   }
 
@@ -214,6 +226,11 @@
       const nextTask = current.nextTask ?? item.tasks[0];
       link.href = itemTaskUrl(item, nextTask);
       link.textContent = current.verified ? "全部完成，重新复习" : `下一步：${nextTask.title}`;
+      const card = container.closest(".nb-card");
+      if (!card) continue;
+      card.querySelector(".nb-bar")?.style.setProperty("--nb-fraction", String(fractionOf(current)));
+      if (current.verified) card.dataset.record = "done";
+      else delete card.dataset.record;
     }
   }
 
@@ -223,7 +240,9 @@
     elements.progressSummary.textContent = `${summary.earnedTasks} / ${summary.totalTasks} 个任务 · ${summary.verifiedItems} / ${summary.totalItems} 已验证`;
     elements.progressTrack.setAttribute("aria-valuenow", String(summary.earnedTasks));
     elements.progressTrack.setAttribute("aria-valuemax", String(summary.totalTasks));
-    elements.progressBar.style.transform = `scaleX(${summary.percent / 100})`;
+    elements.progressTrack.style.setProperty("--nb-fraction", String(summary.percent / 100));
+    document.querySelector("#stat-tasks").textContent = String(summary.earnedTasks);
+    document.querySelector("#stat-verified").textContent = String(patterns.filter((pattern) => progress.itemProgress(`pattern:${pattern.key}`).verified).length);
 
     const resume = progress.resumeItem();
     if (resume) {
@@ -233,6 +252,8 @@
         : summary.earnedTasks === 0
           ? `从 ${resume.title} 开始：${resume.nextAction}`
           : `继续学习：${resume.title} · ${resume.nextAction}`;
+      elements.resumeGo.href = resume.url;
+      elements.resumeGo.textContent = summary.earnedTasks === 0 ? "从这里开始" : "继续学习";
     }
 
     document.querySelectorAll(".pattern-card[data-progress-id]").forEach((card) => {
@@ -240,7 +261,8 @@
       const pattern = patterns.find((candidate) => `pattern:${candidate.key}` === card.dataset.progressId);
       if (!current || !pattern) return;
       card.classList.toggle("learned", current.verified);
-      card.style.setProperty("--nb-fraction", String(current.total ? current.completed / current.total : 0));
+      card.style.setProperty("--nb-fraction", String(fractionOf(current)));
+      setRing(card.querySelector(".nb-ring"), current);
       const stopped = summary.earnedTasks > 0 && resume?.id === card.dataset.progressId;
       card.toggleAttribute("aria-current", stopped);
       if (stopped) card.setAttribute("aria-current", "true");
@@ -520,7 +542,11 @@
   setTerminalExpanded(!compactMedia.matches);
   progress.subscribe(updateProgress);
   review?.subscribe(updateProgress);
-  exercises?.subscribe(() => { const stats = exercises.stats(); document.querySelector("#coding-summary").textContent = `${stats.passed} / ${stats.total} 道编码练习已通过`; });
+  exercises?.subscribe(() => {
+    const stats = exercises.stats();
+    document.querySelector("#coding-summary").textContent = `${stats.passed} / ${stats.total} 道编码练习已通过`;
+    document.querySelector("#stat-exercises").textContent = String(stats.passed);
+  });
   renderPatterns();
   const requestedPattern = new URL(window.location.href).searchParams.get("pattern");
   if (requestedPattern) openPattern(requestedPattern, { pushHistory: false });
