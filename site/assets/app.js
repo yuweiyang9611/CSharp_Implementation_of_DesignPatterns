@@ -5,6 +5,7 @@
   const progress = window.LearningProgress;
   const review = window.ReviewScheduler;
   const exercises = window.ExerciseProgress;
+  const notes = window.LessonNotes;
   if (!catalog || !progress) {
     document.querySelector("#pattern-result").textContent = "学习目录加载失败，请刷新页面重试。";
     return;
@@ -291,8 +292,8 @@
     document.querySelector("#dialog-scenario").textContent = pattern.scenario;
     document.querySelector("#dialog-command").textContent = `dotnet run --project src/DesignPatterns.Runner -- ${pattern.key}`;
     document.querySelector("#dialog-guide").href = `patterns/${pattern.key}.html`;
-    document.querySelector("#dialog-source").href = pattern.sourceUrl;
-    document.querySelector("#dialog-practice").href = pattern.practiceUrl;
+    document.querySelector("#dialog-source").href = `source.html?path=${encodeURIComponent(pattern.source)}`;
+    document.querySelector("#dialog-practice").href = `source.html?path=${encodeURIComponent(pattern.practice)}`;
     const current = progress.itemProgress(`pattern:${pattern.key}`);
     document.querySelector("#dialog-progress-summary").textContent = `${current.completed} / ${current.total}`;
     elements.dialog.dataset.pattern = pattern.key;
@@ -346,6 +347,7 @@
       progress: progress.snapshot(),
       review: review?.snapshot() ?? null,
       exercises: exercises?.snapshot() ?? null,
+      notes: notes?.snapshot() ?? null,
     };
   }
 
@@ -354,6 +356,7 @@
     const restored = progress.restore(previous.progress ?? previous);
     if (restored && previous.review && review) review.restore(previous.review);
     if (restored && previous.exercises && exercises) exercises.restore(previous.exercises);
+    if (restored && previous.notes && notes) notes.restore(previous.notes);
     return restored;
   }
 
@@ -365,6 +368,7 @@
       progress: progress.exportData(),
       review: review?.exportData() ?? null,
       exercises: exercises?.exportData() ?? null,
+      notes: notes?.exportData() ?? null,
     };
   }
 
@@ -376,10 +380,10 @@
     if (payload?.format !== "csharp-design-patterns-learning-backup" || payload.version !== 1) {
       return progress.importData(payload);
     }
-    if (!payload.progress || (payload.review && !review) || (payload.exercises && !exercises?.validate(payload.exercises))) return false;
+    if (!payload.progress || (payload.review && !review) || (payload.exercises && !exercises?.validate(payload.exercises)) || (payload.notes && !notes?.validate(payload.notes))) return false;
     const previous = backupSnapshot();
     if (!progress.importData(payload.progress)) return false;
-    if ((payload.review && !review.restore(payload.review)) || (payload.exercises && !exercises.restore(payload.exercises))) {
+    if ((payload.review && !review.restore(payload.review)) || (payload.exercises && !exercises.restore(payload.exercises)) || (payload.notes && !notes.restore(payload.notes))) {
       restoreSnapshot(previous);
       return false;
     }

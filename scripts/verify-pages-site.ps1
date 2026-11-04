@@ -137,6 +137,34 @@ foreach ($pattern in $patterns) {
 }
 
 $searchIndexPath = Join-Path $assetDirectory 'search-index.json'
+# Source read in place: the bundle and its index exist, every pattern's files are in it, and no guide or lesson
+# links to GitHub for a file the site carries. The panel's own GitHub link is added by script and is not in the HTML.
+$sourceIndexPath = Join-Path $assetDirectory 'source/index.json'
+$bundledSourcePaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+if (-not (Test-Path -LiteralPath $sourceIndexPath -PathType Leaf)) { $issues.Add('Source bundle index is missing: assets/source/index.json') }
+else {
+  try {
+    $sourceIndex = Get-Content -LiteralPath $sourceIndexPath -Raw -Encoding utf8 | ConvertFrom-Json
+    if ($sourceIndex.version -ne 1 -or @($sourceIndex.files).Count -lt 150) { $issues.Add('Source bundle must list the course files (at least 150).') }
+    foreach ($entry in @($sourceIndex.files)) {
+      [void]$bundledSourcePaths.Add([string]$entry.path)
+      if (-not (Test-Path -LiteralPath (Join-Path $assetDirectory ('source/' + $entry.path + '.txt')) -PathType Leaf)) { $issues.Add("Bundled source file is missing: $($entry.path)") }
+    }
+    foreach ($pattern in $patterns) {
+      foreach ($required in @([string]$pattern.source, [string]$pattern.practice, 'src/DesignPatterns/IPatternDemo.cs')) {
+        if (-not $bundledSourcePaths.Contains($required)) { $issues.Add("Pattern $($pattern.key) needs a file outside the source bundle: $required") }
+      }
+    }
+  } catch { $issues.Add("Invalid source bundle index: $($_.Exception.Message)") }
+}
+foreach ($htmlFile in @(Get-ChildItem -LiteralPath $guideDirectory -Filter '*.html') + @(Get-ChildItem -LiteralPath $patternDirectory -Filter '*.html')) {
+  $content = [regex]::Replace((Get-Content -LiteralPath $htmlFile.FullName -Raw -Encoding utf8), '<noscript>.*?</noscript>', '', 'Singleline')
+  foreach ($match in [regex]::Matches($content, 'href="https://github.com/[^"]+/blob/[^/"]+/(?<path>[^"#?]+)')) {
+    $path = [Uri]::UnescapeDataString($match.Groups['path'].Value)
+    if ($bundledSourcePaths.Contains($path)) { $issues.Add("Page sends the reader to GitHub for a bundled file: $($htmlFile.Name) -> $path") }
+  }
+}
+
 if (Test-Path -LiteralPath $searchIndexPath) {
   try {
     $searchIndex = Get-Content -LiteralPath $searchIndexPath -Raw -Encoding utf8 | ConvertFrom-Json

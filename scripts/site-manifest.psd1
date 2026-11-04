@@ -1,5 +1,5 @@
 @{
-  RootPages = @('index.html', 'quiz.html', 'playground.html')
+  RootPages = @('index.html', 'quiz.html', 'playground.html', 'source.html')
   Guides = @(
     @{ Input = 'README.md'; Output = 'repository-overview.html'; Description = 'C# 设计模式学习项目的课程结构、运行方式与仓库说明。'; Type = 'Guide' }
     @{ Input = 'START_HERE.md'; Output = 'learning-path.html'; Description = '从 30 分钟到 14 周的 C# 设计模式学习路线。'; Type = 'Learning Path' }

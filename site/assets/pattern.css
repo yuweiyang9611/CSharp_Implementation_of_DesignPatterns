@@ -5,39 +5,77 @@
 }
 .lesson-breadcrumb { color: var(--nb-ink-soft); font-size: .875rem; }
 
-.lesson-hero { padding-block: .75rem 1.5rem; border-bottom: 1px solid var(--nb-rule-bold); }
-/* The band is the lesson's card head: the category's fill, with the four-task progress on it. */
+/* The band is the card head of the lesson: the category fill, with the five steps and the evidence bar on it. */
 .lesson-band {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: .5rem 1.5rem;
-  margin-bottom: 1.25rem;
-  padding: .75rem 1.125rem;
+  align-items: end;
+  margin: .75rem 0 1.25rem;
+  padding: 1rem 1.25rem 1.125rem;
   border-radius: var(--nb-radius);
   background: var(--nb-hue-fill);
   color: var(--nb-on-fill);
 }
-.lesson-band-eyebrow { font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-.lesson-copy h1 { display: inline; }
-.lesson-chinese { display: inline; margin-left: .75rem; color: var(--nb-ink-soft); font-size: 1.125rem; font-weight: 600; }
-.lesson-intent { max-width: var(--nb-measure); margin-top: .5rem; }
-.lesson-progress { display: flex; flex: 0 1 26rem; flex-wrap: wrap; gap: 0 .75rem; min-width: 0; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.lesson-band-eyebrow { font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; opacity: .9; }
+.lesson-band h1 { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); line-height: 1.25; word-break: keep-all; }
+.lesson-chinese { margin-left: .5rem; font-size: 1.125rem; font-weight: 600; opacity: .9; }
+.lesson-progress { min-width: 0; font-size: .875rem; font-variant-numeric: tabular-nums; text-align: right; }
 .lesson-progress strong { font-weight: 600; }
-.lesson-progress-track { flex: 1 1 100%; order: 1; margin-top: .25rem; }
+.lesson-progress-track { width: 12rem; max-width: 100%; margin: .35rem 0 0 auto; }
+.lesson-steps { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .4rem; margin: .25rem 0 0; padding: 0; list-style: none; counter-reset: step; }
+.lesson-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  min-height: 2rem;
+  padding: 0 .75rem;
+  border: 1px solid rgba(255, 255, 255, .5);
+  border-radius: 999px;
+  font-size: .875rem;
+}
+.lesson-steps li::before { counter-increment: step; content: counter(step); font-variant-numeric: tabular-nums; opacity: .85; }
+.lesson-steps a { color: inherit; text-decoration: none; }
+.lesson-steps a:hover { text-decoration: underline; }
+.lesson-steps li[data-state="done"] { border-color: var(--nb-on-fill); background: var(--nb-on-fill); color: var(--nb-hue-fill); font-weight: 600; }
+.lesson-steps li[data-state="done"]::after { content: "完成"; font-size: .8125rem; font-weight: 400; }
+.lesson-steps li[data-state="now"] { border-color: var(--nb-on-fill); background: rgba(255, 255, 255, .18); font-weight: 600; }
+.lesson-steps li[data-state="now"]::after { content: "停在这里"; font-size: .8125rem; font-weight: 400; }
+.lesson-steps li[data-state="none"] { border-style: dashed; opacity: .7; }
+.lesson-step-count { font-size: .8125rem; opacity: .85; font-variant-numeric: tabular-nums; }
+.lesson-intent { max-width: var(--nb-measure); margin-bottom: 1.25rem; font-size: 1.0625rem; }
 
-.evidence-section { padding-block: 1.75rem; }
-.evidence-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .25rem 2rem; align-items: baseline; margin-bottom: .75rem; }
+/* Two columns from 64rem: read on the left, code on the right. Below that the code follows the reading. */
+.lesson-columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+.lesson-read, .lesson-code { min-width: 0; }
+.lesson-code-title { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 1rem; margin-bottom: .5rem; font-size: 1.0625rem; font-weight: 600; }
+.lesson-code-title span { color: var(--nb-ink-soft); font-size: .875rem; font-weight: 400; }
+.lesson-code .nb-code { --nb-code-height: min(34rem, calc(100vh - 14rem)); }
+.lesson-code .nb-code-actions .nb-button { min-height: 2.25rem; padding-block: 0; font-size: .875rem; }
+@media (min-width: 64rem) {
+  .lesson-columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 2rem; align-items: start; }
+  .lesson-code { position: sticky; top: 1rem; }
+}
+
+.lesson-read > section { padding: 1rem 0 1.125rem; border-top: 1px solid var(--nb-rule-bold); }
+.lesson-read > section > h2 { margin-bottom: .5rem; color: var(--nb-hue, inherit); font-size: 1.0625rem; }
+.lesson-read h3 { margin-top: .5rem; font-size: .9375rem; }
+.lesson-read > section > p { max-width: var(--nb-measure); }
+.problem-tags { display: flex; flex-wrap: wrap; gap: 0 1rem; margin-top: .25rem; font-size: .875rem; }
+.problem-tags a { display: inline-flex; align-items: center; min-height: 2rem; }
+.scenario { color: var(--nb-ink-soft); }
+.lesson-links { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin-top: .25rem; font-size: .9375rem; }
+.lesson-links a { display: inline-flex; align-items: center; gap: .25rem; min-height: 2.75rem; }
+
+/* Evidence: four ruled rows that unlock in order. */
 .evidence-heading p { color: var(--nb-ink-soft); font-size: .9375rem; }
-.evidence-grid { border-top: 1px solid var(--nb-rule-bold); }
-
+.evidence-grid { margin-top: .5rem; border-top: 1px solid var(--nb-rule); }
 .evidence-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(10rem, 13rem) minmax(0, var(--nb-measure));
-  gap: .25rem 1.5rem;
-  padding: 1rem 0 1rem 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .25rem;
+  padding: .875rem 0 .875rem 1.25rem;
   border-bottom: 1px solid var(--nb-rule);
 }
 .evidence-card.completed { --nb-fraction: 1; }
@@ -54,12 +92,12 @@
 }
 .evidence-card.completed + .evidence-card:not(.completed):not(.locked) h3::after {
   content: "停在这里";
-  display: block;
+  margin-left: .5rem;
   color: var(--nb-stopped);
   font-size: .875rem;
 }
-.evidence-card h3 { grid-column: 1; grid-row: 1 / span 6; font-size: 1.0625rem; }
-.evidence-card > :not(h3) { grid-column: 2; }
+.evidence-card h3 { font-size: 1rem; }
+.evidence-card > p { max-width: var(--nb-measure); font-size: .9375rem; }
 .evidence-card.locked h3, .evidence-card.locked > p { color: var(--nb-ink-soft); }
 .evidence-card.locked .evidence-complete span::after { content: "（请先完成上一项证据）"; color: var(--nb-ink-soft); }
 
@@ -68,11 +106,11 @@
   flex-wrap: wrap;
   gap: .25rem .75rem;
   align-items: center;
+  margin-top: .5rem;
   padding: .5rem .75rem;
   background: var(--nb-run-wash);
 }
 .evidence-command code { flex: 1 1 100%; min-width: 0; overflow-x: auto; color: var(--nb-run); white-space: pre; }
-.evidence-command { margin-top: .5rem; }
 .evidence-card.locked .evidence-command { background: var(--nb-sheet); }
 .evidence-card.locked .evidence-command code { color: var(--nb-ink-soft); }
 .evidence-command button {
@@ -89,6 +127,8 @@
   cursor: pointer;
 }
 .evidence-command button:hover { color: var(--nb-ink); }
+.evidence-run-here { margin-top: .5rem; }
+.evidence-run-here .nb-button { min-height: 2.5rem; font-size: .9375rem; }
 
 .expected-output { margin-top: .5rem; }
 .expected-output summary { padding-block: .5rem; color: var(--nb-ink-soft); font-size: .9375rem; cursor: pointer; }
@@ -104,38 +144,74 @@
   line-height: 1.65;
   white-space: pre-wrap;
 }
-.evidence-target { margin-top: .25rem; font-size: .9375rem; color: var(--nb-ink-soft); }
+.evidence-target { margin-top: .25rem; color: var(--nb-ink-soft); font-size: .9375rem; }
 .evidence-acceptance { margin-top: .5rem; padding-left: 1.25rem; font-size: .9375rem; }
-.evidence-complete { min-height: 2.75rem; display: flex; align-items: center; gap: .625rem; margin-top: .5rem; font-size: .9375rem; cursor: pointer; }
+.evidence-complete { display: flex; align-items: center; gap: .625rem; min-height: 2.75rem; margin-top: .5rem; font-size: .9375rem; cursor: pointer; }
 
-.lesson-grid { border-top: 1px solid var(--nb-rule-bold); }
-.lesson-panel {
-  display: grid;
-  grid-template-columns: minmax(10rem, 13rem) minmax(0, var(--nb-measure));
-  gap: .25rem 1.5rem;
-  padding: 1rem 0 1rem 1.25rem;
+/* Self-check: the questions that name this pattern, answered in place. */
+.lesson-question { padding: .875rem 0 1rem 1.25rem; border-bottom: 1px solid var(--nb-rule); }
+.lesson-question-index { display: flex; justify-content: space-between; gap: 1rem; color: var(--nb-ink-soft); font-size: .875rem; font-variant-numeric: tabular-nums; }
+.lesson-question-state[data-due="true"] { color: var(--nb-stopped); font-weight: 600; }
+.lesson-question h3 { margin-top: .125rem; font-size: 1rem; }
+.lesson-question-scenario { margin: .25rem 0 .5rem; max-width: var(--nb-measure); }
+.lesson-question fieldset { margin: 0; padding: 0; border: 0; }
+.lesson-question legend { margin-bottom: .25rem; padding: 0; font-weight: 600; }
+.lesson-question-options { border-top: 1px solid var(--nb-rule-bold); }
+.lesson-question-options label {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  min-height: 2.75rem;
+  padding: .5rem 0;
   border-bottom: 1px solid var(--nb-rule);
+  cursor: pointer;
 }
-.lesson-panel > h2 { grid-column: 1; grid-row: 1 / span 6; color: var(--nb-hue, inherit); font-size: 1.0625rem; }
-.lesson-panel > :not(h2) { grid-column: 2; }
-.lesson-panel h3 { margin-top: .5rem; font-size: .9375rem; }
-.problem-tags { display: flex; flex-wrap: wrap; gap: 0 1rem; margin-top: .25rem; font-size: .875rem; }
-.problem-tags a { display: inline-flex; align-items: center; min-height: 2rem; }
-.scenario { color: var(--nb-ink-soft); }
-.lesson-links { display: flex; flex-wrap: wrap; gap: 0 1.25rem; margin-top: .5rem; font-size: .9375rem; }
-.lesson-links a { display: inline-flex; align-items: center; gap: .25rem; min-height: 2.75rem; }
+.lesson-question-options label:has(input:checked) { font-weight: 600; }
+.lesson-question-options label.correct, .lesson-question-options label.wrong { margin-inline: -.5rem; padding-inline: .5rem; }
+.lesson-question-options label.correct { border-bottom: 2px solid var(--nb-done); background: var(--nb-done-wash); font-weight: 600; }
+.lesson-question-options label.correct::after { content: "正确"; margin-left: auto; color: var(--nb-done); font-size: .875rem; }
+.lesson-question-options label.wrong { border-bottom: 1px dashed var(--nb-wrong); background: var(--nb-wrong-wash); }
+.lesson-question-options label.wrong::after { content: "你的选择"; margin-left: auto; color: var(--nb-wrong); font-size: .875rem; }
+.lesson-question-options input { flex: none; width: 1.125rem; height: 1.125rem; margin: 0; accent-color: var(--nb-link); }
+.lesson-question form > .nb-button { margin-top: .75rem; }
+.lesson-question-feedback { margin-top: .75rem; padding-top: .625rem; border-top: 1px dashed var(--nb-wrong); }
+.lesson-question-feedback.success { border-top: 2px solid var(--nb-done); }
+.lesson-question-feedback strong { color: var(--nb-wrong); }
+.lesson-question-feedback.success strong { color: var(--nb-done); }
+.lesson-question-feedback p { margin-top: .25rem; max-width: var(--nb-measure); white-space: pre-line; }
+.lesson-quiz-empty { padding: .75rem 0; color: var(--nb-ink-soft); }
+
+/* 记一笔: a sheet to write on, saved as you type. */
+.lesson-notes textarea {
+  display: block;
+  width: 100%;
+  min-height: 6rem;
+  padding: .625rem .75rem;
+  border: 1px solid var(--nb-rule-strong);
+  border-radius: var(--nb-radius-control);
+  background: var(--nb-sheet);
+  color: var(--nb-ink);
+  font: inherit;
+  font-size: .9375rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+.lesson-notes textarea:focus-visible { outline: 2px solid var(--nb-link); outline-offset: 2px; }
+.lesson-note-status { margin-top: .375rem; color: var(--nb-ink-soft); font-size: .875rem; }
+
 .related-list { list-style: none; display: flex; flex-wrap: wrap; gap: .25rem 2rem; }
 .related-list a { display: inline-flex; flex-direction: column; min-height: 2.75rem; justify-content: center; }
 .related-list span { color: var(--nb-ink-soft); font-size: .875rem; }
 
-.lesson-pager { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; font-weight: 600; }
+.lesson-pager { display: flex; justify-content: space-between; gap: 1rem; padding-block: 1.25rem; border-top: 1px solid var(--nb-rule-bold); font-weight: 600; }
 .lesson-pager a { display: inline-flex; align-items: center; min-height: 2.75rem; }
 
 .lesson-footer { padding: 1rem var(--nb-inset); border-top: 1px solid var(--nb-rule); color: var(--nb-ink-soft); font-size: .875rem; }
 
 @media (max-width: 48rem) {
-  .lesson-hero, .evidence-heading { grid-template-columns: minmax(0, 1fr); }
+  .lesson-band { grid-template-columns: minmax(0, 1fr); }
   .lesson-chinese { display: block; margin-left: 0; }
-  .evidence-card, .lesson-panel { grid-template-columns: minmax(0, 1fr); }
-  .evidence-card h3, .evidence-card > :not(h3), .lesson-panel > h2, .lesson-panel > :not(h2) { grid-column: 1; grid-row: auto; }
+  .lesson-progress { text-align: left; }
+  .lesson-progress-track { margin-left: 0; }
+  .lesson-code .nb-code { --nb-code-height: 24rem; }
 }

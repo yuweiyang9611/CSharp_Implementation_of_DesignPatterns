@@ -244,6 +244,58 @@ try {
   assert.equal(await continueLink.isVisible(), true, "有阅读位置时应显示继续阅读");
   assert.match(await continueLink.textContent(), /继续阅读：/u);
 
+  // Source read in place: the lesson shows its demo, interface and practice file, and sends nobody to GitHub for them.
+  await page.goto(`${baseUrl}patterns/strategy.html`);
+  const sourceTabs = page.locator("#source-panel .nb-code-tab");
+  assert.equal(await sourceTabs.count(), 3, "课件源码面板应有三个文件页签");
+  await page.locator("#source-panel .nb-code-line").first().waitFor();
+  const demoLines = await page.locator("#source-panel .nb-code-line").count();
+  assert.ok(demoLines >= 90, `StrategyDemo.cs 应完整显示，实际 ${demoLines} 行`);
+  assert.equal(await page.locator("#source-panel .nb-code-line").first().getAttribute("data-line"), "1");
+  assert.ok(await page.locator("#source-panel .tok-keyword").count() > 0, "源码应着色");
+  assert.match(await page.locator("#source-panel .nb-code-link").getAttribute("href"), /github\.com\/.+\/blob\/.+\/src\/DesignPatterns\/Behavioral\/StrategyDemo\.cs$/u);
+  await sourceTabs.nth(2).click();
+  await page.waitForFunction(() => document.querySelector('#source-panel .nb-code-tab[aria-selected="true"]')?.textContent.includes("PricingStrategies") && document.querySelectorAll("#source-panel .nb-code-line").length > 10);
+  for (const step of ["read", "run", "change", "verify", "quiz"]) assert.equal(await page.locator(`#lesson-steps [data-step="${step}"]`).count(), 1, `带子上应有「${step}」一步`);
+  assert.equal(await page.locator('#lesson-steps [data-step="read"]').getAttribute("data-state"), "now", "第一步应标为停在这里");
+  await page.locator('[data-progress-task="read"]').check();
+  assert.equal(await page.locator('#lesson-steps [data-step="read"]').getAttribute("data-state"), "done");
+  assert.equal(await page.locator('#lesson-steps [data-step="run"]').getAttribute("data-state"), "now");
+  assert.equal(await page.locator(".evidence-target a").getAttribute("href"), "#source-panel", "修改入口应指向站内面板");
+  await page.locator(".lesson-links a[data-source-tab]").click();
+  assert.equal(await page.locator('#source-panel .nb-code-tab[aria-selected="true"]').textContent(), "StrategyDemo.cs", "修改入口应切回 Demo 页签");
+  const strategyHtml = readFileSync(join(siteRoot, "patterns", "strategy.html"), "utf8").replace(/<noscript>[\s\S]*?<\/noscript>/gu, "");
+  assert.equal((strategyHtml.match(/href="https:\/\/github\.com\/[^"]*\/blob\//gu) ?? []).length, 0, "课件正文不应再把源码链接到 GitHub");
+  const lessonQuestions = page.locator("#lesson-quiz .lesson-question");
+  assert.ok(await lessonQuestions.count() >= 1, "Strategy 应有辨析题");
+  assert.equal(await page.locator('#lesson-steps [data-step="quiz"]').getAttribute("data-state"), "pending");
+  await lessonQuestions.first().locator("input").first().check();
+  await lessonQuestions.first().locator('button[type="submit"]').click();
+  assert.ok(await lessonQuestions.first().locator(".lesson-question-feedback").isVisible(), "作答后应给出判断");
+  assert.notEqual(await page.locator('#lesson-steps [data-step="quiz"]').getAttribute("data-state"), "pending");
+  await page.locator("#lesson-note").fill("和 State 的区别是谁来切换");
+  await page.waitForFunction(() => document.querySelector("#lesson-note-status").textContent.includes("已保存"));
+  await page.reload();
+  assert.equal(await page.locator("#lesson-note").inputValue(), "和 State 的区别是谁来切换", "笔记应在刷新后保留");
+  await page.evaluate(() => { window.ReviewScheduler.reset(); window.LearningProgress.setTaskComplete("pattern:strategy", "read", false); });
+
+  await page.goto(`${baseUrl}source.html?path=${encodeURIComponent("examples/OnlineStore/Pricing/PricingStrategies.cs")}#L5-L9`);
+  await page.locator("#source-panel .nb-code-line").first().waitFor();
+  assert.equal(await page.locator("#source-panel .nb-code-line[data-marked]").count(), 5, "行号范围应标出 5 行");
+  assert.ok(await page.locator("#source-sibling-list li").count() >= 1, "源码页应列出同目录文件");
+  await page.goto(`${baseUrl}source.html?dir=examples%2FOnlineStore`);
+  await page.locator(".source-row").first().waitFor();
+  assert.ok(await page.locator(".source-row").count() >= 3, "目录页应列出子目录和文件");
+  const bundle = new Set(JSON.parse(readFileSync(join(siteRoot, "assets", "source", "index.json"), "utf8")).files.map((file) => file.path));
+  assert.ok(bundle.has("src/DesignPatterns/Behavioral/StrategyDemo.cs") && bundle.size >= 150, "源码包应带上课程文件");
+  for (const guide of readdirSync(join(siteRoot, "guides")).filter((name) => name.endsWith(".html"))) {
+    const html = readFileSync(join(siteRoot, "guides", guide), "utf8");
+    for (const match of html.matchAll(/href="https:\/\/github\.com\/[^"]+\/blob\/[^/"]+\/([^"#?]+)/gu)) {
+      assert.ok(!bundle.has(decodeURIComponent(match[1])), `${guide} 仍把 ${match[1]} 链接到 GitHub`);
+    }
+  }
+  assert.ok(readFileSync(join(siteRoot, "guides", "pattern-index.html"), "utf8").includes("../source.html?path="), "模式索引应链接到站内源码");
+
   await page.goto(`${baseUrl}guides/pattern-index.html`);
   assert.equal(await page.locator(".learning-layout > main tbody tr").count(), 23, "模式索引应保留 23 行表格");
   assert.doesNotMatch(await page.locator(".learning-layout > main").textContent(), /GENERATED PATTERN INDEX/u, "同步脚本的注释标记不应显示");
@@ -357,6 +409,9 @@ try {
   await mobile.locator(".lesson-main").waitFor();
   await assertNoDocumentOverflow(mobile, "移动端模式课件");
   assert.equal(await mobile.locator(".related-list a").count(), 3);
+  await mobile.goto(`${baseUrl}patterns/strategy.html`);
+  await mobile.locator("#source-panel .nb-code-line").first().waitFor();
+  await assertNoDocumentOverflow(mobile, "移动端源码面板");
   assert.deepEqual(mobileErrors, [], `移动端页面发生脚本错误：\n${mobileErrors.join("\n")}`);
   await context.close();
 
@@ -370,6 +425,8 @@ try {
   assert.ok(await noScriptPage.locator(".learning-site-nav").isVisible());
   assert.ok(await noScriptPage.locator(".guide-toc-list").isVisible());
   assert.ok(await noScriptPage.locator(".toc-sections").count() > 0);
+  await noScriptPage.goto(`${baseUrl}patterns/strategy.html`);
+  assert.ok(await noScriptPage.locator("#source-panel noscript").isVisible(), "禁用 JavaScript 后源码面板应给出 GitHub 链接");
   await noScriptPage.goto(`${baseUrl}quiz.html`);
   assert.ok(await noScriptPage.locator("noscript").isVisible());
   await noScriptContext.close();

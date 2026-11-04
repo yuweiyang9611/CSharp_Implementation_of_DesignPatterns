@@ -143,6 +143,36 @@ export async function playgroundRegression(browser, baseUrl) {
       assert.equal(await stalled.locator("#run-code").isEnabled(), true);
       await stalled.close();
     }
+    // The lesson runs its demo on the same runtime, and an edited copy runs too.
+    await page.goto(`${baseUrl}patterns/strategy.html`);
+    await page.locator("#source-panel .nb-code-line").first().waitFor();
+    await page.locator("#run-demo").click();
+    await page.waitForFunction(() => document.querySelector("#demo-output")?.dataset.state === "done", null, { timeout: 95000 });
+    assert.match(await page.locator("#demo-output-text").textContent(), /Standard courier: cost 10\.40, delivery in 3 day\(s\)/u);
+    await page.locator("#edit-demo").click();
+    const draft = await page.locator("#demo-editor").inputValue();
+    assert.ok(draft.includes("WeightKilograms: 4.5m"), "编辑副本应是 Demo 原文");
+    await page.locator("#demo-editor").fill(draft.replace("WeightKilograms: 4.5m", "WeightKilograms: 10m"));
+    await page.locator("#run-demo").click();
+    await page.waitForFunction(() => document.querySelector("#demo-output")?.dataset.state === "done" && document.querySelector("#demo-output-text").textContent.includes("cost 17.00"), null, { timeout: 95000 });
+    await page.locator("#reset-demo").click();
+    assert.equal(await page.locator("#demo-editor").isHidden(), true);
+    assert.equal(await page.locator("#demo-output").getAttribute("data-state"), "done");
+    // Every demo compiles and runs in the browser and prints what the Runner recorded.
+    const demos = await page.evaluate(() => window.PatternCatalog.patterns.map((pattern) => ({
+      key: pattern.key, source: pattern.source, category: pattern.category,
+      expected: pattern.evidenceCards.find((card) => card.id === "run").expectedOutput,
+    })));
+    for (const demo of demos) {
+      const result = await page.evaluate(async (item) => {
+        const source = await (await fetch(`../assets/source/${item.source}.txt`)).text();
+        const typeName = `DesignPatterns.${item.category}.${item.source.split("/").pop().replace(/\.cs$/u, "")}`;
+        return window.DemoRunner.run({ source, typeName }).done;
+      }, demo);
+      assert.ok(result.ok, `${demo.key}: ${result.error ?? ""} ${result.diagnostics.join("; ")}`);
+      for (const line of demo.expected) assert.ok(result.output.includes(line), `${demo.key} 的浏览器输出缺少：${line}`);
+      console.log(`Browser demo verified: ${demo.key}`);
+    }
     assert.deepEqual(errors, []);
     console.log("Playground regression passed: C# 14, all exercises, limits, stop/restart, backups, legacy review, mobile and accessibility.");
   } finally { await context.close(); }

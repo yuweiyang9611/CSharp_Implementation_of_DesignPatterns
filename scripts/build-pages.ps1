@@ -174,6 +174,7 @@ foreach ($core in $coreCatalog) {
       scenario = [string]$extra.scenario
       source = [string]$extra.source
       practice = [string]$extra.practice
+      practiceLabel = [string]$extra.practiceLabel
       guide = [string]$extra.guide
       problemTags = @($extra.problemTags)
       changeAxis = [string]$extra.changeAxis
@@ -206,10 +207,73 @@ New-Item -ItemType Directory -Path $stageDirectory, $guideDirectory, $patternDir
 Copy-Item -LiteralPath (Join-Path $siteSource 'index.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'quiz.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'playground.html') -Destination $stageDirectory
+Copy-Item -LiteralPath (Join-Path $siteSource 'source.html') -Destination $stageDirectory
 Copy-Item -LiteralPath (Join-Path $siteSource 'assets') -Destination $stageDirectory -Recurse
 [IO.File]::WriteAllText((Join-Path $assetsDirectory 'exercises.js'), "window.ExerciseCatalog = $exerciseJson;`n", [Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $siteSource 'data/coding-exercises.json') -Destination (Join-Path $assetsDirectory 'exercises.json')
 & (Join-Path $PSScriptRoot 'build-browser-exercises.ps1') -Destination (Join-Path $assetsDirectory 'compiler')
+
+# Source read in place: every file a lesson or guide can point at, copied at this revision as plain text,
+# so the panel on a page never drifts from the repository. Only files a reader can learn from are bundled.
+$sourceRoots = @('src', 'examples', 'labs', 'tests', 'tools', 'docs', 'site', 'scripts')
+$sourceExtensions = @('.cs', '.csproj', '.props', '.sln', '.json', '.md', '.ps1', '.psd1', '.cmd', '.sh', '.yml', '.html', '.css', '.js', '.mjs', '.txt')
+$sourceDirectory = Join-Path $assetsDirectory 'source'
+$bundledFiles = [Collections.Generic.List[object]]::new()
+$bundledPaths = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+foreach ($sourceRoot in $sourceRoots) {
+  $rootPath = Join-Path $root $sourceRoot
+  if (-not (Test-Path -LiteralPath $rootPath)) { continue }
+  foreach ($file in Get-ChildItem -LiteralPath $rootPath -Recurse -File) {
+    $relative = [IO.Path]::GetRelativePath($root, $file.FullName) -replace '\\', '/'
+    # Case-sensitive: examples/DocumentWorkflow/Output is course code, the repository's output/ is not.
+    if ($relative -cmatch '(^|/)(bin|obj|node_modules|TestResults|\.git)/' -or $relative -cmatch '^output/') { continue }
+    if ($sourceExtensions -notcontains $file.Extension.ToLowerInvariant()) { continue }
+    if ($file.Length -gt 256KB) { continue }
+    $text = [IO.File]::ReadAllText($file.FullName)
+    $target = Join-Path $sourceDirectory ($relative + '.txt')
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+    [IO.File]::WriteAllText($target, $text, [Text.UTF8Encoding]::new($false))
+    [void]$bundledPaths.Add($relative)
+    $lineCount = [regex]::Matches($text, "`n").Count
+    if ($text.Length -gt 0 -and -not $text.EndsWith("`n")) { $lineCount += 1 }
+    $bundledFiles.Add([pscustomobject][ordered]@{ path = $relative; bytes = [Text.Encoding]::UTF8.GetByteCount($text); lines = $lineCount })
+  }
+}
+foreach ($pattern in $patterns) {
+  foreach ($required in @($pattern.source, $pattern.practice, 'src/DesignPatterns/IPatternDemo.cs')) {
+    if (-not $bundledPaths.Contains($required)) { throw "Pattern $($pattern.key) points at a file outside the source bundle: $required" }
+  }
+}
+$sourceRevision = if ($env:GITHUB_SHA -match '^[0-9a-fA-F]{40}$') { $env:GITHUB_SHA.ToLowerInvariant() } else { ([string](& git -C $root rev-parse HEAD)).Trim().ToLowerInvariant() }
+$sourceIndex = [ordered]@{
+  version = 1
+  revision = $sourceRevision
+  repository = $repositoryUrl
+  blobBase = $blobBase
+  files = @($bundledFiles | Sort-Object path)
+}
+[IO.File]::WriteAllText((Join-Path $sourceDirectory 'index.json'), ($sourceIndex | ConvertTo-Json -Depth 4 -Compress), [Text.UTF8Encoding]::new($false))
+
+# A GitHub file or folder link whose target is in the bundle becomes a link into the site.
+$blobLinkPattern = '(?<=href=")' + [regex]::Escape($blobBase) + '(?<path>[^"#?]+)(?<fragment>#[^"]*)?(?=")'
+$treeLinkPattern = '(?<=href=")' + [regex]::Escape($repositoryUrl) + '/tree/[^/"]+/(?<path>[^"#?]+?)/?(?=")'
+function Convert-RepositoryLinks([string]$Html, [string]$Prefix) {
+  $Html = [regex]::Replace($Html, $blobLinkPattern, {
+      param($match)
+      $path = [Uri]::UnescapeDataString($match.Groups['path'].Value)
+      if (-not $bundledPaths.Contains($path)) { return $match.Value }
+      $fragment = $match.Groups['fragment'].Value
+      if ($fragment -notmatch '^#L\d+(-L?\d+)?$') { $fragment = '' }
+      return $Prefix + 'source.html?path=' + [Uri]::EscapeDataString($path) + $fragment
+    })
+  return [regex]::Replace($Html, $treeLinkPattern, {
+      param($match)
+      $path = [Uri]::UnescapeDataString($match.Groups['path'].Value).TrimEnd('/')
+      $inside = @($bundledPaths | Where-Object { $_.StartsWith($path + '/', [StringComparison]::Ordinal) })
+      if ($inside.Count -eq 0) { return $match.Value }
+      return $Prefix + 'source.html?dir=' + [Uri]::EscapeDataString($path)
+    })
+}
 
 [IO.File]::WriteAllText(
   (Join-Path $assetsDirectory 'catalog.json'),
@@ -249,6 +313,7 @@ foreach ($page in $pages) {
   foreach ($entry in $routeMap.GetEnumerator()) {
     $html = $html.Replace('href="' + $entry.Key, 'href="' + $entry.Value)
   }
+  $html = Convert-RepositoryLinks -Html $html -Prefix '../'
 
   $titleMatch = [regex]::Match($html, '<title>(?<title>.*?)</title>', [Text.RegularExpressions.RegexOptions]::Singleline)
   $pageTitle = if ($titleMatch.Success) { [Net.WebUtility]::HtmlDecode($titleMatch.Groups['title'].Value) } else { 'C# 设计模式学习地图' }
@@ -429,6 +494,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       if ($card.PSObject.Properties.Name -contains 'command') {
         $encodedCommand = Encode-Html $card.command
         $commandHtml = '<div class="evidence-command"><code tabindex="0">' + $encodedCommand + '</code><button type="button" data-copy-command="' + $encodedCommand + '">复制命令</button></div>'
+        if ($card.kind -eq 'run') { $commandHtml += '<p class="evidence-run-here"><button type="button" class="nb-button" data-run-demo>或者在旁边的面板里直接运行</button></p>' }
       }
       $expectedHtml = ''
       if ($card.PSObject.Properties.Name -contains 'expectedOutput') {
@@ -437,7 +503,7 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
       }
       $targetHtml = ''
       if ($card.PSObject.Properties.Name -contains 'target') {
-        $targetHtml = '<p class="evidence-target">修改入口：<a href="' + (Encode-Html $pattern.sourceUrl) + '"><code>' + (Encode-Html $card.target) + '</code></a></p>'
+        $targetHtml = '<p class="evidence-target">修改入口：<a href="#source-panel" data-source-tab="' + (Encode-Html $pattern.source) + '"><code>' + (Encode-Html $card.target) + '</code></a>，在面板里点「改一改再跑」就能试。</p>'
       }
       $acceptanceHtml = ''
       if ($card.PSObject.Properties.Name -contains 'acceptance') {
@@ -454,6 +520,21 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
 </article>
 "@
     }) -join "`n"
+  $sourceFile = [IO.Path]::GetFileName($pattern.source)
+  $practiceFile = [IO.Path]::GetFileName($pattern.practice)
+  $demoType = 'DesignPatterns.' + $pattern.category + '.' + [IO.Path]::GetFileNameWithoutExtension($pattern.source)
+  $practicePageUrl = '../source.html?path=' + [Uri]::EscapeDataString($pattern.practice)
+  $firstTag = $tagById[[string]$pattern.problemTags[0]]
+  $sourceConfig = ([ordered]@{
+      base = '../assets/source/'
+      blobBase = $blobBase
+      demo = [ordered]@{ path = $pattern.source; type = $demoType }
+      files = @(
+        [ordered]@{ path = $pattern.source; label = $sourceFile },
+        [ordered]@{ path = 'src/DesignPatterns/IPatternDemo.cs'; label = 'IPatternDemo.cs' },
+        [ordered]@{ path = $pattern.practice; label = $practiceFile }
+      )
+    } | ConvertTo-Json -Depth 6 -Compress).Replace('</', '<\/')
   $patternHtml = @"
 <!doctype html>
 <html lang="zh-CN">
@@ -485,32 +566,57 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
   <link rel="stylesheet" href="../assets/storage-status.css">
   <script src="../assets/storage-status.js" defer></script>
   <script src="../assets/progress.js" defer></script>
+  <script src="../assets/review.js" defer></script>
+  <script src="../assets/notes.js" defer></script>
   <script src="../assets/catalog.js" defer></script>
+  <script src="../assets/code-colors.js" defer></script>
+  <script src="../assets/source-panel.js" defer></script>
+  <script src="../assets/demo-runner.js" defer></script>
   <script src="../assets/lesson.js" defer></script>
+  <script src="../assets/lesson-source.js" defer></script>
+  <script src="../assets/lesson-quiz.js" defer></script>
+  <script src="../assets/lesson-notes.js" defer></script>
 </head>
 <body data-pattern-key="$($pattern.key)">
   <a class="skip-link" href="#main">跳到正文</a>
   <header class="lesson-header nb-head">
     <a class="lesson-brand nb-brand" href="../index.html">C# 设计模式</a>
     <button class="lesson-nav-toggle nb-nav-toggle" id="lesson-nav-toggle" type="button" aria-expanded="false" aria-controls="lesson-nav">菜单</button>
-    <nav class="lesson-nav nb-nav nb-nav--collapsible" id="lesson-nav" aria-label="课程导航"><a href="../index.html#patterns" aria-current="page">模式</a><a href="../guides/learning-path.html">路线</a><a href="../playground.html">编码练习</a><a href="../quiz.html">辨析训练</a><a href="../guides/projects.html">项目</a><a href="../guides/labs.html">实验</a><a href="../index.html#site-search">搜索</a><a href="$repositoryUrl">GitHub</a><a href="https://yuweiyang9611.github.io/">全部项目</a></nav>
+    <nav class="lesson-nav nb-nav nb-nav--collapsible" id="lesson-nav" aria-label="课程导航"><a href="../index.html#patterns" aria-current="page">模式</a><a href="../guides/learning-path.html">路线</a><a href="../playground.html">编码练习</a><a href="../quiz.html">辨析训练</a><a href="../guides/projects.html">项目</a><a href="../guides/labs.html">实验</a><a href="../source.html">源码</a><a href="../index.html#site-search">搜索</a><a href="$repositoryUrl">GitHub</a><a href="https://yuweiyang9611.github.io/">全部项目</a></nav>
   </header>
   <main class="lesson-main" id="main">
     <p class="lesson-breadcrumb"><a href="../index.html#patterns">模式地图</a> / $(Encode-Html $categoryLabels[$pattern.category]) / $(Encode-Html $pattern.english)</p>
-    <section class="lesson-hero">
-      <div class="lesson-band" data-hue="$($categoryHues[$pattern.category])">
-        <p class="lesson-band-eyebrow">$(Encode-Html $categoryLabels[$pattern.category]) · $(('{0:00}' -f $pattern.number))</p>
-        <div class="lesson-progress"><p>我的证据进度 <strong id="lesson-progress-count">0 / 4</strong></p><div class="lesson-progress-track nb-bar nb-bar--on-fill" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div><p id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</p></div>
+    <header class="lesson-band" data-hue="$($categoryHues[$pattern.category])">
+      <div>
+        <p class="lesson-band-eyebrow">$(Encode-Html $categoryLabels[$pattern.category]) · $(('{0:00}' -f $pattern.number)) · $(Encode-Html $firstTag.label)</p>
+        <h1>$(Encode-Html $pattern.english)<span class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</span></h1>
       </div>
-      <div class="lesson-copy"><h1>$(Encode-Html $pattern.english)</h1><p class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</p><p class="lesson-intent">$(Encode-Html $pattern.intent)</p></div>
-    </section>
-    <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><h2 id="evidence-title">用四项证据完成这个模式</h2><p>必须按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
-    <div class="lesson-grid">
-      <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
-      <section class="lesson-panel" data-hue="cyan"><h2>运行并追踪</h2><p>先预测输出，再从 Runner 进入完整 Demo，最后沿实战落点观察业务价值。</p><div class="lesson-links"><a href="$($pattern.sourceUrl)">独立 Demo 源码</a><a href="$($pattern.practiceUrl)">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
-      <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
-      <section class="lesson-panel" data-hue="red"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
-      <section class="lesson-panel full"><h2>相似模式对比</h2><ul class="related-list">$relatedHtml</ul></section>
+      <div class="lesson-progress"><p>证据 <strong id="lesson-progress-count">0 / 4</strong> · <span id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</span></p><div class="lesson-progress-track nb-bar nb-bar--on-fill" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div></div>
+      <ol class="lesson-steps" id="lesson-steps" aria-label="这一课的五步">
+        <li data-step="read" data-state="pending"><a href="#evidence-read">读</a></li>
+        <li data-step="run" data-state="pending"><a href="#evidence-run">跑</a></li>
+        <li data-step="change" data-state="pending"><a href="#evidence-change">改</a></li>
+        <li data-step="verify" data-state="pending"><a href="#evidence-verify">验证</a></li>
+        <li data-step="quiz" data-state="pending"><a href="#lesson-quiz">自测</a><span class="lesson-step-count"></span></li>
+      </ol>
+    </header>
+    <p class="lesson-intent">$(Encode-Html $pattern.intent)</p>
+    <div class="lesson-columns">
+      <div class="lesson-read">
+        <section class="lesson-panel"><h2>它解决什么变化</h2><p>$(Encode-Html $pattern.changeAxis)</p><div class="problem-tags" role="group" aria-label="适用问题">$tagsHtml</div><h3>示例场景</h3><p class="scenario">$(Encode-Html $pattern.scenario)</p></section>
+        <section class="lesson-panel" data-hue="cyan"><h2>看代码、跑一遍</h2><p>旁边是这个模式的独立 Demo，和仓库同一版本：先预测输出，点「运行」在浏览器里跑，再「改一改再跑」看哪一行变了。实战落点在第三个页签。</p><div class="lesson-links"><a href="#source-panel" data-source-tab="$($pattern.source)">独立 Demo 源码</a><a href="$practicePageUrl">实战项目落点</a><a href="../guides/fundamentals.html$($pattern.guide)">完整教程章节</a></div></section>
+        <section class="evidence-section" aria-labelledby="evidence-title"><div class="evidence-heading"><h2 id="evidence-title">用四项证据完成这个模式</h2><p>按顺序完成；取消前一项会同时撤销后续证据。</p></div><div class="evidence-grid">$evidenceCardsHtml</div></section>
+        <section class="lesson-panel"><h2>何时使用</h2><p>$(Encode-Html $pattern.whenUse)</p></section>
+        <section class="lesson-panel" data-hue="red"><h2>何时避免</h2><p>$(Encode-Html $pattern.avoidWhen)</p></section>
+        <section class="lesson-quiz" id="lesson-quiz" data-hue="cyan" aria-labelledby="lesson-quiz-title"><div class="evidence-heading"><h2 id="lesson-quiz-title">自测</h2><p id="lesson-quiz-summary">辨析题载入中</p></div><div id="lesson-quiz-list"></div><noscript><p class="lesson-quiz-empty">自测需要 JavaScript；可以去 <a href="../quiz.html">辨析训练</a>。</p></noscript></section>
+        <section class="lesson-notes" id="lesson-notes" aria-labelledby="lesson-notes-title"><h2 id="lesson-notes-title">记一笔</h2><label class="sr-only" for="lesson-note">这一课的笔记</label><textarea id="lesson-note" rows="4" placeholder="这个模式让你想到什么、和哪个模式容易混、下次要试什么。"></textarea><p class="lesson-note-status" id="lesson-note-status">只保存在这个浏览器里。</p></section>
+        <section class="lesson-panel"><h2>相似模式对比</h2><ul class="related-list">$relatedHtml</ul></section>
+      </div>
+      <aside class="lesson-code" aria-labelledby="lesson-code-title">
+        <p class="lesson-code-title" id="lesson-code-title">源码<span>$(Encode-Html $sourceFile) · 与仓库同一版本</span></p>
+        <div class="nb-code" id="source-panel"><div class="nb-code-tabs"><span class="nb-code-tab" aria-selected="true">$(Encode-Html $sourceFile)</span><span class="nb-code-tab">IPatternDemo.cs</span><span class="nb-code-tab">$(Encode-Html $practiceFile)</span></div><pre class="nb-code-view"><code><noscript>看代码需要 JavaScript。源文件在 GitHub：<a href="$($pattern.sourceUrl)">$(Encode-Html $pattern.source)</a>、<a href="$($pattern.practiceUrl)">$(Encode-Html $pattern.practice)</a>。</noscript></code></pre></div>
+        <script type="application/json" id="lesson-source">$sourceConfig</script>
+      </aside>
     </div>
     <nav class="lesson-pager" aria-label="模式课件导航">$previousHtml$nextHtml</nav>
   </main>
@@ -583,10 +689,20 @@ $playgroundJsonLd = Get-JsonLdScript -Value (@{
 $playgroundHtml = $playgroundHtml.Replace('{{PAGES_BASE}}', $pagesBase).Replace('{{REPOSITORY_URL}}', $repositoryUrl).Replace('</head>', $playgroundJsonLd + '</head>')
 [IO.File]::WriteAllText($playgroundPath, $playgroundHtml, [Text.UTF8Encoding]::new($false))
 
+$sourceUrl = $pagesBase + 'source.html'
+$sourcePagePath = Join-Path $stageDirectory 'source.html'
+$sourcePageHtml = Get-Content -LiteralPath $sourcePagePath -Raw -Encoding utf8
+$sourceJsonLd = Get-JsonLdScript -Value (@{
+  '@context' = 'https://schema.org'; '@type' = 'LearningResource'; name = '课程源码'; url = $sourceUrl
+  inLanguage = 'zh-CN'; isAccessibleForFree = $true; learningResourceType = 'Source'
+})
+$sourcePageHtml = $sourcePageHtml.Replace('{{PAGES_BASE}}', $pagesBase).Replace('{{REPOSITORY_URL}}', $repositoryUrl).Replace('</head>', $sourceJsonLd + '</head>')
+[IO.File]::WriteAllText($sourcePagePath, $sourcePageHtml, [Text.UTF8Encoding]::new($false))
+
 & (Join-Path $PSScriptRoot 'new-pages-search-index.ps1') -SiteDirectory $stageDirectory
 
 $allUrls = @($pagesBase) +
-  @($quizUrl, $playgroundUrl) +
+  @($quizUrl, $playgroundUrl, $sourceUrl) +
   @($pages | ForEach-Object { $pagesBase + 'guides/' + $_.Output }) +
   @($patterns | ForEach-Object { $_.pageUrl })
 $sitemapItems = $allUrls | ForEach-Object { '  <url><loc>' + [Security.SecurityElement]::Escape($_) + '</loc></url>' }
@@ -612,6 +728,6 @@ $version = [ordered]@{ commit = $revision } | ConvertTo-Json
   -RepositoryRoot $root `
   -ExpectedPagesBase $pagesBase
 
-Write-Host "GitHub Pages site generated: 1 learning dashboard, $($pages.Count) guides, $($patterns.Count) pattern lessons."
+Write-Host "GitHub Pages site generated: 1 learning dashboard, $($pages.Count) guides, $($patterns.Count) pattern lessons, $($bundledFiles.Count) source files read in place."
 Write-Host "Validated by verify-pages-site.ps1: $($allUrls.Count) canonical sitemap URLs."
 Write-Host "Output: $stageDirectory"
