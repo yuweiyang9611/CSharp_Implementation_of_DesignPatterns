@@ -50,6 +50,17 @@
       card.classList.toggle("locked", !task.available);
       card.setAttribute("aria-disabled", String(!task.available));
     }
+    const steps = document.querySelector("#lesson-steps");
+    if (steps) {
+      let stopped = false;
+      for (const task of current.tasks) {
+        const chip = steps.querySelector(`[data-step="${task.id}"]`);
+        if (!chip) continue;
+        const state = task.completed ? "done" : (!stopped && task.available) ? "now" : "pending";
+        if (state === "now") stopped = true;
+        chip.setAttribute("data-state", state);
+      }
+    }
   }
 
   document.querySelector(".evidence-grid").addEventListener("change", (event) => {

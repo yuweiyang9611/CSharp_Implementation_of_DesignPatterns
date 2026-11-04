@@ -1,4 +1,5 @@
 // Colours code after load, so the exported guide, its search index and its print output stay plain text.
+// window.CodeColors colours text on demand for the source panel, which loads files after the page.
 (() => {
   "use strict";
 
@@ -24,14 +25,26 @@
     number: String.raw`(?<![\w.-])\d+(?:\.\d+)?\b`,
   };
 
-  const compile = (rules) => new RegExp(Object.entries(rules).map(([name, source]) => `(?<${name}>${source})`).join("|"), "gm");
-  const patterns = { csharp: compile(csharp), powershell: compile(shell), bat: compile(shell) };
+  // Data files: keys as types, literals as strings and numbers.
+  const data = {
+    comment: String.raw`//[^\n]*|/\*[\s\S]*?\*/|(?<!\S)#[^\n]*`,
+    type: String.raw`"(?:[^"\\\n]|\\.)*"(?=\s*:)`,
+    string: String.raw`"(?:[^"\\\n]|\\.)*"|'[^'\n]*'`,
+    number: String.raw`(?<![\w.-])-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b`,
+    keyword: String.raw`\b(?:true|false|null)\b`,
+  };
 
-  for (const code of document.querySelectorAll('pre code[class*="language-"]')) {
-    const pattern = patterns[code.className.match(/language-([\w-]+)/)?.[1]];
-    if (!pattern || code.children.length > 0) continue;
-    const source = code.textContent;
+  const compile = (rules) => new RegExp(Object.entries(rules).map(([name, source]) => `(?<${name}>${source})`).join("|"), "gm");
+  const patterns = { csharp: compile(csharp), powershell: compile(shell), bat: compile(shell), shell: compile(shell), json: compile(data), yaml: compile(data) };
+  const languages = { cs: "csharp", ps1: "powershell", psd1: "powershell", cmd: "bat", bat: "bat", sh: "shell", json: "json", yml: "yaml", yaml: "yaml" };
+
+  function highlight(source, language) {
     const parts = document.createDocumentFragment();
+    const pattern = patterns[language];
+    if (!pattern) {
+      parts.append(source);
+      return parts;
+    }
     let position = 0;
     for (const match of source.matchAll(pattern)) {
       parts.append(source.slice(position, match.index));
@@ -42,6 +55,24 @@
       position = match.index + match[0].length;
     }
     parts.append(source.slice(position));
-    code.replaceChildren(parts);
+    return parts;
   }
+
+  function languageFor(path) {
+    const extension = String(path).toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? "";
+    return languages[extension] ?? (extension || "text");
+  }
+
+  window.CodeColors = Object.freeze({ highlight, languageFor });
+
+  function colourPage() {
+    for (const code of document.querySelectorAll('pre code[class*="language-"]')) {
+      const language = code.className.match(/language-([\w-]+)/)?.[1];
+      if (!patterns[language] || code.children.length > 0) continue;
+      code.replaceChildren(highlight(code.textContent, language));
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", colourPage);
+  else colourPage();
 })();
