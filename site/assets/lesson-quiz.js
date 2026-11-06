@@ -34,7 +34,7 @@
     const answered = states.filter((state) => state.answered).length;
     summary.textContent = `${correct} / ${questions.length} 题上次答对`;
     step?.setAttribute("data-state", correct === questions.length ? "done" : answered ? "now" : "pending");
-    step?.querySelector(".lesson-step-count")?.replaceChildren(`${correct} / ${questions.length}`);
+    step?.querySelector(".nb-steps-count")?.replaceChildren(`${correct} / ${questions.length}`);
   }
 
   function renderQuestion(quiz, index) {
