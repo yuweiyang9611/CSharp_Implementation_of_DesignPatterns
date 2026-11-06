@@ -592,12 +592,12 @@ for ($index = 0; $index -lt $patterns.Count; $index++) {
         <h1>$(Encode-Html $pattern.english)<span class="lesson-chinese">$(Encode-Html $pattern.chinese)模式</span></h1>
       </div>
       <div class="lesson-progress"><p>证据 <strong id="lesson-progress-count">0 / 4</strong> · <span id="lesson-progress-summary">全课程 0% · 0 / $itemCount 已验证</span></p><div class="lesson-progress-track nb-bar nb-bar--on-fill" role="progressbar" aria-label="$(Encode-Html $pattern.english) 证据进度" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="lesson-progress-bar"></span></div></div>
-      <ol class="lesson-steps" id="lesson-steps" aria-label="这一课的五步">
+      <ol class="nb-steps nb-steps--on-fill lesson-steps" id="lesson-steps" aria-label="这一课的五步">
         <li data-step="read" data-state="pending"><a href="#evidence-read">读</a></li>
         <li data-step="run" data-state="pending"><a href="#evidence-run">跑</a></li>
         <li data-step="change" data-state="pending"><a href="#evidence-change">改</a></li>
         <li data-step="verify" data-state="pending"><a href="#evidence-verify">验证</a></li>
-        <li data-step="quiz" data-state="pending"><a href="#lesson-quiz">自测</a><span class="lesson-step-count"></span></li>
+        <li data-step="quiz" data-state="pending"><a href="#lesson-quiz">自测</a><span class="nb-steps-count"></span></li>
       </ol>
     </header>
     <p class="lesson-intent">$(Encode-Html $pattern.intent)</p>
