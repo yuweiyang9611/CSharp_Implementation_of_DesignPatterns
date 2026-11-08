@@ -99,4 +99,29 @@ assert.equal(restoredProgress.summary().earnedTasks, 1, "a failed cross-tab read
 assert.equal(restoredReview.questionState("q1").attempts, 1, "a failed cross-tab read must retain current answers");
 assert.equal(restoredSession.failures.size, 2);
 
-console.log("Storage failure tests passed: blocked reads/writes/reset, in-memory records, backups, cross-tab protection and recovery.");
+// Completion times are history: ticking a later task, undoing it, or setting a level keeps the time each earlier task
+// was first completed. The project index counts study days from these times.
+{
+  const history = createSession();
+  const steps = [{ id: "pattern:strategy", type: "pattern", title: "Strategy", tasks: ["read", "run", "change"].map((id) => ({ id, title: id, kind: id })) }];
+  const tracker = history.window.LearningProgress.configure(steps);
+  const stored = () => JSON.parse(history.values.get(progressKey)).items["pattern:strategy"].completed;
+  const pause = () => new Promise((resolve) => setTimeout(resolve, 5));
+  assert.equal(tracker.setTaskComplete("pattern:strategy", "read"), true);
+  const firstRead = stored().read;
+  await pause();
+  assert.equal(tracker.setTaskComplete("pattern:strategy", "run"), true);
+  assert.equal(stored().read, firstRead, "ticking run must keep the time read was completed");
+  assert.ok(stored().run > firstRead, "run takes the time it was completed");
+  const firstRun = stored().run;
+  await pause();
+  assert.equal(tracker.setTaskComplete("pattern:strategy", "run", false), true);
+  assert.deepEqual(Object.keys(stored()), ["read"]);
+  assert.equal(stored().read, firstRead, "undoing run keeps read's time");
+  await pause();
+  assert.equal(tracker.setLevel("pattern:strategy", 3), true);
+  assert.equal(stored().read, firstRead, "a level keeps the times of tasks already done");
+  assert.ok(stored().run > firstRun, "run completed again takes the new time");
+}
+
+console.log("Storage failure tests passed: blocked reads/writes/reset, in-memory records, backups, cross-tab protection, recovery and completion history.");

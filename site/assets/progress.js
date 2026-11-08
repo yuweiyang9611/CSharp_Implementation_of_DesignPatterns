@@ -215,6 +215,14 @@
     return completedTaskIds(id).includes(taskId);
   }
 
+  // The first count tasks of an item as completed. A task already completed keeps the time it was first completed,
+  // so ticking a later task does not rewrite the history of the earlier ones (the project index counts study days
+  // from these times); only newly completed tasks take the current time.
+  function keepFirstTimes(item, count, timestamp) {
+    const previous = state.items[item.id]?.completed ?? {};
+    return Object.fromEntries(item.tasks.slice(0, count).map((task) => [task.id, typeof previous[task.id] === "string" ? previous[task.id] : timestamp]));
+  }
+
   function setTaskComplete(id, taskId, requestedComplete = true) {
     const item = catalogItem(id);
     const taskIndex = item?.tasks.findIndex((task) => task.id === taskId) ?? -1;
@@ -228,7 +236,7 @@
     if (completedCount === 0) delete state.items[id];
     else {
       state.items[id] = {
-        completed: Object.fromEntries(item.tasks.slice(0, completedCount).map((task) => [task.id, timestamp])),
+        completed: keepFirstTimes(item, completedCount, timestamp),
         updatedAt: timestamp,
       };
     }
@@ -249,7 +257,7 @@
     if (targetCount === 0) delete state.items[id];
     else {
       state.items[id] = {
-        completed: Object.fromEntries(item.tasks.slice(0, targetCount).map((task) => [task.id, timestamp])),
+        completed: keepFirstTimes(item, targetCount, timestamp),
         updatedAt: timestamp,
       };
     }
