@@ -13,7 +13,7 @@ dotnet --version
 dotnet build DesignPatterns.sln --configuration Release
 ```
 
-项目目标框架与 CI 使用 .NET 10，语言版本固定为 C# 14。`global.json` 允许使用已安装的 .NET 10 最新 feature band；`dotnet --version` 应以 `10.` 开头。构建结尾应出现 `Build succeeded.`（中文环境可能显示“生成成功”）并且没有错误。
+项目目标框架与 CI 使用 .NET 10，语言版本固定为 C# 14。仓库不用 `global.json` 固定 SDK 版本，.NET SDK 10 或更新版本都可以；`dotnet --version` 的主版本号应不小于 10。只装了更新的 SDK（例如 .NET 11）时，运行示例和测试还需要 .NET 10 运行时。构建结尾应出现 `Build succeeded.`（中文环境可能显示“生成成功”）并且没有错误。
 
 | 你现在有多少时间 | 选择路线 | 完成后能做到什么 |
 | --- | --- | --- |
@@ -322,7 +322,7 @@ dotnet run --project examples/OnlineStore/DesignPatterns.TeachingProjects.Online
 
 ### SDK 或编译失败
 
-- `NETSDK1045` 通常表示当前 SDK 不支持 `net10.0`；请确认 `dotnet --list-sdks` 中存在 .NET 10 SDK。
+- `NETSDK1045` 通常表示当前 SDK 不支持 `net10.0`；请确认 `dotnet --list-sdks` 中存在 .NET 10 或更新版本的 SDK。
 - 使用 `--no-build` 报缺少产物时，先执行 `dotnet build DesignPatterns.sln -c Release`，或暂时去掉 `--no-build`。
 - 传给示例程序的参数必须放在独立的 `--` 后面，例如 `... -- --self-test`；Runner key 则是 `... -- adapter`。
 - 修改练习后先看第一条编译错误，不要用关闭 Nullable 或“警告视为错误”掩盖问题。
@@ -336,7 +336,7 @@ powershell -ExecutionPolicy Bypass -File scripts/export-all-guides.ps1
 - 需要本机安装 Microsoft Edge、Google Chrome 或 Chromium；找不到浏览器时 HTML 仍会生成，终端会显示其路径。
 - 如果 PDF 正被阅读器占用，先关闭文件再重试。
 - 生成结果在 `output/pdf/`；它是可再生输出，不要求提交到 Git。
-- 日常代码练习使用 `scripts/verify.ps1 -Mode Quick`；提交前使用 `scripts/verify.ps1 -Mode Full -SkipPdf` 检查格式、覆盖率和浏览器行为。两个档位都需要 PowerShell 7、.NET 10 和 Node.js 24；完整档还需要 Chrome 或 Edge，以及 `dotnet workload install wasm-tools wasm-experimental` 安装的 WebAssembly 工作负载。
+- 日常代码练习使用 `scripts/verify.ps1 -Mode Quick`；提交前使用 `scripts/verify.ps1 -Mode Full -SkipPdf` 检查格式、覆盖率和浏览器行为。两个档位都需要 PowerShell 7、.NET 10 和 Node.js 24；完整档还需要 Chrome 或 Edge，以及 `dotnet workload install wasm-tools wasm-experimental` 安装的 WebAssembly 工作负载（.NET 11 及更新的 SDK 改装 `wasm-tools-net10 wasm-experimental-net10`）。
 
 下一步：[打开 23 种模式索引](docs/模式索引.md)，选择第一个 Runner key。
 

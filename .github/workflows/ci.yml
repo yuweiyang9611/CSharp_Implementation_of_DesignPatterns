@@ -133,12 +133,11 @@ jobs:
       - name: Set up .NET 10 SDK
         uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
-          global-json-file: tools/BrowserExercises/global.json # Matches the locked WebAssembly SDK pack
+          dotnet-version: 10.0.x
           cache: true
           cache-dependency-path: '**/packages.lock.json'
 
       - name: Install WebAssembly compiler workloads
-        working-directory: tools/BrowserExercises
         run: dotnet workload install wasm-tools wasm-experimental
 
       - name: Set up Node.js 24

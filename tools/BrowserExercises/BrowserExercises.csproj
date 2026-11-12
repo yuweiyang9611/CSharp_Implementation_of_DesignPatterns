@@ -5,6 +5,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <WasmBuildNative>false</WasmBuildNative>
     <PublishTrimmed>false</PublishTrimmed>
+    <!--
+      No lock file for the host. Its only package of its own is Microsoft.NET.Sdk.WebAssembly.Pack, which
+      the SDK adds at a version taken from the installed SDK and wasm workload, so a lock entry for it
+      failed the restore (NU1004) on every SDK or workload other than the one that wrote it. Roslyn is
+      still locked: ExerciseEngine keeps its lock file, and build-browser-exercises.ps1 restores in locked
+      mode. Packages for the host belong in ExerciseEngine; the build script refuses a PackageReference here.
+    -->
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../ExerciseEngine/ExerciseEngine.csproj" /></ItemGroup>
   <Target Name="ExportCompilerReferences" AfterTargets="Build">
