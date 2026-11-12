@@ -258,7 +258,7 @@ Client        Context        Strategy
 
 ### 2.7 .NET 10 与 C# 14 怎样进入本课程
 
-仓库只在根目录的 `Directory.Build.props` 声明 `net10.0` 和 C# 14，各项目不得再写 `LangVersion=latest`。`global.json` 固定 .NET 10 SDK 主版本并允许滚动到同一主版本的新 feature band，使本机和 CI 使用同一代编译器。
+仓库只在根目录的 `Directory.Build.props` 声明 `net10.0` 和 C# 14，各项目不得再写 `LangVersion=latest`。仓库不用 `global.json` 固定 SDK 版本：.NET SDK 10 或更新版本都可以构建，换用更新的 SDK 也不会改变这里声明的目标框架和语言版本。
 
 C# 14 语法只在能让边界更清楚时使用。例如 `field` 可以在不手写后备字段的情况下守住配置不变量，空条件赋值可以避免为了一个可选观察者展开无关分支：
 

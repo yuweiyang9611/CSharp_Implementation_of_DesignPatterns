@@ -57,7 +57,7 @@ pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
 
 完整档增加锁定还原、格式检查、四份覆盖率报告的行 55%／分支 40% 门槛、验证脚本自测、站点构建、真实浏览器与可访问性回归，以及 HTML 导出。每次覆盖率结果写入独立的 `output/test-results/verify-<唯一标识>/`，避免旧报告干扰。它对应 CI 的代码与站点检查；提交邮箱隐私检查、跨系统矩阵和线上部署核验仍由 CI 执行。
 
-Quick 无需 WebAssembly 工作负载。Full 和站点构建需要在所选 .NET 10 SDK 中安装 `wasm-tools` 与 `wasm-experimental`（下方有命令）。
+Quick 无需 WebAssembly 工作负载。Full 和站点构建需要给所用的 .NET SDK 安装两个 WebAssembly 工作负载：.NET 10 SDK 装 `wasm-tools` 与 `wasm-experimental`，更新的 SDK 装 `wasm-tools-net10` 与 `wasm-experimental-net10`（下方有命令）。
 
 默认模式为 `Full`，不指定 `-SkipPdf` 时还会导出 PDF。`-NoRestore` 仅供 `Quick` 使用，要求依赖已还原；完整档始终执行锁定还原。
 
@@ -208,10 +208,15 @@ scripts/                           验证与导出脚本
 
 草稿和通过记录按题目 ID／版本保存，编辑后撤销当前通过状态。完整 JSON 备份增加可选 exercises 字段，旧备份仍可导入；编码页也可单独备份。保存失败时使用全站统一提示，下载内存中的最新草稿后可恢复。
 
-浏览器项目的 WebAssembly SDK 包版本由 SDK 和工作负载集决定，所以 [tools/BrowserExercises/global.json](tools/BrowserExercises/global.json) 把该项目固定在 .NET SDK 10.0.403 和同版本的工作负载集，站点 CI 也按此文件安装 SDK；解决方案其余部分仍遵循根目录的 `global.json`。升级时改这个文件里的两个版本，在该目录重新安装工作负载并运行 `dotnet restore --force-evaluate`，一起提交更新后的 `packages.lock.json`。完整构建需要 PowerShell 7、.NET SDK 10.0.403、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载：
+仓库不用 `global.json` 固定 .NET SDK 版本，.NET SDK 10 或更新版本都可以构建。浏览器宿主项目 [BrowserExercises](tools/BrowserExercises/BrowserExercises.csproj) 不写锁文件：它自己唯一的包 `Microsoft.NET.Sdk.WebAssembly.Pack` 由 SDK 加入，版本跟着已安装的 SDK 和工作负载走，锁住它会让其他版本的 SDK 还原失败（NU1004）。Roslyn 仍由 `ExerciseEngine` 的锁文件锁定，解决方案里的其余项目也照旧锁定，并以锁定模式还原。宿主项目里不能直接写 `PackageReference`（构建脚本会拒绝），要加的包放进 `ExerciseEngine`。
+
+完整构建需要 PowerShell 7、.NET SDK 10 或更新版本、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载。工作负载的名字随 SDK 不同：.NET 10 SDK 装 `wasm-tools` 和 `wasm-experimental`；更新的 SDK（例如 .NET 11）里这两个名字指的是新版本的工具，项目面向 .NET 10，要装 `wasm-tools-net10` 和 `wasm-experimental-net10`：
 
 ~~~powershell
-Push-Location tools/BrowserExercises; dotnet workload install wasm-tools wasm-experimental; Pop-Location
+# .NET 10 SDK
+dotnet workload install wasm-tools wasm-experimental
+# 更新的 SDK（例如 .NET 11）改用这一行
+# dotnet workload install wasm-tools-net10 wasm-experimental-net10
 pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
 # 仅重建站点（含浏览器编译器）
 pwsh -File scripts/build-pages.ps1
@@ -219,7 +224,7 @@ node tests/site-server.mjs
 # 打开 http://localhost:4173/playground.html
 ~~~
 
-安装工作负载需要网络，系统级 SDK 可能需要管理员权限。若 Windows MSI 安装失败，可用微软 dotnet-install.ps1 在仓库外或忽略目录安装独立 SDK，再在 tools/BrowserExercises 目录用该 dotnet.exe 安装工作负载，并设置 CSHARP_DESIGN_PATTERNS_WASM_DOTNET 为它的绝对路径。构建脚本使用此变量选择浏览器 SDK；普通解决方案仍使用 PATH 中的 dotnet。CI 的 site 作业自动安装工作负载并执行真实浏览器回归，Quick 保持无需工作负载。
+安装工作负载需要网络，系统级 SDK 可能需要管理员权限。若 Windows MSI 安装失败，可用微软 dotnet-install.ps1 在仓库外或忽略目录安装独立 SDK，再用该 dotnet.exe 安装工作负载，并设置 CSHARP_DESIGN_PATTERNS_WASM_DOTNET 为它的绝对路径。构建脚本使用此变量选择浏览器 SDK；普通解决方案仍使用 PATH 中的 dotnet。CI 的 site 作业自动安装工作负载并执行真实浏览器回归，Quick 保持无需工作负载。
 
 ~~~powershell
 dotnet test tests/GuideExporter.Tests -c Release --filter FullyQualifiedName~ExerciseTests
