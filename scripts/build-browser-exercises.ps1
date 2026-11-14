@@ -5,8 +5,8 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $project = Join-Path $root 'tools/BrowserExercises'
 $dotnet = if ($env:CSHARP_DESIGN_PATTERNS_WASM_DOTNET) { $env:CSHARP_DESIGN_PATTERNS_WASM_DOTNET } else { 'dotnet' }
-# Any .NET SDK from 10 up builds this; no global.json pins one. The WebAssembly workloads are wasm-tools and
-# wasm-experimental on a .NET 10 SDK, and wasm-tools-net10 and wasm-experimental-net10 on a newer SDK.
+# Any .NET SDK from 11 up builds this; no global.json pins one. The WebAssembly workloads are wasm-tools and
+# wasm-experimental on a .NET 11 SDK, and wasm-tools-net11 and wasm-experimental-net11 on a newer SDK.
 # The host is not locked (see BrowserExercises.csproj), so a package added there would escape the lock files:
 # keep packages in ExerciseEngine.
 if ((Get-Content -LiteralPath (Join-Path $project 'BrowserExercises.csproj') -Raw) -match '<PackageReference\b') {
@@ -16,13 +16,13 @@ Push-Location $project
 try {
   & $dotnet restore BrowserExercises.csproj --locked-mode
   if ($LASTEXITCODE -ne 0) {
-    throw ('Browser restore failed. Use a .NET SDK 10 or later with the WebAssembly workloads: ' +
-      'wasm-tools and wasm-experimental on a .NET 10 SDK, wasm-tools-net10 and wasm-experimental-net10 on a newer SDK. ' +
+    throw ('Browser restore failed. Use a .NET SDK 11 or later with the WebAssembly workloads: ' +
+      'wasm-tools and wasm-experimental on a .NET 11 SDK, wasm-tools-net11 and wasm-experimental-net11 on a newer SDK. ' +
       'If NU1004 names a Roslyn package, refresh the ExerciseEngine lock file with `dotnet restore --force-evaluate`.')
   }
   & $dotnet publish BrowserExercises.csproj -c Release --no-restore
   if ($LASTEXITCODE -ne 0) { throw 'Browser compiler publish failed.' }
-  $output = Join-Path $project 'bin/Release/net10.0'
+  $output = Join-Path $project 'bin/Release/net11.0'
   $framework = Join-Path $output 'publish/wwwroot/_framework'
   if (-not (Test-Path $framework)) { throw "Published browser framework is missing: $framework" }
   New-Item -ItemType Directory -Force -Path $Destination | Out-Null

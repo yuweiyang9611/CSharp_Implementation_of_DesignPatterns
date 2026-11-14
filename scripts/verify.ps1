@@ -20,7 +20,7 @@ try {
   if ($Mode -eq 'Full') { $requiredCommands += 'npm' }
   foreach ($command in $requiredCommands) {
     if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
-      throw "Required command '$command' was not found. Install .NET 10 SDK and Node.js 24 (including npm), then retry."
+      throw "Required command '$command' was not found. Install .NET 11 SDK and Node.js 24 (including npm), then retry."
     }
   }
   Write-Host "Running $Mode verification."

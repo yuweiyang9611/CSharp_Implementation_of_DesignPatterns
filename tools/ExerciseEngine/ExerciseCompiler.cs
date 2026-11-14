@@ -20,7 +20,7 @@ public sealed class ExerciseCompiler
         image = null;
         if (Encoding.UTF8.GetByteCount(source) > 100 * 1024)
             return new(false, [new("源码不能超过 100 KB。", "Error", 0, 0)]);
-        var options = new CSharpParseOptions(LanguageVersion.CSharp14);
+        var options = new CSharpParseOptions(LanguageVersion.CSharp15);
         var compilation = CSharpCompilation.Create("Submission_" + Guid.NewGuid().ToString("N"),
             [CSharpSyntaxTree.ParseText(source, options, "Submission.cs"), CSharpSyntaxTree.ParseText(checks, options, "Checks.cs")],
             references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: false, concurrentBuild: false));

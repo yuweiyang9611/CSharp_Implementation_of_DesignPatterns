@@ -11,7 +11,7 @@
 | [CheckoutRefactoringKata](CheckoutRefactoringKata/README.md) | 4～7 天 | 怎样从职责混乱但行为正确的结账代码，小步重构出 Strategy、Chain、State、Facade | 特征测试与 Starter/Reference 等价性测试 |
 | [ReliableCheckout](ReliableCheckout/README.md) | 2～3 周 | 怎样用事务、幂等、Outbox、重试、状态机和故障注入保护结账不变量 | 真实 HTTP + SQLite 集成测试中的五个验收场景 |
 
-两个实验均继承仓库根目录的 .NET 10 / C# 14 配置。
+两个实验均继承仓库根目录的 .NET 11 / C# 15 配置。
 
 ## 实验一：坏代码到设计模式
 

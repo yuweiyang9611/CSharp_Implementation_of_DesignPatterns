@@ -87,7 +87,7 @@ public sealed class ProcessRecoveryTests
 #else
         const string configuration = "Release";
 #endif
-        var host = Path.Combine(root.FullName, "labs", "ReliableCheckout", "ReliableCheckout.ProcessHost", "bin", configuration, "net10.0", "ReliableCheckout.ProcessHost.dll");
+        var host = Path.Combine(root.FullName, "labs", "ReliableCheckout", "ReliableCheckout.ProcessHost", "bin", configuration, "net11.0", "ReliableCheckout.ProcessHost.dll");
         var start = new ProcessStartInfo("dotnet") { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
         foreach (var argument in new[] { host, database, point, marker }) start.ArgumentList.Add(argument);
         var process = Process.Start(start)!;
