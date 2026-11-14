@@ -7,7 +7,7 @@ public static class SelfTestRunner
     public static int Run(TextWriter writer)
     {
         ArgumentNullException.ThrowIfNull(writer);
-        writer.WriteLine("SmartHome self-test (.NET 10, no third-party test framework)");
+        writer.WriteLine("SmartHome self-test (.NET 11, no third-party test framework)");
 
         SmartHomeDemoResult result;
         try

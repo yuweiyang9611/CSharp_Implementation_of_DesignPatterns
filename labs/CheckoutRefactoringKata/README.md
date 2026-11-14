@@ -87,7 +87,7 @@ CheckoutRefactoringKata/
 - 特征测试：[Tests/StarterCharacterizationTests.cs](Tests/StarterCharacterizationTests.cs)
 - 等价性测试：[Tests/BehaviorEquivalenceTests.cs](Tests/BehaviorEquivalenceTests.cs)
 
-所有项目都省略了 `TargetFramework` 和 `LangVersion`，统一继承仓库根目录的 .NET 10 / C# 14 配置，避免工坊与主项目发生工具链漂移。
+所有项目都省略了 `TargetFramework` 和 `LangVersion`，统一继承仓库根目录的 .NET 11 / C# 15 配置，避免工坊与主项目发生工具链漂移。
 
 ## 4. 先运行，再阅读
 

@@ -1,6 +1,6 @@
 {
-  "name": "C# Design Patterns · .NET 10",
-  "image": "mcr.microsoft.com/devcontainers/dotnet:2.1.3-10.0-noble",
+  "name": "C# Design Patterns · .NET 11",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:2.3.5-11.0-resolute",
   "features": {
     "ghcr.io/devcontainers/features/node:2": {
       "version": "24"

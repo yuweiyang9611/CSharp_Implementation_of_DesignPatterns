@@ -4,7 +4,7 @@
 
 ## 先做 2 分钟环境检查
 
-没有本地 .NET 10 时，可先 [在 GitHub Codespaces 中打开本项目](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)。预配置容器会自动还原、构建并生成学习站；Codespaces 可能消耗 GitHub 使用额度。
+没有本地 .NET 11 时，可先 [在 GitHub Codespaces 中打开本项目](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)。预配置容器会自动还原、构建并生成学习站；Codespaces 可能消耗 GitHub 使用额度。
 
 在仓库根目录执行：
 
@@ -13,7 +13,7 @@ dotnet --version
 dotnet build DesignPatterns.sln --configuration Release
 ```
 
-项目目标框架与 CI 使用 .NET 10，语言版本固定为 C# 14。仓库不用 `global.json` 固定 SDK 版本，.NET SDK 10 或更新版本都可以；`dotnet --version` 的主版本号应不小于 10。只装了更新的 SDK（例如 .NET 11）时，运行示例和测试还需要 .NET 10 运行时。构建结尾应出现 `Build succeeded.`（中文环境可能显示“生成成功”）并且没有错误。
+项目目标框架与 CI 使用 .NET 11，语言版本固定为 C# 15。仓库不用 `global.json` 固定 SDK 版本，.NET SDK 11 或更新版本都可以；`dotnet --version` 的主版本号应不小于 11。只装了更新的 SDK（例如 .NET 12）时，运行示例和测试还需要 .NET 11 运行时。构建结尾应出现 `Build succeeded.`（中文环境可能显示“生成成功”）并且没有错误。
 
 | 你现在有多少时间 | 选择路线 | 完成后能做到什么 |
 | --- | --- | --- |
@@ -315,14 +315,14 @@ dotnet run --project examples/OnlineStore/DesignPatterns.TeachingProjects.Online
 
 ### PowerShell 找不到命令或脚本被阻止
 
-- `dotnet` 无法识别：执行 `where.exe dotnet` 与 `dotnet --list-sdks`；安装 .NET 10 SDK 后关闭并重新打开终端。
+- `dotnet` 无法识别：执行 `where.exe dotnet` 与 `dotnet --list-sdks`；安装 .NET 11 SDK 后关闭并重新打开终端。
 - 当前目录错误：先 `cd` 到包含 `DesignPatterns.sln` 的仓库根目录。
 - 脚本执行策略阻止运行：使用文档中的 `powershell -ExecutionPolicy Bypass -File ...`，它只对该进程生效。
 - 在 PowerShell 7 中也可把命令开头的 `powershell` 换成 `pwsh`。
 
 ### SDK 或编译失败
 
-- `NETSDK1045` 通常表示当前 SDK 不支持 `net10.0`；请确认 `dotnet --list-sdks` 中存在 .NET 10 或更新版本的 SDK。
+- `NETSDK1045` 通常表示当前 SDK 不支持 `net11.0`；请确认 `dotnet --list-sdks` 中存在 .NET 11 或更新版本的 SDK。
 - 使用 `--no-build` 报缺少产物时，先执行 `dotnet build DesignPatterns.sln -c Release`，或暂时去掉 `--no-build`。
 - 传给示例程序的参数必须放在独立的 `--` 后面，例如 `... -- --self-test`；Runner key 则是 `... -- adapter`。
 - 修改练习后先看第一条编译错误，不要用关闭 Nullable 或“警告视为错误”掩盖问题。
@@ -336,7 +336,7 @@ powershell -ExecutionPolicy Bypass -File scripts/export-all-guides.ps1
 - 需要本机安装 Microsoft Edge、Google Chrome 或 Chromium；找不到浏览器时 HTML 仍会生成，终端会显示其路径。
 - 如果 PDF 正被阅读器占用，先关闭文件再重试。
 - 生成结果在 `output/pdf/`；它是可再生输出，不要求提交到 Git。
-- 日常代码练习使用 `scripts/verify.ps1 -Mode Quick`；提交前使用 `scripts/verify.ps1 -Mode Full -SkipPdf` 检查格式、覆盖率和浏览器行为。两个档位都需要 PowerShell 7、.NET 10 和 Node.js 24；完整档还需要 Chrome 或 Edge，以及 `dotnet workload install wasm-tools wasm-experimental` 安装的 WebAssembly 工作负载（.NET 11 及更新的 SDK 改装 `wasm-tools-net10 wasm-experimental-net10`）。
+- 日常代码练习使用 `scripts/verify.ps1 -Mode Quick`；提交前使用 `scripts/verify.ps1 -Mode Full -SkipPdf` 检查格式、覆盖率和浏览器行为。两个档位都需要 PowerShell 7、.NET 11 和 Node.js 24；完整档还需要 Chrome 或 Edge，以及 `dotnet workload install wasm-tools wasm-experimental` 安装的 WebAssembly 工作负载（.NET 12 及更新的 SDK 改装 `wasm-tools-net11 wasm-experimental-net11`）。
 
 下一步：[打开 23 种模式索引](docs/模式索引.md)，选择第一个 Runner key。
 

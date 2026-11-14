@@ -1,10 +1,10 @@
 # C# 设计模式学习项目
 
-这是基于《图解设计模式》学习顺序重新编写的现代 C# 14 / .NET 10 课程：覆盖 GoF 23 种模式、23 个可独立运行的示例、3 个模式组合教学项目、2 个高级实验，以及可一次生成 5 份 PDF 的课程交付链。
+这是基于《图解设计模式》学习顺序重新编写的现代 C# 15 / .NET 11 课程：覆盖 GoF 23 种模式、23 个可独立运行的示例、3 个模式组合教学项目、2 个高级实验，以及可一次生成 5 份 PDF 的课程交付链。
 
 > **在线学习：** [打开 C# 设计模式学习地图](https://yuweiyang9611.github.io/CSharp_Implementation_of_DesignPatterns/)——按时间或实际问题选择路线，在 23 个独立课件、3 个项目和 2 个实验之间持续记录“阅读 → 运行 → 改造 → 验证”进度。
 
-> **免配置运行：** [在 GitHub Codespaces 中打开](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)——预配置 .NET 10、Node.js 24、站点构建与预览任务；创建 Codespace 可能消耗 GitHub 使用额度。
+> **免配置运行：** [在 GitHub Codespaces 中打开](https://codespaces.new/yuweiyang9611/CSharp_Implementation_of_DesignPatterns?quickstart=1)——预配置 .NET 11、Node.js 24、站点构建与预览任务；创建 Codespace 可能消耗 GitHub 使用额度。
 
 > 第一次打开仓库？请从 [START_HERE：选择你的学习路线](START_HERE.md) 开始。需要快速定位源码时使用 [23 种模式索引](docs/模式索引.md)。
 
@@ -43,7 +43,7 @@ GitHub noreply 邮箱可在 GitHub 的 **Settings → Emails** 中查看。建�
 
 不想先配置本地环境时，直接使用上面的 Codespaces 入口；容器创建后会锁定还原依赖、构建解决方案并生成学习站。VS Code 中运行 `Site: preview` 任务即可在 4173 端口预览。真实浏览器回归需要系统 Chrome 或 Edge，由 GitHub Actions 或安装了浏览器的本机执行。
 
-本地验证需要 PowerShell 7、.NET 10 SDK 和 Node.js 24。日常改动先运行快速档：构建、正式测试（含高级实验）、23 个 Demo 烟雾测试、3 个项目自检、目录与文档检查，以及复习和存储故障测试。
+本地验证需要 PowerShell 7、.NET 11 SDK 和 Node.js 24。日常改动先运行快速档：构建、正式测试（含高级实验）、23 个 Demo 烟雾测试、3 个项目自检、目录与文档检查，以及复习和存储故障测试。
 
 ```powershell
 pwsh -File scripts/verify.ps1 -Mode Quick
@@ -57,7 +57,7 @@ pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
 
 完整档增加锁定还原、格式检查、四份覆盖率报告的行 55%／分支 40% 门槛、验证脚本自测、站点构建、真实浏览器与可访问性回归，以及 HTML 导出。每次覆盖率结果写入独立的 `output/test-results/verify-<唯一标识>/`，避免旧报告干扰。它对应 CI 的代码与站点检查；提交邮箱隐私检查、跨系统矩阵和线上部署核验仍由 CI 执行。
 
-Quick 无需 WebAssembly 工作负载。Full 和站点构建需要给所用的 .NET SDK 安装两个 WebAssembly 工作负载：.NET 10 SDK 装 `wasm-tools` 与 `wasm-experimental`，更新的 SDK 装 `wasm-tools-net10` 与 `wasm-experimental-net10`（下方有命令）。
+Quick 无需 WebAssembly 工作负载。Full 和站点构建需要给所用的 .NET SDK 安装两个 WebAssembly 工作负载：.NET 11 SDK 装 `wasm-tools` 与 `wasm-experimental`，更新的 SDK 装 `wasm-tools-net11` 与 `wasm-experimental-net11`（下方有命令）。
 
 默认模式为 `Full`，不指定 `-SkipPdf` 时还会导出 PDF。`-NoRestore` 仅供 `Quick` 使用，要求依赖已还原；完整档始终执行锁定还原。
 
@@ -115,7 +115,7 @@ dotnet test labs/ReliableCheckout/ReliableCheckout.slnx -c Release
 
 ## 持续集成
 
-GitHub Actions 在每次 push 和 pull request 时使用 .NET 10 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。站点还会校验学习目录 JSON Schema 与交叉引用，对 Pages 验证器执行故障注入自测，并在系统 Chrome 中执行桌面与 390px 移动端回归、顺序证据、进度备份、全文搜索、测验复习、深链接、横向溢出和 axe 严重级可访问性检查。只有 Windows/Linux 验证与浏览器检查全部通过，主分支才会发布 GitHub Pages，并核对线上 commit 与关键资源。PDF 由手动或版本标签工作流生成。
+GitHub Actions 在每次 push 和 pull request 时使用 .NET 11 自动执行锁定还原、格式检查、构建、xUnit 测试、全部轻量自检、文档校验和 HTML 指南导出。四个测试程序集都生成 Cobertura，且每份报告必须达到行覆盖率 55%、分支覆盖率 40% 的防回退基线。站点还会校验学习目录 JSON Schema 与交叉引用，对 Pages 验证器执行故障注入自测，并在系统 Chrome 中执行桌面与 390px 移动端回归、顺序证据、进度备份、全文搜索、测验复习、深链接、横向溢出和 axe 严重级可访问性检查。只有 Windows/Linux 验证与浏览器检查全部通过，主分支才会发布 GitHub Pages，并核对线上 commit 与关键资源。PDF 由手动或版本标签工作流生成。
 
 ## 在线学习站
 
@@ -202,21 +202,21 @@ scripts/                           验证与导出脚本
 
 打开学习站的“编码练习”，选择题目，修改源码并运行逐项验收。初始实现故意包含缺陷，参考答案折叠显示。四道改错题覆盖 Observer 取消订阅、Command 撤销／重做、Prototype 克隆隔离和 State 非法转换；四道扩展题覆盖 Strategy 折扣边界、Bridge 新渠道、责任链短路和简单函数重构。
 
-题目、初始代码、参考答案和验收代码唯一来源是 [coding-exercises.json](site/data/coding-exercises.json)。[ExerciseCompiler](tools/ExerciseEngine/ExerciseCompiler.cs) 是浏览器和本地测试共用的 Roslyn 编译／执行核心。[playground.html](site/playground.html) 保留普通 JavaScript 页面，运行时采用 [.NET 独立 Web Worker](https://learn.microsoft.com/en-us/aspnet/core/client-side/dotnet-on-webworkers?view=aspnetcore-10.0)，每次运行创建新 Worker，结束、停止或超时后销毁。编译使用 C# 14，关闭并行编译，避免浏览器单线程等待问题。
+题目、初始代码、参考答案和验收代码唯一来源是 [coding-exercises.json](site/data/coding-exercises.json)。[ExerciseCompiler](tools/ExerciseEngine/ExerciseCompiler.cs) 是浏览器和本地测试共用的 Roslyn 编译／执行核心。[playground.html](site/playground.html) 保留普通 JavaScript 页面，运行时采用 [.NET 独立 Web Worker](https://learn.microsoft.com/en-us/aspnet/core/client-side/dotnet-on-webworkers?view=aspnetcore-10.0)，每次运行创建新 Worker，结束、停止或超时后销毁。编译使用 C# 15，关闭并行编译，避免浏览器单线程等待问题。
 
 首次运行才下载 .NET 和 Roslyn，首次下载可能较慢。仅提供纯 C#、集合、LINQ 等练习所需引用，没有任意 NuGet 安装、数据库或 ASP.NET 宿主。源码上限 100 KB，输出上限 64 KB；页面分别限制加载 60 秒、编译 30 秒和执行 5 秒。停止由页面终止 Worker，所以无限循环不会阻塞编辑界面。诊断、代码与输出均按文本显示。
 
 草稿和通过记录按题目 ID／版本保存，编辑后撤销当前通过状态。完整 JSON 备份增加可选 exercises 字段，旧备份仍可导入；编码页也可单独备份。保存失败时使用全站统一提示，下载内存中的最新草稿后可恢复。
 
-仓库不用 `global.json` 固定 .NET SDK 版本，.NET SDK 10 或更新版本都可以构建。浏览器宿主项目 [BrowserExercises](tools/BrowserExercises/BrowserExercises.csproj) 不写锁文件：它自己唯一的包 `Microsoft.NET.Sdk.WebAssembly.Pack` 由 SDK 加入，版本跟着已安装的 SDK 和工作负载走，锁住它会让其他版本的 SDK 还原失败（NU1004）。Roslyn 仍由 `ExerciseEngine` 的锁文件锁定，解决方案里的其余项目也照旧锁定，并以锁定模式还原。宿主项目里不能直接写 `PackageReference`（构建脚本会拒绝），要加的包放进 `ExerciseEngine`。
+仓库不用 `global.json` 固定 .NET SDK 版本，.NET SDK 11 或更新版本都可以构建。浏览器宿主项目 [BrowserExercises](tools/BrowserExercises/BrowserExercises.csproj) 不写锁文件：它自己唯一的包 `Microsoft.NET.Sdk.WebAssembly.Pack` 由 SDK 加入，版本跟着已安装的 SDK 和工作负载走，锁住它会让其他版本的 SDK 还原失败（NU1004）。Roslyn 仍由 `ExerciseEngine` 的锁文件锁定，解决方案里的其余项目也照旧锁定，并以锁定模式还原。宿主项目里不能直接写 `PackageReference`（构建脚本会拒绝），要加的包放进 `ExerciseEngine`。
 
-完整构建需要 PowerShell 7、.NET SDK 10 或更新版本、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载。工作负载的名字随 SDK 不同：.NET 10 SDK 装 `wasm-tools` 和 `wasm-experimental`；更新的 SDK（例如 .NET 11）里这两个名字指的是新版本的工具，项目面向 .NET 10，要装 `wasm-tools-net10` 和 `wasm-experimental-net10`：
+完整构建需要 PowerShell 7、.NET SDK 11 或更新版本、Node.js 24、Chrome／Edge，以及两个 WebAssembly 工作负载。工作负载的名字随 SDK 不同：.NET 11 SDK 装 `wasm-tools` 和 `wasm-experimental`；更新的 SDK（例如 .NET 12）里这两个名字指的是新版本的工具，项目面向 .NET 11，要装 `wasm-tools-net11` 和 `wasm-experimental-net11`：
 
 ~~~powershell
-# .NET 10 SDK
+# .NET 11 SDK
 dotnet workload install wasm-tools wasm-experimental
-# 更新的 SDK（例如 .NET 11）改用这一行
-# dotnet workload install wasm-tools-net10 wasm-experimental-net10
+# 更新的 SDK（例如 .NET 12）改用这一行
+# dotnet workload install wasm-tools-net11 wasm-experimental-net11
 pwsh -File scripts/verify.ps1 -Mode Full -SkipPdf
 # 仅重建站点（含浏览器编译器）
 pwsh -File scripts/build-pages.ps1
